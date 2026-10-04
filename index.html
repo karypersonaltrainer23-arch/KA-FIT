@@ -227,12 +227,17 @@ main{
   height:52px;
   flex-shrink:0;
   border-radius:15px;
-  background:#d4af37;
-  color:#080808;
+  background:#171717;
+  border:1px solid #d4af37;
+  color:#d4af37;
   display:flex;
   justify-content:center;
   align-items:center;
-  font-size:24px;
+}
+
+.icon svg{
+  width:28px;
+  height:28px;
 }
 
 .card h3{
@@ -372,7 +377,12 @@ Administra tus clientes y entrenamientos.
 
 <div class="card">
 
-<div class="icon">👤</div>
+<div class="icon">
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/>
+    <path d="M4.5 21c.7-5 3.2-7.5 7.5-7.5s6.8 2.5 7.5 7.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+  </svg>
+</div>
 
 <div>
 <h3>Mis clientes</h3>
@@ -386,7 +396,15 @@ Administra tus clientes y entrenamientos.
 
 <div class="card">
 
-<div class="icon">🏋️</div>
+<div class="icon">
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M3 9v6M6 7v10M18 7v10M21 9v6M6 12h12"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"/>
+  </svg>
+</div>
 
 <div>
 <h3>Rutinas</h3>
@@ -400,7 +418,22 @@ Administra tus clientes y entrenamientos.
 
 <div class="card">
 
-<div class="icon">📈</div>
+<div class="icon">
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M4 19V5M4 19H20M7 15l4-4 3 2 5-6"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"/>
+    <path d="M16 7h3v3"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"/>
+  </svg>
+</div>
 
 <div>
 <h3>Progreso</h3>
@@ -414,7 +447,24 @@ Administra tus clientes y entrenamientos.
 
 <div class="card">
 
-<div class="icon">📅</div>
+<div class="icon">
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <rect x="4" y="5" width="16" height="15" rx="2"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"/>
+    <path d="M8 3v4M16 3v4M4 9h16"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"/>
+    <path d="M8 13h2M14 13h2M8 17h2M14 17h2"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"/>
+  </svg>
+</div>
 
 <div>
 <h3>Agenda</h3>
