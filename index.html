@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#080808">
-
 <title>KA-FIT</title>
 
 <style>
@@ -17,9 +16,142 @@
 body{
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   background:#080808;
-  color:white;
+  color:#fff;
   min-height:100vh;
 }
+
+button,input{
+  font:inherit;
+}
+
+.screen{
+  display:none;
+  min-height:100vh;
+}
+
+.screen.active{
+  display:block;
+}
+
+/* LOGIN */
+
+#login{
+  min-height:100vh;
+  padding:55px 24px 35px;
+  display:none;
+  align-items:center;
+  justify-content:center;
+}
+
+#login.active{
+  display:flex;
+}
+
+.login-box{
+  width:100%;
+  max-width:420px;
+  text-align:center;
+}
+
+.logo{
+  width:120px;
+  height:120px;
+  border:2px solid #d4af37;
+  border-radius:50%;
+  margin:0 auto 18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#d4af37;
+  font-size:34px;
+  font-weight:900;
+  letter-spacing:3px;
+}
+
+.brand{
+  color:#d4af37;
+  font-size:36px;
+  letter-spacing:4px;
+}
+
+.tagline{
+  color:#999;
+  margin-top:7px;
+  margin-bottom:45px;
+}
+
+.access-card{
+  background:#141414;
+  border:1px solid #292929;
+  border-radius:24px;
+  padding:27px 20px;
+  text-align:left;
+}
+
+.access-card h2{
+  text-align:center;
+  margin-bottom:8px;
+}
+
+.access-card .info{
+  color:#888;
+  text-align:center;
+  font-size:14px;
+  margin-bottom:25px;
+}
+
+label{
+  display:block;
+  color:#bbb;
+  font-size:13px;
+  margin-bottom:8px;
+}
+
+input{
+  width:100%;
+  background:#0b0b0b;
+  color:#fff;
+  border:1px solid #333;
+  border-radius:14px;
+  padding:16px;
+  outline:none;
+  font-size:17px;
+  letter-spacing:2px;
+}
+
+input:focus{
+  border-color:#d4af37;
+}
+
+.access-button{
+  width:100%;
+  margin-top:15px;
+  border:none;
+  border-radius:14px;
+  padding:16px;
+  background:#d4af37;
+  color:#080808;
+  font-weight:800;
+  font-size:16px;
+}
+
+.error{
+  min-height:20px;
+  margin-top:12px;
+  text-align:center;
+  color:#ff6b6b;
+  font-size:13px;
+}
+
+.trainer{
+  color:#d4af37;
+  text-align:center;
+  font-size:12px;
+  letter-spacing:2px;
+  margin-top:25px;
+}
+
+/* APP */
 
 .app{
   max-width:480px;
@@ -28,103 +160,87 @@ body{
   padding-bottom:95px;
 }
 
-/* ENCABEZADO */
-
 header{
-  padding:55px 24px 25px;
-  text-align:center;
+  padding:55px 22px 22px;
 }
 
-.logo{
-  width:105px;
-  height:105px;
-  margin:auto;
-  border:2px solid #d4af37;
-  border-radius:50%;
+.top{
   display:flex;
+  justify-content:space-between;
   align-items:center;
-  justify-content:center;
+}
+
+.mini-logo{
   color:#d4af37;
-  font-size:28px;
-  font-weight:800;
+  font-size:25px;
+  font-weight:900;
   letter-spacing:2px;
 }
 
-h1{
-  color:#d4af37;
-  font-size:32px;
-  margin-top:15px;
-  letter-spacing:3px;
-}
-
-.subtitle{
-  color:#999;
-  margin-top:5px;
-  font-size:14px;
-}
-
-/* CONTENIDO */
-
-main{
-  padding:10px 20px;
+.logout{
+  background:#171717;
+  color:#aaa;
+  border:1px solid #292929;
+  border-radius:12px;
+  padding:9px 12px;
 }
 
 .welcome{
-  margin-bottom:25px;
+  margin-top:35px;
 }
 
-.welcome h2{
-  font-size:24px;
+.welcome h1{
+  font-size:28px;
 }
 
 .welcome p{
-  color:#999;
-  margin-top:6px;
+  color:#888;
+  margin-top:7px;
 }
 
-/* TARJETAS */
+main{
+  padding:5px 20px;
+}
 
 .card{
   background:#141414;
   border:1px solid #292929;
   border-radius:20px;
-  padding:20px;
-  margin-bottom:15px;
+  padding:19px;
+  margin-bottom:14px;
   display:flex;
   align-items:center;
-  gap:17px;
-  cursor:pointer;
+  gap:15px;
 }
 
 .icon{
   width:52px;
   height:52px;
+  flex-shrink:0;
   border-radius:15px;
   background:#d4af37;
   color:#080808;
   display:flex;
   justify-content:center;
   align-items:center;
-  font-size:25px;
+  font-size:24px;
 }
 
 .card h3{
-  font-size:18px;
+  font-size:17px;
   margin-bottom:4px;
 }
 
 .card p{
-  color:#999;
+  color:#888;
   font-size:13px;
 }
 
 .arrow{
   margin-left:auto;
   color:#d4af37;
-  font-size:24px;
+  font-size:25px;
 }
-
-/* NAVEGACIÓN */
 
 nav{
   position:fixed;
@@ -143,110 +259,161 @@ nav{
 }
 
 .nav-item{
+  flex:1;
   text-align:center;
   color:#777;
-  font-size:11px;
-  flex:1;
+  font-size:10px;
 }
 
 .nav-item span{
   display:block;
-  font-size:23px;
+  font-size:22px;
   margin-bottom:4px;
 }
 
 .nav-item.active{
   color:#d4af37;
 }
-
-.badge{
-  display:inline-block;
-  background:#d4af37;
-  color:#080808;
-  padding:7px 13px;
-  border-radius:20px;
-  font-size:12px;
-  font-weight:bold;
-  margin-top:15px;
-}
-
 </style>
 </head>
 
 <body>
 
+<section id="login" class="screen active">
+
+  <div class="login-box">
+
+    <div class="logo">KA</div>
+
+    <h1 class="brand">KA-FIT</h1>
+
+    <p class="tagline">
+      Entrenamiento Personal
+    </p>
+
+    <div class="access-card">
+
+      <h2>Bienvenida</h2>
+
+      <p class="info">
+        Ingresa tu código para acceder a KA-FIT
+      </p>
+
+      <label for="codigo">
+        CÓDIGO DE ACCESO
+      </label>
+
+      <input
+        id="codigo"
+        type="password"
+        inputmode="numeric"
+        placeholder="••••"
+        maxlength="4"
+      >
+
+      <button class="access-button" onclick="entrar()">
+        INGRESAR
+      </button>
+
+      <div id="error" class="error"></div>
+
+    </div>
+
+    <div class="trainer">
+      KA-FIT · PERSONAL TRAINING
+    </div>
+
+  </div>
+
+</section>
+
+
+<section id="home" class="screen">
+
 <div class="app">
 
 <header>
 
-<div class="logo">
-KA
+<div class="top">
+
+<div class="mini-logo">
+KA-FIT
 </div>
 
-<h1>KA-FIT</h1>
+<button class="logout" onclick="salir()">
+Salir
+</button>
 
-<p class="subtitle">
-Entrenamiento Personal
+</div>
+
+<div class="welcome">
+
+<h1>Hola, Karina 👋</h1>
+
+<p>
+Administra tus clientes y entrenamientos.
 </p>
 
-<div class="badge">
-ENTRENADORA
 </div>
 
 </header>
 
+
 <main>
 
-<div class="welcome">
-<h2>Hola, Karina 👋</h2>
-<p>Administra tus entrenamientos y clientes.</p>
-</div>
-
 <div class="card">
+
 <div class="icon">👤</div>
 
 <div>
 <h3>Mis clientes</h3>
-<p>Gestiona tus clientes y sus objetivos</p>
+<p>Perfiles, objetivos y seguimiento</p>
 </div>
 
 <div class="arrow">›</div>
+
 </div>
 
 
 <div class="card">
+
 <div class="icon">🏋️</div>
 
 <div>
 <h3>Rutinas</h3>
-<p>Crea y asigna planes de entrenamiento</p>
+<p>Crea y asigna entrenamientos</p>
 </div>
 
 <div class="arrow">›</div>
+
 </div>
 
 
 <div class="card">
+
 <div class="icon">📈</div>
 
 <div>
 <h3>Progreso</h3>
-<p>Registra medidas, peso y avances</p>
+<p>Peso, medidas y avances</p>
 </div>
 
 <div class="arrow">›</div>
+
 </div>
 
 
 <div class="card">
+
 <div class="icon">📅</div>
 
 <div>
 <h3>Agenda</h3>
-<p>Organiza tus sesiones de entrenamiento</p>
+<p>Organiza tus sesiones</p>
 </div>
 
 <div class="arrow">›</div>
+
 </div>
 
 </main>
@@ -282,6 +449,73 @@ Perfil
 </nav>
 
 </div>
+
+</section>
+
+
+<script>
+
+/*
+  CÓDIGO PROVISIONAL SOLO PARA PROBAR
+  LA INTERFAZ.
+*/
+
+const codigoPrueba = "2026";
+
+function entrar(){
+
+  const codigo =
+    document.getElementById("codigo").value;
+
+  const error =
+    document.getElementById("error");
+
+  if(codigo === codigoPrueba){
+
+    document
+      .getElementById("login")
+      .classList.remove("active");
+
+    document
+      .getElementById("home")
+      .classList.add("active");
+
+    error.textContent = "";
+
+  }else{
+
+    error.textContent =
+      "Código incorrecto. Inténtalo nuevamente.";
+
+  }
+
+}
+
+function salir(){
+
+  document
+    .getElementById("home")
+    .classList.remove("active");
+
+  document
+    .getElementById("login")
+    .classList.add("active");
+
+  document.getElementById("codigo").value = "";
+
+}
+
+document
+  .getElementById("codigo")
+  .addEventListener("keydown", function(event){
+
+    if(event.key === "Enter"){
+      entrar();
+    }
+
+  });
+
+</script>
 
 </body>
 </html>
