@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080808">
+
+<title>KA-FIT</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:#080808;
+  color:white;
+  min-height:100vh;
+}
+
+.app{
+  max-width:480px;
+  margin:auto;
+  min-height:100vh;
+  padding-bottom:95px;
+}
+
+/* ENCABEZADO */
+
+header{
+  padding:55px 24px 25px;
+  text-align:center;
+}
+
+.logo{
+  width:105px;
+  height:105px;
+  margin:auto;
+  border:2px solid #d4af37;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#d4af37;
+  font-size:28px;
+  font-weight:800;
+  letter-spacing:2px;
+}
+
+h1{
+  color:#d4af37;
+  font-size:32px;
+  margin-top:15px;
+  letter-spacing:3px;
+}
+
+.subtitle{
+  color:#999;
+  margin-top:5px;
+  font-size:14px;
+}
+
+/* CONTENIDO */
+
+main{
+  padding:10px 20px;
+}
+
+.welcome{
+  margin-bottom:25px;
+}
+
+.welcome h2{
+  font-size:24px;
+}
+
+.welcome p{
+  color:#999;
+  margin-top:6px;
+}
+
+/* TARJETAS */
+
+.card{
+  background:#141414;
+  border:1px solid #292929;
+  border-radius:20px;
+  padding:20px;
+  margin-bottom:15px;
+  display:flex;
+  align-items:center;
+  gap:17px;
+  cursor:pointer;
+}
+
+.icon{
+  width:52px;
+  height:52px;
+  border-radius:15px;
+  background:#d4af37;
+  color:#080808;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:25px;
+}
+
+.card h3{
+  font-size:18px;
+  margin-bottom:4px;
+}
+
+.card p{
+  color:#999;
+  font-size:13px;
+}
+
+.arrow{
+  margin-left:auto;
+  color:#d4af37;
+  font-size:24px;
+}
+
+/* NAVEGACIÓN */
+
+nav{
+  position:fixed;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:100%;
+  max-width:480px;
+  height:82px;
+  background:#111;
+  border-top:1px solid #292929;
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  padding-bottom:10px;
+}
+
+.nav-item{
+  text-align:center;
+  color:#777;
+  font-size:11px;
+  flex:1;
+}
+
+.nav-item span{
+  display:block;
+  font-size:23px;
+  margin-bottom:4px;
+}
+
+.nav-item.active{
+  color:#d4af37;
+}
+
+.badge{
+  display:inline-block;
+  background:#d4af37;
+  color:#080808;
+  padding:7px 13px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:bold;
+  margin-top:15px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+
+<div class="logo">
+KA
+</div>
+
+<h1>KA-FIT</h1>
+
+<p class="subtitle">
+Entrenamiento Personal
+</p>
+
+<div class="badge">
+ENTRENADORA
+</div>
+
+</header>
+
+<main>
+
+<div class="welcome">
+<h2>Hola, Karina 👋</h2>
+<p>Administra tus entrenamientos y clientes.</p>
+</div>
+
+<div class="card">
+<div class="icon">👤</div>
+
+<div>
+<h3>Mis clientes</h3>
+<p>Gestiona tus clientes y sus objetivos</p>
+</div>
+
+<div class="arrow">›</div>
+</div>
+
+
+<div class="card">
+<div class="icon">🏋️</div>
+
+<div>
+<h3>Rutinas</h3>
+<p>Crea y asigna planes de entrenamiento</p>
+</div>
+
+<div class="arrow">›</div>
+</div>
+
+
+<div class="card">
+<div class="icon">📈</div>
+
+<div>
+<h3>Progreso</h3>
+<p>Registra medidas, peso y avances</p>
+</div>
+
+<div class="arrow">›</div>
+</div>
+
+
+<div class="card">
+<div class="icon">📅</div>
+
+<div>
+<h3>Agenda</h3>
+<p>Organiza tus sesiones de entrenamiento</p>
+</div>
+
+<div class="arrow">›</div>
+</div>
+
+</main>
+
+
+<nav>
+
+<div class="nav-item active">
+<span>⌂</span>
+Inicio
+</div>
+
+<div class="nav-item">
+<span>👤</span>
+Clientes
+</div>
+
+<div class="nav-item">
+<span>🏋️</span>
+Rutinas
+</div>
+
+<div class="nav-item">
+<span>📈</span>
+Progreso
+</div>
+
+<div class="nav-item">
+<span>⚙️</span>
+Perfil
+</div>
+
+</nav>
+
+</div>
+
+</body>
+</html>
