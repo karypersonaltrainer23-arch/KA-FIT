@@ -785,48 +785,57 @@ function closeAddModal(){
 
 function saveClient(){
 
-  const name = document.getElementById("name").value.trim();
+    const name = document.getElementById("name").value.trim();
 
-  if(!name){
-    alert("Escribe el nombre del cliente.");
-    return;
-  }
+    if(!name){
+        alert("Escribe el nombre del cliente.");
+        return;
+    }
 
-  const client = {
+    const clientData = {
+        name: name,
+        age: document.getElementById("age").value,
+        weight: document.getElementById("weight").value,
+        height: document.getElementById("height").value,
+        status: document.getElementById("status").value,
+        goal: document.getElementById("goal").value,
+        phone: document.getElementById("phone").value,
+        notes: document.getElementById("notes").value
+    };
 
-    id: Date.now(),
+    if(editingClientId !== null){
 
-    name:name,
+        const index = clients.findIndex(
+            client => client.id === editingClientId
+        );
 
-    age:document.getElementById("age").value,
+        if(index !== -1){
+            clients[index] = {
+                ...clients[index],
+                ...clientData
+            };
+        }
 
-    weight:document.getElementById("weight").value,
+        editingClientId = null;
 
-    height:document.getElementById("height").value,
+    }else{
 
-    status:document.getElementById("status").value,
+        const client = {
+            id: Date.now(),
+            ...clientData
+        };
 
-    goal:document.getElementById("goal").value,
+        clients.unshift(client);
+    }
 
-    phone:document.getElementById("phone").value,
+    localStorage.setItem(
+        "kafit_clients",
+        JSON.stringify(clients)
+    );
 
-    notes:document.getElementById("notes").value
-
-  };
-
-  clients.unshift(client);
-
-  localStorage.setItem(
-    "kafit_clients",
-    JSON.stringify(clients)
-  );
-
-  clearForm();
-
-  closeAddModal();
-
-  renderClients();
-
+    clearForm();
+    closeAddModal();
+    renderClients();
 }
 
 
@@ -1017,7 +1026,13 @@ function openProfile(id){
 
     </div>
 
-
+    <button
+  class="edit-client"
+  onclick="editClient(${client.id})"
+>
+  ✏️ Editar cliente
+</button>
+    
     <button
       class="delete"
       onclick="deleteClient(${client.id})"
@@ -1044,7 +1059,29 @@ function closeProfile(){
 
 }
 
+let editingClientId = null;
 
+function editClient(id){
+
+    const client = clients.find(client => client.id === id);
+
+    if(!client) return;
+
+    editingClientId = id;
+
+    document.getElementById("name").value = client.name || "";
+    document.getElementById("age").value = client.age || "";
+    document.getElementById("weight").value = client.weight || "";
+    document.getElementById("height").value = client.height || "";
+    document.getElementById("status").value = client.status || "Activo";
+    document.getElementById("goal").value = client.goal || "Ganancia muscular";
+    document.getElementById("phone").value = client.phone || "";
+    document.getElementById("notes").value = client.notes || "";
+
+    closeProfile();
+
+    document.getElementById("clientModal").classList.add("show");
+}
 /* ELIMINAR CLIENTE */
 
 function deleteClient(id){
