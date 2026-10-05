@@ -553,6 +553,92 @@ body{
   }
 }
 
+  /* ===== KA-FIT · ACABADO PREMIUM DORADO ===== */
+
+/* Ondas y destellos dorados del fondo */
+.app{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+}
+
+.app::before,
+.app::after{
+  content:"";
+  position:absolute;
+  pointer-events:none;
+  z-index:-1;
+}
+
+/* Onda superior */
+.app::before{
+  width:150%;
+  height:260px;
+  top:155px;
+  left:-25%;
+  border-radius:50%;
+  border-top:2px solid rgba(247,223,138,.75);
+  transform:rotate(10deg);
+  box-shadow:
+    0 -4px 10px rgba(212,175,55,.38),
+    0 -12px 35px rgba(212,175,55,.18);
+  background:
+    radial-gradient(ellipse at 65% 0%,
+    rgba(212,175,55,.20) 0%,
+    rgba(212,175,55,.07) 28%,
+    transparent 58%);
+}
+
+/* Onda grande inferior */
+.app::after{
+  width:150%;
+  height:420px;
+  left:-35%;
+  bottom:120px;
+  border-radius:50%;
+  border-bottom:2px solid rgba(212,175,55,.65);
+  transform:rotate(15deg);
+  box-shadow:
+    0 6px 12px rgba(247,223,138,.30),
+    0 15px 45px rgba(212,175,55,.15);
+  background:
+    radial-gradient(ellipse at 20% 85%,
+    rgba(212,175,55,.16) 0%,
+    rgba(212,175,55,.05) 32%,
+    transparent 62%);
+}
+
+/* Más profundidad en las tarjetas */
+.client-card{
+  position:relative;
+  box-shadow:
+    0 0 8px rgba(212,175,55,.28),
+    0 0 24px rgba(212,175,55,.10),
+    inset 0 0 20px rgba(212,175,55,.05);
+}
+
+/* Brillo del avatar */
+.avatar{
+  box-shadow:
+    0 0 10px rgba(212,175,55,.38),
+    inset 0 0 10px rgba(212,175,55,.08);
+}
+
+/* Botón premium */
+.add-button{
+  box-shadow:
+    0 0 10px rgba(247,223,138,.60),
+    0 0 25px rgba(212,175,55,.35),
+    0 0 45px rgba(212,175,55,.12),
+    inset 0 1px 2px rgba(255,255,255,.55);
+}
+
+/* Resplandor suave en estadísticas */
+.stat-card{
+  box-shadow:
+    0 0 12px rgba(212,175,55,.15),
+    inset 0 0 18px rgba(212,175,55,.04);
+}
 </style>
 </head>
 
