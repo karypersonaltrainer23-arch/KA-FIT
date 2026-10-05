@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#050505">
+
+<title>Mis Clientes | KA-FIT</title>
+
+<style>
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+:root{
+  --gold:#e9b83f;
+  --gold-light:#ffd76a;
+  --black:#050505;
+  --card:#101010;
+  --gray:#999;
+  --border:#493a19;
+  --white:#ffffff;
+}
+
+html,body{
+  background:#050505;
+  color:white;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  min-height:100%;
+}
+
+body{
+  padding-bottom:100px;
+}
+
+.app{
+  width:100%;
+  max-width:520px;
+  margin:0 auto;
+  min-height:100vh;
+  background:#050505;
+}
+
+/* CABECERA */
+
+.header{
+  position:sticky;
+  top:0;
+  z-index:50;
+  background:rgba(5,5,5,.96);
+  backdrop-filter:blur(15px);
+  -webkit-backdrop-filter:blur(15px);
+  border-bottom:1px solid #242424;
+  padding:18px 18px 15px;
+}
+
+.header-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.back{
+  width:42px;
+  height:42px;
+  border:1px solid #70551e;
+  border-radius:12px;
+  background:#0b0b0b;
+  color:var(--gold);
+  font-size:27px;
+  cursor:pointer;
+}
+
+.title-area{
+  text-align:center;
+  flex:1;
+}
+
+.title-area h1{
+  color:var(--gold);
+  font-size:22px;
+  letter-spacing:.5px;
+}
+
+.title-area p{
+  color:#aaa;
+  font-size:12px;
+  margin-top:3px;
+}
+
+.logo-small{
+  width:42px;
+  height:42px;
+  border:1px solid #70551e;
+  border-radius:50%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:var(--gold);
+  font-weight:800;
+  font-size:11px;
+}
+
+/* CONTENIDO */
+
+.content{
+  padding:20px 16px;
+}
+
+.welcome{
+  margin-bottom:18px;
+}
+
+.welcome h2{
+  font-size:25px;
+  margin-bottom:5px;
+}
+
+.welcome h2 span{
+  color:var(--gold);
+}
+
+.welcome p{
+  color:#9a9a9a;
+  font-size:14px;
+}
+
+/* RESUMEN */
+
+.stats{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-bottom:20px;
+}
+
+.stat{
+  border:1px solid #493a19;
+  background:linear-gradient(145deg,#111,#090909);
+  border-radius:16px;
+  padding:16px;
+}
+
+.stat-number{
+  color:var(--gold);
+  font-size:28px;
+  font-weight:800;
+}
+
+.stat-label{
+  color:#aaa;
+  font-size:12px;
+  margin-top:4px;
+}
+
+/* BUSCADOR */
+
+.search-box{
+  display:flex;
+  align-items:center;
+  background:#111;
+  border:1px solid #333;
+  border-radius:14px;
+  padding:0 14px;
+  margin-bottom:15px;
+}
+
+.search-box span{
+  color:var(--gold);
+  font-size:19px;
+}
+
+.search-box input{
+  width:100%;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:white;
+  padding:14px 10px;
+  font-size:15px;
+}
+
+/* BOTÓN AGREGAR */
+
+.add-button{
+  width:100%;
+  border:1px solid #9f7926;
+  border-radius:14px;
+  padding:14px;
+  margin-bottom:22px;
+  background:linear-gradient(135deg,#d69b22,#f1c557);
+  color:#080808;
+  font-size:15px;
+  font-weight:800;
+  cursor:pointer;
+  box-shadow:0 0 18px rgba(233,184,63,.15);
+}
+
+/* TÍTULO LISTA */
+
+.section-title{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+}
+
+.section-title h3{
+  font-size:18px;
+}
+
+.section-title span{
+  color:var(--gold);
+  font-size:12px;
+}
+
+/* CLIENTES */
+
+.client-list{
+  display:flex;
+  flex-direction:column;
+  gap:11px;
+}
+
+.client-card{
+  display:flex;
+  align-items:center;
+  gap:13px;
+  background:linear-gradient(145deg,#121212,#090909);
+  border:1px solid #333;
+  border-radius:17px;
+  padding:14px;
+  cursor:pointer;
+}
+
+.client-card:active{
+  transform:scale(.99);
+  border-color:var(--gold);
+}
+
+.avatar{
+  width:52px;
+  height:52px;
+  min-width:52px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#2b220e,#0c0c0c);
+  border:1px solid var(--gold);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:var(--gold);
+  font-weight:800;
+  font-size:18px;
+}
+
+.client-info{
+  flex:1;
+}
+
+.client-name{
+  font-size:16px;
+  font-weight:700;
+  margin-bottom:4px;
+}
+
+.client-goal{
+  font-size:12px;
+  color:#aaa;
+}
+
+.arrow{
+  width:34px;
+  height:34px;
+  border:1px solid var(--gold);
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--gold);
+  font-size:22px;
+}
+
+.empty{
+  text-align:center;
+  border:1px dashed #444;
+  border-radius:17px;
+  padding:35px 20px;
+  color:#888;
+}
+
+.empty-icon{
+  font-size:38px;
+  margin-bottom:10px;
+}
+
+/* MODAL */
+
+.modal{
+  display:none;
+  position:fixed;
+  z-index:200;
+  inset:0;
+  background:rgba(0,0,0,.82);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  padding:20px;
+  align-items:center;
+  justify-content:center;
+}
+
+.modal.show{
+  display:flex;
+}
+
+.modal-box{
+  width:100%;
+  max-width:460px;
+  max-height:88vh;
+  overflow-y:auto;
+  background:#0d0d0d;
+  border:1px solid #73571f;
+  border-radius:22px;
+  padding:20px;
+  box-shadow:0 0 40px rgba(233,184,63,.12);
+}
+
+.modal-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+}
+
+.modal-header h2{
+  color:var(--gold);
+  font-size:20px;
+}
+
+.close{
+  border:0;
+  background:#1c1c1c;
+  color:white;
+  width:35px;
+  height:35px;
+  border-radius:50%;
+  font-size:19px;
+}
+
+.field{
+  margin-bottom:13px;
+}
+
+.field label{
+  display:block;
+  color:#bbb;
+  font-size:12px;
+  margin-bottom:6px;
+}
+
+.field input,
+.field select,
+.field textarea{
+  width:100%;
+  background:#151515;
+  border:1px solid #363636;
+  border-radius:11px;
+  color:white;
+  padding:12px;
+  outline:none;
+  font-size:15px;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus{
+  border-color:var(--gold);
+}
+
+.field textarea{
+  min-height:75px;
+  resize:vertical;
+}
+
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.save{
+  width:100%;
+  padding:14px;
+  border:0;
+  border-radius:12px;
+  margin-top:8px;
+  background:linear-gradient(135deg,#d69b22,#f1c557);
+  color:#080808;
+  font-size:15px;
+  font-weight:800;
+}
+
+/* FICHA */
+
+.profile-name{
+  text-align:center;
+  margin-bottom:20px;
+}
+
+.profile-avatar{
+  width:76px;
+  height:76px;
+  margin:0 auto 10px;
+  border-radius:50%;
+  border:2px solid var(--gold);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:25px;
+  font-weight:800;
+  color:var(--gold);
+  background:#151109;
+}
+
+.profile-name h2{
+  color:white;
+}
+
+.profile-name p{
+  color:var(--gold);
+  margin-top:4px;
+  font-size:13px;
+}
+
+.profile-data{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+}
+
+.data-box{
+  background:#151515;
+  border:1px solid #303030;
+  border-radius:12px;
+  padding:12px;
+}
+
+.data-box small{
+  display:block;
+  color:#888;
+  margin-bottom:5px;
+}
+
+.data-box strong{
+  font-size:14px;
+}
+
+.notes{
+  margin-top:10px;
+  background:#151515;
+  border:1px solid #303030;
+  border-radius:12px;
+  padding:13px;
+}
+
+.notes small{
+  color:#888;
+}
+
+.notes p{
+  margin-top:6px;
+  color:#ddd;
+  font-size:14px;
+  line-height:1.4;
+}
+
+.delete{
+  width:100%;
+  border:1px solid #6e2929;
+  color:#ff7070;
+  background:#170b0b;
+  border-radius:12px;
+  padding:13px;
+  margin-top:15px;
+  font-weight:700;
+}
+
+/* NAVEGACIÓN INFERIOR */
+
+.bottom-nav{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  z-index:100;
+  height:88px;
+  padding-bottom:env(safe-area-inset-bottom);
+  background:rgba(3,3,3,.97);
+  border-top:1px solid #292929;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.bottom-inner{
+  width:100%;
+  max-width:520px;
+  display:flex;
+  align-items:center;
+  justify-content:space-around;
+}
+
+.nav-item{
+  width:20%;
+  text-decoration:none;
+  color:#777;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:5px;
+  font-size:11px;
+}
+
+.nav-icon{
+  font-size:23px;
+}
+
+.nav-item.active{
+  color:var(--gold);
+}
+
+.nav-item.active::after{
+  content:"";
+  width:42px;
+  height:2px;
+  background:var(--gold);
+  border-radius:10px;
+  box-shadow:0 0 8px var(--gold);
+}
+
+@media(max-width:390px){
+  .content{
+    padding-left:12px;
+    padding-right:12px;
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header class="header">
+
+  <div class="header-top">
+
+    <button class="back" onclick="window.location.href='index.html'">
+      ‹
+    </button>
+
+    <div class="title-area">
+      <h1>MIS CLIENTES</h1>
+      <p>KA-FIT · Entrenadora Personal</p>
+    </div>
+
+    <div class="logo-small">
+      KA
+    </div>
+
+  </div>
+
+</header>
+
+<main class="content">
+
+  <div class="welcome">
+    <h2>Hola, <span>Karina</span> 💪</h2>
+    <p>Administra y da seguimiento a tus clientes.</p>
+  </div>
+
+  <div class="stats">
+
+    <div class="stat">
+      <div class="stat-number" id="totalClients">0</div>
+      <div class="stat-label">CLIENTES</div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-number" id="activeClients">0</div>
+      <div class="stat-label">ACTIVOS</div>
+    </div>
+
+  </div>
+
+  <div class="search-box">
+    <span>⌕</span>
+    <input
+      type="text"
+      id="search"
+      placeholder="Buscar cliente..."
+      oninput="renderClients()"
+    >
+  </div>
+
+  <button class="add-button" onclick="openAddModal()">
+    ＋ AGREGAR NUEVO CLIENTE
+  </button>
+
+  <div class="section-title">
+    <h3>Mis clientes</h3>
+    <span id="clientCounter">0 registrados</span>
+  </div>
+
+  <div id="clientList" class="client-list"></div>
+
+</main>
+
+</div>
+
+
+<!-- MODAL AGREGAR CLIENTE -->
+
+<div class="modal" id="addModal">
+
+  <div class="modal-box">
+
+    <div class="modal-header">
+      <h2>Nuevo cliente</h2>
+      <button class="close" onclick="closeAddModal()">×</button>
+    </div>
+
+    <div class="field">
+      <label>Nombre completo *</label>
+      <input id="name" type="text" placeholder="Nombre del cliente">
+    </div>
+
+    <div class="form-grid">
+
+      <div class="field">
+        <label>Edad</label>
+        <input id="age" type="number" placeholder="Edad">
+      </div>
+
+      <div class="field">
+        <label>Peso (kg)</label>
+        <input id="weight" type="number" step="0.1" placeholder="Peso">
+      </div>
+
+    </div>
+
+    <div class="form-grid">
+
+      <div class="field">
+        <label>Estatura (cm)</label>
+        <input id="height" type="number" placeholder="Estatura">
+      </div>
+
+      <div class="field">
+        <label>Estado</label>
+        <select id="status">
+          <option value="Activo">Activo</option>
+          <option value="Pausa">En pausa</option>
+        </select>
+      </div>
+
+    </div>
+
+    <div class="field">
+      <label>Objetivo</label>
+
+      <select id="goal">
+        <option value="Ganancia muscular">Ganancia muscular</option>
+        <option value="Pérdida de grasa">Pérdida de grasa</option>
+        <option value="Recomposición corporal">Recomposición corporal</option>
+        <option value="Fuerza">Fuerza</option>
+        <option value="Acondicionamiento físico">Acondicionamiento físico</option>
+        <option value="Salud y bienestar">Salud y bienestar</option>
+      </select>
+
+    </div>
+
+    <div class="field">
+      <label>Teléfono</label>
+      <input id="phone" type="tel" placeholder="Número de teléfono">
+    </div>
+
+    <div class="field">
+      <label>Notas</label>
+      <textarea
+        id="notes"
+        placeholder="Lesiones, observaciones, preferencias, etc."
+      ></textarea>
+    </div>
+
+    <button class="save" onclick="saveClient()">
+      GUARDAR CLIENTE
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- MODAL FICHA CLIENTE -->
+
+<div class="modal" id="profileModal">
+
+  <div class="modal-box">
+
+    <div class="modal-header">
+      <h2>Ficha del cliente</h2>
+      <button class="close" onclick="closeProfile()">×</button>
+    </div>
+
+    <div id="profileContent"></div>
+
+  </div>
+
+</div>
+
+
+<!-- BARRA INFERIOR -->
+
+<nav class="bottom-nav">
+
+  <div class="bottom-inner">
+
+    <a href="index.html" class="nav-item">
+      <span class="nav-icon">⌂</span>
+      <span>Inicio</span>
+    </a>
+
+    <a href="clientes.html" class="nav-item active">
+      <span class="nav-icon">♙</span>
+      <span>Clientes</span>
+    </a>
+
+    <a href="#" class="nav-item">
+      <span class="nav-icon">🏋️</span>
+      <span>Rutinas</span>
+    </a>
+
+    <a href="#" class="nav-item">
+      <span class="nav-icon">▥</span>
+      <span>Progreso</span>
+    </a>
+
+    <a href="#" class="nav-item">
+      <span class="nav-icon">▣</span>
+      <span>Agenda</span>
+    </a>
+
+  </div>
+
+</nav>
+
+
+<script>
+
+/* CLIENTES GUARDADOS EN EL IPHONE */
+
+let clients = JSON.parse(localStorage.getItem("kafit_clients")) || [];
+
+
+/* ABRIR FORMULARIO */
+
+function openAddModal(){
+  document.getElementById("addModal").classList.add("show");
+}
+
+
+/* CERRAR FORMULARIO */
+
+function closeAddModal(){
+  document.getElementById("addModal").classList.remove("show");
+}
+
+
+/* GUARDAR CLIENTE */
+
+function saveClient(){
+
+  const name = document.getElementById("name").value.trim();
+
+  if(!name){
+    alert("Escribe el nombre del cliente.");
+    return;
+  }
+
+  const client = {
+
+    id: Date.now(),
+
+    name:name,
+
+    age:document.getElementById("age").value,
+
+    weight:document.getElementById("weight").value,
+
+    height:document.getElementById("height").value,
+
+    status:document.getElementById("status").value,
+
+    goal:document.getElementById("goal").value,
+
+    phone:document.getElementById("phone").value,
+
+    notes:document.getElementById("notes").value
+
+  };
+
+  clients.unshift(client);
+
+  localStorage.setItem(
+    "kafit_clients",
+    JSON.stringify(clients)
+  );
+
+  clearForm();
+
+  closeAddModal();
+
+  renderClients();
+
+}
+
+
+/* LIMPIAR FORMULARIO */
+
+function clearForm(){
+
+  document.getElementById("name").value="";
+  document.getElementById("age").value="";
+  document.getElementById("weight").value="";
+  document.getElementById("height").value="";
+  document.getElementById("phone").value="";
+  document.getElementById("notes").value="";
+
+}
+
+
+/* INICIALES */
+
+function initials(name){
+
+  return name
+  .split(" ")
+  .slice(0,2)
+  .map(word => word.charAt(0).toUpperCase())
+  .join("");
+
+}
+
+
+/* MOSTRAR CLIENTES */
+
+function renderClients(){
+
+  const container =
+    document.getElementById("clientList");
+
+  const search =
+    document.getElementById("search")
+    .value
+    .toLowerCase();
+
+  const filtered = clients.filter(client =>
+    client.name.toLowerCase().includes(search)
+  );
+
+  document.getElementById("totalClients")
+    .textContent = clients.length;
+
+  document.getElementById("activeClients")
+    .textContent =
+    clients.filter(c => c.status === "Activo").length;
+
+  document.getElementById("clientCounter")
+    .textContent =
+    clients.length + " registrados";
+
+  if(filtered.length === 0){
+
+    container.innerHTML = `
+
+      <div class="empty">
+
+        <div class="empty-icon">♙</div>
+
+        <strong>
+          ${clients.length === 0
+          ? "Aún no tienes clientes"
+          : "No encontramos ese cliente"}
+        </strong>
+
+        <p style="margin-top:7px;font-size:13px;">
+          ${clients.length === 0
+          ? "Pulsa “Agregar nuevo cliente” para comenzar."
+          : "Prueba con otro nombre."}
+        </p>
+
+      </div>
+
+    `;
+
+    return;
+  }
+
+
+  container.innerHTML = filtered.map(client => `
+
+    <div
+      class="client-card"
+      onclick="openProfile(${client.id})"
+    >
+
+      <div class="avatar">
+        ${initials(client.name)}
+      </div>
+
+      <div class="client-info">
+
+        <div class="client-name">
+          ${escapeHTML(client.name)}
+        </div>
+
+        <div class="client-goal">
+          ${escapeHTML(client.goal)} · ${escapeHTML(client.status)}
+        </div>
+
+      </div>
+
+      <div class="arrow">›</div>
+
+    </div>
+
+  `).join("");
+
+}
+
+
+/* ABRIR FICHA */
+
+function openProfile(id){
+
+  const client =
+    clients.find(c => c.id === id);
+
+  if(!client) return;
+
+  document.getElementById("profileContent").innerHTML = `
+
+    <div class="profile-name">
+
+      <div class="profile-avatar">
+        ${initials(client.name)}
+      </div>
+
+      <h2>${escapeHTML(client.name)}</h2>
+
+      <p>${escapeHTML(client.goal)}</p>
+
+    </div>
+
+
+    <div class="profile-data">
+
+      <div class="data-box">
+        <small>Edad</small>
+        <strong>${client.age || "—"}</strong>
+      </div>
+
+      <div class="data-box">
+        <small>Peso</small>
+        <strong>
+          ${client.weight ? client.weight + " kg" : "—"}
+        </strong>
+      </div>
+
+      <div class="data-box">
+        <small>Estatura</small>
+        <strong>
+          ${client.height ? client.height + " cm" : "—"}
+        </strong>
+      </div>
+
+      <div class="data-box">
+        <small>Estado</small>
+        <strong>${escapeHTML(client.status)}</strong>
+      </div>
+
+      <div class="data-box">
+        <small>Teléfono</small>
+        <strong>${escapeHTML(client.phone || "—")}</strong>
+      </div>
+
+      <div class="data-box">
+        <small>Objetivo</small>
+        <strong>${escapeHTML(client.goal)}</strong>
+      </div>
+
+    </div>
+
+
+    <div class="notes">
+
+      <small>Notas</small>
+
+      <p>
+        ${escapeHTML(client.notes || "Sin notas registradas.")}
+      </p>
+
+    </div>
+
+
+    <button
+      class="delete"
+      onclick="deleteClient(${client.id})"
+    >
+      Eliminar cliente
+    </button>
+
+  `;
+
+  document
+  .getElementById("profileModal")
+  .classList.add("show");
+
+}
+
+
+/* CERRAR FICHA */
+
+function closeProfile(){
+
+  document
+  .getElementById("profileModal")
+  .classList.remove("show");
+
+}
+
+
+/* ELIMINAR CLIENTE */
+
+function deleteClient(id){
+
+  const confirmDelete =
+    confirm("¿Quieres eliminar este cliente?");
+
+  if(!confirmDelete) return;
+
+  clients =
+    clients.filter(client => client.id !== id);
+
+  localStorage.setItem(
+    "kafit_clients",
+    JSON.stringify(clients)
+  );
+
+  closeProfile();
+
+  renderClients();
+
+}
+
+
+/* PROTEGER TEXTO */
+
+function escapeHTML(value){
+
+  return String(value)
+
+  .replaceAll("&","&amp;")
+  .replaceAll("<","&lt;")
+  .replaceAll(">","&gt;")
+  .replaceAll('"',"&quot;")
+  .replaceAll("'","&#039;");
+
+}
+
+
+/* INICIAR */
+
+renderClients();
+
+</script>
+
+</body>
+</html>
