@@ -13,378 +13,172 @@
   padding:0;
 }
 
-:root{
-  --gold:#d9a928;
-  --gold-light:#f2c65c;
-  --black:#050505;
-  --card:#101010;
-  --white:#ffffff;
-  --gray:#aaa;
+html,body{
+  background:#050505;
+  color:#fff;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
 }
 
 body{
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
-  background:#050505;
-  color:white;
   min-height:100vh;
-  padding-bottom:105px;
+  padding-bottom:92px;
 }
 
-/* ===== CONTENEDOR ===== */
 .app{
   width:100%;
   max-width:520px;
-  margin:auto;
-  overflow:hidden;
+  margin:0 auto;
+  background:#050505;
 }
 
-/* ===== HERO ===== */
+/* IMÁGENES */
+.hero-image,
+.card-image,
+.banner-image{
+  display:block;
+  width:100%;
+  height:auto;
+}
+
+/* ENCABEZADO */
 .hero{
   position:relative;
-  min-height:480px;
-  padding:20px 22px 28px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:flex-end;
-  background:
-    radial-gradient(circle at 50% 35%,
-    rgba(218,169,40,.16),
-    transparent 42%),
-    linear-gradient(to bottom,#000 0%,#050505 100%);
-}
-
-/* brillo dorado */
-.hero::after{
-  content:"";
-  position:absolute;
-  left:0;
-  right:0;
-  bottom:0;
-  height:160px;
-  background:linear-gradient(
-    to bottom,
-    transparent,
-    rgba(0,0,0,.55),
-    #050505
-  );
-  pointer-events:none;
-}
-
-/* ===== MENÚ ===== */
-.menu{
-  position:absolute;
-  top:28px;
-  left:24px;
-  width:43px;
-  height:34px;
-  z-index:5;
-}
-
-.menu span{
-  display:block;
-  height:3px;
-  background:var(--gold-light);
-  margin:8px 0;
-  border-radius:4px;
-  box-shadow:0 0 8px rgba(217,169,40,.4);
-}
-
-/* ===== SALIR ===== */
-.logout{
-  position:absolute;
-  right:22px;
-  top:27px;
-  z-index:5;
-  border:1.5px solid var(--gold);
-  border-radius:11px;
-  padding:10px 15px;
-  color:var(--gold-light);
-  background:rgba(0,0,0,.65);
-  font-size:15px;
-  font-weight:600;
-}
-
-/* ===== LOGO ===== */
-.logo{
-  position:absolute;
-  top:25px;
-  left:50%;
-  transform:translateX(-50%);
-  width:270px;
-  max-width:66vw;
-  height:auto;
-  object-fit:contain;
-  z-index:2;
-  filter:
-    drop-shadow(0 0 7px rgba(218,169,40,.15))
-    drop-shadow(0 8px 20px rgba(0,0,0,.9));
-}
-
-/* ===== BIENVENIDA ===== */
-.welcome{
-  position:relative;
-  z-index:3;
-  text-align:center;
   width:100%;
 }
 
-.welcome h1{
-  font-size:34px;
-  line-height:1.05;
-  font-weight:800;
-  letter-spacing:-1px;
-  margin-bottom:12px;
+.hero-image{
+  width:100%;
 }
 
-.welcome h1 span{
-  color:var(--gold-light);
+/*
+Los botones transparentes quedan encima de los botones
+que ya aparecen dibujados en la imagen.
+*/
+.hero-menu{
+  position:absolute;
+  left:1.5%;
+  top:1%;
+  width:13%;
+  height:10%;
+  border:0;
+  background:transparent;
+  cursor:pointer;
 }
 
-.role{
-  font-size:15px;
-  letter-spacing:5px;
-  font-weight:500;
-  margin-bottom:13px;
+.hero-exit{
+  position:absolute;
+  right:1%;
+  top:1%;
+  width:16%;
+  height:9%;
+  border:0;
+  background:transparent;
+  cursor:pointer;
 }
 
-.subtitle{
-  color:#c7c7c7;
-  font-size:16px;
-  line-height:1.35;
-}
-
-/* ===== TARJETAS ===== */
-.dashboard{
-  padding:0 16px 18px;
-}
-
-.grid{
+/* TARJETAS */
+.cards{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:13px;
+  gap:8px;
+  padding:8px 10px 0;
 }
 
 .card{
   position:relative;
-  height:185px;
-  border:1.5px solid var(--gold);
-  border-radius:17px;
+  display:block;
   overflow:hidden;
-  background:
-    radial-gradient(circle at 90% 20%,
-    rgba(218,169,40,.15),
-    transparent 38%),
-    linear-gradient(145deg,#161616,#050505);
-  padding:20px 16px;
+  border-radius:14px;
   text-decoration:none;
-  color:white;
-  box-shadow:
-    inset 0 0 30px rgba(0,0,0,.55),
-    0 5px 20px rgba(0,0,0,.35);
+  background:#080808;
 }
 
-.card::before{
-  content:"";
+.card-image{
+  width:100%;
+  height:auto;
+}
+
+/* Toda la tarjeta es pulsable */
+.card-hit{
   position:absolute;
   inset:0;
-  background:
-    linear-gradient(
-      135deg,
-      rgba(0,0,0,.05),
-      rgba(0,0,0,.3)
-    );
-  pointer-events:none;
-}
-
-.card-content{
-  position:relative;
   z-index:2;
-  height:100%;
-  display:flex;
-  flex-direction:column;
 }
 
-.icon{
-  width:48px;
-  height:48px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:var(--gold-light);
-  font-size:39px;
-  margin-bottom:auto;
-}
-
-.card h2{
-  color:var(--gold-light);
-  font-size:18px;
-  font-weight:800;
-  margin-bottom:7px;
-}
-
-.card p{
-  color:#d0d0d0;
-  font-size:14px;
-  line-height:1.35;
-  max-width:125px;
-}
-
-.arrow{
-  position:absolute;
-  right:13px;
-  bottom:14px;
-  width:34px;
-  height:34px;
-  border:2px solid var(--gold-light);
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:var(--gold-light);
-  font-size:26px;
-  line-height:1;
-}
-
-/* ===== BANNER ===== */
+/* BANNER */
 .banner{
-  margin:4px 16px 24px;
-  height:140px;
-  border:1.5px solid var(--gold);
-  border-radius:17px;
+  margin:9px 10px 18px;
+  border-radius:14px;
   overflow:hidden;
-  position:relative;
-  display:flex;
-  align-items:center;
-  padding:20px 28px;
-  background:
-    radial-gradient(circle at 85% 50%,
-    rgba(218,169,40,.22),
-    transparent 32%),
-    linear-gradient(110deg,#080808,#171108,#050505);
 }
 
-.banner::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:
-    linear-gradient(
-      90deg,
-      rgba(0,0,0,.1),
-      transparent,
-      rgba(217,169,40,.08)
-    );
+.banner-image{
+  width:100%;
 }
 
-.quote{
-  position:relative;
-  z-index:2;
-  letter-spacing:5px;
-  font-size:18px;
-  line-height:1.35;
-}
-
-.quote strong{
-  color:white;
-  font-size:23px;
-}
-
-.quote .gold{
-  color:var(--gold-light);
-}
-
-/* ===== NAVEGACIÓN ===== */
+/* NAVEGACIÓN INFERIOR REAL */
 .bottom-nav{
   position:fixed;
-  z-index:20;
-  bottom:0;
   left:0;
   right:0;
-  height:91px;
+  bottom:0;
+  z-index:100;
+  height:88px;
   padding-bottom:env(safe-area-inset-bottom);
-  background:rgba(5,5,5,.97);
-  border-top:1px solid #292929;
+  background:rgba(3,3,3,.97);
+  border-top:1px solid #262626;
   display:flex;
-  justify-content:space-around;
   align-items:center;
-  backdrop-filter:blur(15px);
+  justify-content:space-around;
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
 }
 
 .nav-item{
   width:20%;
-  text-align:center;
-  color:#777;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
   text-decoration:none;
+  color:#777;
   font-size:12px;
+  gap:4px;
 }
 
 .nav-icon{
   font-size:25px;
-  height:31px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  margin-bottom:3px;
-  filter:grayscale(1);
+  line-height:1;
 }
 
 .nav-item.active{
-  color:var(--gold-light);
-}
-
-.nav-item.active .nav-icon{
-  filter:none;
+  color:#e9b83f;
 }
 
 .nav-item.active::after{
   content:"";
-  display:block;
-  width:48px;
+  width:45px;
   height:2px;
-  margin:8px auto 0;
-  background:var(--gold-light);
-  box-shadow:0 0 9px var(--gold);
+  border-radius:5px;
+  background:#e9b83f;
+  box-shadow:0 0 8px #e9b83f;
+  margin-top:4px;
 }
 
-/* ===== ADAPTACIÓN IPHONE ===== */
+/* Ajuste para iPhone */
 @media(max-width:390px){
-
-  .hero{
-    min-height:455px;
+  .cards{
+    gap:6px;
+    padding-left:7px;
+    padding-right:7px;
   }
 
-  .logo{
-    width:245px;
-  }
-
-  .welcome h1{
-    font-size:31px;
-  }
-
-  .role{
-    font-size:13px;
-    letter-spacing:4px;
-  }
-
-  .grid{
-    gap:10px;
-  }
-
-  .card{
-    height:175px;
-    padding:17px 13px;
-  }
-
-  .card h2{
-    font-size:16px;
-  }
-
-  .card p{
-    font-size:13px;
+  .banner{
+    margin-left:7px;
+    margin-right:7px;
   }
 }
-
 </style>
 </head>
 
@@ -392,169 +186,159 @@ body{
 
 <div class="app">
 
-  <!-- PARTE SUPERIOR -->
+  <!-- ENCABEZADO EXACTO DEL BOCETO -->
   <section class="hero">
+    <img
+      class="hero-image"
+      src="01_encabezado_ka-fit.jpg"
+      alt="KA-FIT"
+    >
 
-    <div class="menu">
-      <span></span>
-      <span></span>
-      <span></span>
-    </div>
-
-    <button class="logout" onclick="salir()">
-      ↪ Salir
+    <button
+      class="hero-menu"
+      type="button"
+      aria-label="Abrir menú"
+      onclick="abrirMenu()">
     </button>
 
-    <!-- TU LOGO ORIGINAL -->
-    <img src="79e38440-934e-44c7-a334-dcf55fbf1461.jpeg" class="logo" alt="KA-FIT">
+    <button
+      class="hero-exit"
+      type="button"
+      aria-label="Salir"
+      onclick="salir()">
+    </button>
+  </section>
 
-    <div class="welcome">
-      <h1>Hola, <span>Karina 💪</span></h1>
 
-      <div class="role">
-        ENTRENADORA PERSONAL
-      </div>
+  <!-- TARJETAS -->
+  <section class="cards">
 
-      <div class="subtitle">
-        Gestiona tus clientes, rutinas y su progreso
-      </div>
+    <div class="card">
+      <img
+        class="card-image"
+        src="02_mis_clientes.jpg"
+        alt="Mis clientes"
+      >
+      <a
+        class="card-hit"
+        href="#"
+        aria-label="Mis clientes">
+      </a>
+    </div>
+
+
+    <div class="card">
+      <img
+        class="card-image"
+        src="03_rutinas.jpg"
+        alt="Rutinas"
+      >
+      <a
+        class="card-hit"
+        href="#"
+        aria-label="Rutinas">
+      </a>
+    </div>
+
+
+    <div class="card">
+      <img
+        class="card-image"
+        src="04_progreso.jpg"
+        alt="Progreso"
+      >
+      <a
+        class="card-hit"
+        href="#"
+        aria-label="Progreso">
+      </a>
+    </div>
+
+
+    <div class="card">
+      <img
+        class="card-image"
+        src="05_agenda.jpg"
+        alt="Agenda"
+      >
+      <a
+        class="card-hit"
+        href="#"
+        aria-label="Agenda">
+      </a>
     </div>
 
   </section>
 
 
-  <!-- CUADRÍCULA -->
-  <main class="dashboard">
-
-    <div class="grid">
-
-      <!-- CLIENTES -->
-      <a href="#" class="card">
-        <div class="card-content">
-          <div class="icon">♙</div>
-
-          <div>
-            <h2>MIS CLIENTES</h2>
-            <p>Perfiles, objetivos y seguimiento</p>
-          </div>
-
-          <div class="arrow">›</div>
-        </div>
-      </a>
-
-
-      <!-- RUTINAS -->
-      <a href="#" class="card">
-        <div class="card-content">
-          <div class="icon">🏋️</div>
-
-          <div>
-            <h2>RUTINAS</h2>
-            <p>Crea y asigna entrenamientos</p>
-          </div>
-
-          <div class="arrow">›</div>
-        </div>
-      </a>
-
-
-      <!-- PROGRESO -->
-      <a href="#" class="card">
-        <div class="card-content">
-          <div class="icon">▥</div>
-
-          <div>
-            <h2>PROGRESO</h2>
-            <p>Peso, medidas y avances</p>
-          </div>
-
-          <div class="arrow">›</div>
-        </div>
-      </a>
-
-
-      <!-- AGENDA -->
-      <a href="#" class="card">
-        <div class="card-content">
-          <div class="icon">▣</div>
-
-          <div>
-            <h2>AGENDA</h2>
-            <p>Organiza tus sesiones</p>
-          </div>
-
-          <div class="arrow">›</div>
-        </div>
-      </a>
-
-    </div>
-
-  </main>
-
-
-  <!-- FRASE -->
+  <!-- BANNER -->
   <section class="banner">
-
-    <div class="quote">
-      <span class="gold">DISCIPLINA</span><br>
-      <strong>HOY</strong><br>
-      <span class="gold">RESULTADOS</span><br>
-      SIEMPRE
-    </div>
-
+    <img
+      class="banner-image"
+      src="06_banner_disciplina.jpg"
+      alt="Disciplina hoy, resultados siempre"
+    >
   </section>
 
 </div>
 
 
-<!-- BARRA INFERIOR -->
+<!-- BARRA INFERIOR FUNCIONAL -->
 <nav class="bottom-nav">
 
   <a href="#" class="nav-item active">
-    <div class="nav-icon">⌂</div>
-    Inicio
+    <span class="nav-icon">⌂</span>
+    <span>Inicio</span>
   </a>
 
   <a href="#" class="nav-item">
-    <div class="nav-icon">♙</div>
-    Clientes
+    <span class="nav-icon">♙</span>
+    <span>Clientes</span>
   </a>
 
   <a href="#" class="nav-item">
-    <div class="nav-icon">🏋️</div>
-    Rutinas
+    <span class="nav-icon">🏋️</span>
+    <span>Rutinas</span>
   </a>
 
   <a href="#" class="nav-item">
-    <div class="nav-icon">▥</div>
-    Progreso
+    <span class="nav-icon">▥</span>
+    <span>Progreso</span>
   </a>
 
   <a href="#" class="nav-item">
-    <div class="nav-icon">▣</div>
-    Agenda
+    <span class="nav-icon">▣</span>
+    <span>Agenda</span>
   </a>
 
 </nav>
 
 
 <script>
-
 function salir(){
   const confirmar = confirm("¿Quieres salir de KA-FIT?");
 
   if(confirmar){
-    window.scrollTo(0,0);
+    window.scrollTo({
+      top:0,
+      behavior:"smooth"
+    });
   }
 }
 
-/* Evita que los botones # recarguen la página */
-document.querySelectorAll('a[href="#"]').forEach(function(link){
-  link.addEventListener("click",function(e){
-    e.preventDefault();
+function abrirMenu(){
+  alert("Menú KA-FIT");
+}
+
+/*
+Por ahora evitamos que las secciones recarguen la página.
+Después conectaremos cada una con su pantalla real.
+*/
+document.querySelectorAll('a[href="#"]').forEach(function(enlace){
+  enlace.addEventListener("click",function(evento){
+    evento.preventDefault();
   });
 });
-
 </script>
 
 </body>
