@@ -8,7 +8,6 @@
 <title>Mis Clientes | KA-FIT</title>
 
 <style>
-
 *{
   box-sizing:border-box;
   margin:0;
@@ -17,303 +16,550 @@
 
 :root{
   --gold:#d4af37;
-  --gold-light:#f7df8a;
+  --gold2:#ffd75a;
+  --gold3:#9b7418;
   --black:#050505;
-  --card:#101010;
-  --gray:#999;
-  --border:#493a19;
+  --card:#0d0d0d;
+  --gray:#a8a8a8;
   --white:#ffffff;
+  --green:#4ee06c;
 }
 
 html,body{
-  background:
-  radial-gradient(circle at 15% 18%, rgba(212,175,55,.16) 0%, transparent 25%),
-  radial-gradient(circle at 85% 42%, rgba(212,175,55,.10) 0%, transparent 28%),
-  radial-gradient(circle at 20% 80%, rgba(247,223,138,.08) 0%, transparent 30%),
-  #050505;
-  color:white;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
   min-height:100%;
+  background:#050505;
+  color:white;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
 }
 
 body{
-  padding-bottom:100px;
+  padding-bottom:105px;
+  overflow-x:hidden;
 }
+
+/* =========================
+   FONDO KA-FIT
+========================= */
+
+.background{
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  overflow:hidden;
+
+  background:
+    radial-gradient(circle at 10% 22%,
+      rgba(212,175,55,.14),
+      transparent 25%),
+
+    radial-gradient(circle at 90% 48%,
+      rgba(212,175,55,.09),
+      transparent 28%),
+
+    radial-gradient(circle at 20% 88%,
+      rgba(255,190,20,.08),
+      transparent 30%),
+
+    linear-gradient(
+      180deg,
+      #050505 0%,
+      #090806 45%,
+      #030303 100%
+    );
+}
+
+.wave{
+  position:absolute;
+  width:150%;
+  height:170px;
+  left:-25%;
+  border-radius:50%;
+  border-top:1px solid rgba(255,199,40,.8);
+  box-shadow:
+    0 -3px 10px rgba(255,193,28,.20),
+    0 -8px 35px rgba(212,175,55,.10);
+  transform:rotate(-8deg);
+}
+
+.wave.one{
+  top:205px;
+}
+
+.wave.two{
+  top:510px;
+  transform:rotate(8deg);
+  opacity:.6;
+}
+
+.wave.three{
+  top:880px;
+  transform:rotate(12deg);
+  opacity:.8;
+}
+
+.sparkles{
+  position:absolute;
+  left:-20px;
+  top:830px;
+  width:180px;
+  height:250px;
+
+  background:
+    radial-gradient(circle at 20% 20%,#d4af37 0 1px,transparent 2px),
+    radial-gradient(circle at 60% 40%,#ffd75a 0 1px,transparent 2px),
+    radial-gradient(circle at 40% 70%,#d4af37 0 1px,transparent 2px),
+    radial-gradient(circle at 80% 85%,#ffd75a 0 1px,transparent 2px);
+
+  opacity:.5;
+}
+
+/* =========================
+   CONTENEDOR
+========================= */
 
 .app{
-  width:100%;
-  max-width:520px;
-  margin:0 auto;
+  position:relative;
+  z-index:2;
+  max-width:600px;
+  margin:auto;
   min-height:100vh;
-  background:transparent;
 }
 
-/* CABECERA */
+/* =========================
+   HEADER
+========================= */
 
 .header{
-  position:sticky;
-  top:0;
-  z-index:50;
-  background:rgba(5,5,5,.96);
-  backdrop-filter:blur(15px);
-  -webkit-backdrop-filter:blur(15px);
-  border-bottom:1px solid #242424;
-  padding:18px 18px 15px;
-}
-
-.header-top{
-  display:flex;
+  height:125px;
+  padding:38px 24px 15px;
+  display:grid;
+  grid-template-columns:60px 1fr 60px;
   align-items:center;
-  justify-content:space-between;
+
+  border-bottom:1px solid rgba(255,255,255,.13);
+
+  background:rgba(0,0,0,.80);
+  backdrop-filter:blur(12px);
 }
 
 .back{
-  width:42px;
-  height:42px;
-  border:1px solid #70551e;
-  border-radius:12px;
-  background:#0b0b0b;
-  color:var(--gold);
-  font-size:27px;
-  cursor:pointer;
+  width:54px;
+  height:54px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border:1px solid var(--gold);
+  border-radius:15px;
+
+  color:var(--gold2);
+  font-size:38px;
+  font-weight:300;
+
+  text-decoration:none;
+
+  box-shadow:
+    0 0 10px rgba(212,175,55,.25),
+    inset 0 0 8px rgba(212,175,55,.08);
 }
 
-.title-area{
+.header-title{
   text-align:center;
-  flex:1;
 }
 
-.title-area h1{
-  color:var(--gold);
-  font-size:22px;
+.header-title h1{
+  color:var(--gold2);
+  font-size:27px;
+  line-height:1.05;
   letter-spacing:.5px;
 }
 
-.title-area p{
-  color:#aaa;
-  font-size:12px;
-  margin-top:3px;
-}
-
-.logo-small{
-  width:42px;
-  height:42px;
-  border:1px solid #70551e;
-  border-radius:50%;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  color:var(--gold);
-  font-weight:800;
-  font-size:11px;
-}
-
-/* CONTENIDO */
-
-.content{
-  padding:20px 16px;
-}
-
-.welcome{
-  margin-bottom:18px;
-}
-
-.welcome h2{
-  font-size:25px;
-  margin-bottom:5px;
-}
-
-.welcome h2 span{
-  color:var(--gold);
-}
-
-.welcome p{
-  color:#9a9a9a;
+.header-title p{
+  margin-top:7px;
+  color:#d3d3d3;
   font-size:14px;
 }
 
-/* RESUMEN */
+.avatar{
+  width:54px;
+  height:54px;
+
+  border:1px solid var(--gold);
+  border-radius:50%;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  color:var(--gold2);
+  font-weight:800;
+
+  box-shadow:
+    0 0 15px rgba(255,200,40,.40),
+    inset 0 0 8px rgba(212,175,55,.12);
+}
+
+/* =========================
+   CONTENIDO
+========================= */
+
+.content{
+  padding:27px 23px 25px;
+}
+
+.welcome-area{
+  position:relative;
+  min-height:105px;
+}
+
+.welcome h2{
+  font-size:30px;
+  line-height:1.1;
+}
+
+.welcome h2 span{
+  color:var(--gold2);
+}
+
+.welcome p{
+  color:#b9b9b9;
+  margin-top:9px;
+  font-size:16px;
+}
+
+/* =========================
+   FÉNIX DECORATIVO
+========================= */
+
+.phoenix{
+  position:absolute;
+  right:-4px;
+  top:-24px;
+
+  width:105px;
+  height:105px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  opacity:.95;
+  pointer-events:none;
+}
+
+.phoenix img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+
+  filter:
+    drop-shadow(0 0 5px rgba(255,213,80,.8))
+    drop-shadow(0 0 14px rgba(212,175,55,.35));
+}
+
+/* =========================
+   ESTADÍSTICAS
+========================= */
 
 .stats{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:10px;
-  margin-bottom:20px;
+  gap:14px;
+  margin-top:5px;
 }
 
 .stat{
-  border:1px solid #493a19;
-  background:linear-gradient(145deg,#111,#090909);
-  border-radius:16px;
-  padding:16px;
+  height:105px;
+
+  border:1px solid var(--gold);
+  border-radius:19px;
+
+  display:flex;
+  align-items:center;
+  padding:18px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,205,60,.07),
+      rgba(0,0,0,.75)
+    );
+
+  box-shadow:
+    0 0 12px rgba(212,175,55,.22),
+    inset 0 0 15px rgba(255,215,90,.04);
+}
+
+.stat-icon{
+  width:55px;
+  font-size:37px;
+  color:var(--gold2);
+}
+
+.stat-data{
+  margin-left:8px;
 }
 
 .stat-number{
-  color:var(--gold);
-  font-size:28px;
+  color:var(--gold2);
+  font-size:38px;
+  line-height:1;
   font-weight:800;
 }
 
 .stat-label{
-  color:#aaa;
-  font-size:12px;
-  margin-top:4px;
+  color:#ddd;
+  margin-top:6px;
+  font-size:14px;
 }
 
-/* BUSCADOR */
+/* =========================
+   BUSCADOR
+========================= */
 
-.search-box{
+.search{
+  margin-top:28px;
+
+  height:62px;
+
+  border:1px solid var(--gold);
+  border-radius:18px;
+
   display:flex;
   align-items:center;
-  background:#111;
-  border:1px solid #333;
-  border-radius:14px;
-  padding:0 14px;
-  margin-bottom:15px;
+
+  background:rgba(18,18,18,.90);
+
+  box-shadow:
+    0 0 10px rgba(212,175,55,.17),
+    inset 0 0 10px rgba(255,215,90,.03);
 }
 
-.search-box span{
-  color:var(--gold);
-  font-size:19px;
+.search-icon{
+  width:60px;
+  text-align:center;
+  color:var(--gold2);
+  font-size:28px;
 }
 
-.search-box input{
-  width:100%;
+.search input{
+  flex:1;
+  height:100%;
+
   border:0;
   outline:0;
   background:transparent;
+
   color:white;
-  padding:14px 10px;
-  font-size:15px;
+  font-size:18px;
+
+  padding-right:15px;
 }
 
-/* BOTÓN AGREGAR */
+.search input::placeholder{
+  color:#aaa;
+}
+
+/* =========================
+   BOTÓN AGREGAR
+========================= */
 
 .add-button{
   width:100%;
-  border:1px solid #f7df8a;
-  border-radius:14px;
-  padding:14px;
-  margin-bottom:22px;
-  background:linear-gradient(135deg,#8a6518 0%,#d4af37 28%,#f7df8a 50%,#d4af37 72%,#8a6518 100%);
-  color:#050505;
-  font-size:15px;
-  font-weight:800;
+  height:66px;
+
+  margin-top:25px;
+
+  border:1px solid #ffe278;
+  border-radius:18px;
+
+  color:#090909;
+
+  font-size:17px;
+  font-weight:900;
+
+  background:
+    linear-gradient(
+      100deg,
+      #b98c13,
+      #ffd85b,
+      #d7a929
+    );
+
+  box-shadow:
+    0 0 8px #ffe16a,
+    0 0 22px rgba(255,196,35,.65),
+    inset 0 0 12px rgba(255,255,255,.30);
+
   cursor:pointer;
-  box-shadow:0 0 12px rgba(212,175,55,.45),0 0 28px rgba(212,175,55,.18),inset 0 1px 0 rgba(255,255,255,.35);
 }
 
-/* TÍTULO LISTA */
+.add-button span{
+  font-size:27px;
+  vertical-align:-2px;
+  margin-right:8px;
+}
 
-.section-title{
+/* =========================
+   LISTA
+========================= */
+
+.clients-header{
+  margin-top:31px;
+
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin-bottom:12px;
 }
 
-.section-title h3{
-  font-size:18px;
+.clients-header h3{
+  font-size:22px;
 }
 
-.section-title span{
-  color:var(--gold);
-  font-size:12px;
+.clients-header span{
+  color:var(--gold2);
+  font-size:14px;
 }
 
-/* CLIENTES */
-
-.client-list{
-  display:flex;
-  flex-direction:column;
-  gap:11px;
+.clients-list{
+  margin-top:17px;
 }
 
 .client-card{
-  display:flex;
-  align-items:center;
-  gap:13px;
-  background:linear-gradient(145deg,rgba(28,24,15,.96),#0a0a0a 48%,#111 100%);
-  border:1px solid rgba(212,175,55,.85);
-  border-radius:17px;
-  padding:14px;
-  cursor:pointer;
-  box-shadow:0 0 10px rgba(212,175,55,.18),inset 0 0 18px rgba(212,175,55,.05);
-}
+  min-height:102px;
 
-.client-card:active{
-  transform:scale(.99);
-  border-color:var(--gold);
-}
-
-.avatar{
-  width:52px;
-  height:52px;
-  min-width:52px;
-  border-radius:50%;
-  background:linear-gradient(135deg,#2b220e,#0c0c0c);
   border:1px solid var(--gold);
+  border-radius:21px;
+
+  padding:15px 14px;
+
   display:flex;
-  justify-content:center;
   align-items:center;
-  color:var(--gold);
-  font-weight:800;
-  font-size:18px;
+
+  margin-bottom:15px;
+
+  background:
+    linear-gradient(
+      120deg,
+      rgba(255,203,40,.06),
+      rgba(7,7,7,.94)
+    );
+
+  box-shadow:
+    0 0 12px rgba(212,175,55,.28),
+    inset 0 0 10px rgba(255,215,90,.03);
+}
+
+.initials{
+  width:67px;
+  height:67px;
+
+  flex:none;
+
+  border:1px solid var(--gold2);
+  border-radius:50%;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  color:var(--gold2);
+  font-size:21px;
+  font-weight:900;
+
+  box-shadow:
+    0 0 13px rgba(255,209,55,.45);
 }
 
 .client-info{
   flex:1;
+  padding-left:17px;
+  min-width:0;
 }
 
-.client-name{
-  font-size:16px;
-  font-weight:700;
-  margin-bottom:4px;
+.client-info h4{
+  font-size:18px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
-.client-goal{
-  font-size:12px;
-  color:#aaa;
+.client-info p{
+  margin-top:6px;
+  color:#bbb;
+  font-size:14px;
 }
 
-.arrow{
-  width:34px;
-  height:34px;
-  border:1px solid var(--gold);
+.active{
+  color:var(--gold2);
+}
+
+.dot{
+  display:inline-block;
+
+  width:8px;
+  height:8px;
+
+  margin-left:5px;
+
   border-radius:50%;
+
+  background:var(--green);
+
+  box-shadow:0 0 8px var(--green);
+}
+
+.client-arrow{
+  width:52px;
+  height:52px;
+
+  flex:none;
+
+  border:1px solid var(--gold2);
+  border-radius:50%;
+
   display:flex;
   align-items:center;
   justify-content:center;
-  color:var(--gold);
-  font-size:22px;
+
+  color:var(--gold2);
+  font-size:31px;
+
+  background:rgba(0,0,0,.4);
+
+  box-shadow:0 0 10px rgba(255,205,45,.35);
+
+  cursor:pointer;
 }
+
+/* =========================
+   SIN CLIENTES
+========================= */
 
 .empty{
   text-align:center;
-  border:1px dashed #444;
-  border-radius:17px;
-  padding:35px 20px;
   color:#888;
+  padding:35px 15px;
 }
 
-.empty-icon{
-  font-size:38px;
-  margin-bottom:10px;
-}
-
-/* MODAL */
+/* =========================
+   MODAL CLIENTE
+========================= */
 
 .modal{
-  display:none;
   position:fixed;
-  z-index:200;
   inset:0;
+  z-index:50;
+
   background:rgba(0,0,0,.82);
-  backdrop-filter:blur(6px);
-  -webkit-backdrop-filter:blur(6px);
-  padding:20px;
-  align-items:center;
+
+  display:none;
+  align-items:flex-end;
   justify-content:center;
+
+  backdrop-filter:blur(8px);
 }
 
 .modal.show{
@@ -322,922 +568,1060 @@ body{
 
 .modal-box{
   width:100%;
-  max-width:460px;
-  max-height:88vh;
-  overflow-y:auto;
-  background:#0d0d0d;
-  border:1px solid #73571f;
-  border-radius:22px;
-  padding:20px;
-  box-shadow:0 0 40px rgba(233,184,63,.12);
+  max-width:600px;
+
+  padding:25px 23px 35px;
+
+  border-radius:28px 28px 0 0;
+
+  border-top:1px solid var(--gold);
+
+  background:
+    linear-gradient(
+      160deg,
+      #15130d,
+      #080808 50%
+    );
+
+  box-shadow:
+    0 -5px 30px rgba(212,175,55,.25);
 }
 
-.modal-header{
+.modal-title{
   display:flex;
-  justify-content:space-between;
   align-items:center;
-  margin-bottom:20px;
+  justify-content:space-between;
+  margin-bottom:22px;
 }
 
-.modal-header h2{
-  color:var(--gold);
-  font-size:20px;
+.modal-title h3{
+  color:var(--gold2);
+  font-size:23px;
 }
 
 .close{
-  border:0;
-  background:#1c1c1c;
-  color:white;
-  width:35px;
-  height:35px;
+  width:38px;
+  height:38px;
+
+  border:1px solid #555;
   border-radius:50%;
-  font-size:19px;
+
+  background:#111;
+  color:white;
+
+  font-size:20px;
 }
 
 .field{
-  margin-bottom:13px;
+  margin-bottom:15px;
 }
 
 .field label{
   display:block;
   color:#bbb;
-  font-size:12px;
-  margin-bottom:6px;
+  font-size:13px;
+  margin-bottom:7px;
 }
 
 .field input,
-.field select,
-.field textarea{
+.field select{
   width:100%;
-  background:#151515;
-  border:1px solid #363636;
-  border-radius:11px;
+  height:50px;
+
+  border:1px solid #65541d;
+  border-radius:13px;
+
+  background:#0c0c0c;
   color:white;
-  padding:12px;
+
+  padding:0 14px;
+  font-size:16px;
+
   outline:none;
-  font-size:15px;
 }
 
 .field input:focus,
-.field select:focus,
-.field textarea:focus{
-  border-color:var(--gold);
+.field select:focus{
+  border-color:var(--gold2);
 }
 
-.field textarea{
-  min-height:75px;
-  resize:vertical;
-}
-
-.form-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-
-.save{
+.save-client{
   width:100%;
-  padding:14px;
-  border:0;
-  border-radius:12px;
+  height:57px;
+
   margin-top:8px;
-  background:linear-gradient(135deg,#d69b22,#f1c557);
-  color:#080808;
-  font-size:15px;
-  font-weight:800;
+
+  border:0;
+  border-radius:15px;
+
+  background:linear-gradient(90deg,#b88a10,#ffda58);
+  color:#050505;
+
+  font-size:17px;
+  font-weight:900;
+
+  box-shadow:0 0 15px rgba(255,202,40,.4);
 }
 
-/* FICHA */
-
-.profile-name{
-  text-align:center;
-  margin-bottom:20px;
-}
-
-.profile-avatar{
-  width:76px;
-  height:76px;
-  margin:0 auto 10px;
-  border-radius:50%;
-  border:2px solid var(--gold);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-size:25px;
-  font-weight:800;
-  color:var(--gold);
-  background:#151109;
-}
-
-.profile-name h2{
-  color:white;
-}
-
-.profile-name p{
-  color:var(--gold);
-  margin-top:4px;
-  font-size:13px;
-}
-
-.profile-data{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:9px;
-}
-
-.data-box{
-  background:#151515;
-  border:1px solid #303030;
-  border-radius:12px;
-  padding:12px;
-}
-
-.data-box small{
-  display:block;
-  color:#888;
-  margin-bottom:5px;
-}
-
-.data-box strong{
-  font-size:14px;
-}
-
-.notes{
-  margin-top:10px;
-  background:#151515;
-  border:1px solid #303030;
-  border-radius:12px;
-  padding:13px;
-}
-
-.notes small{
-  color:#888;
-}
-
-.notes p{
-  margin-top:6px;
-  color:#ddd;
-  font-size:14px;
-  line-height:1.4;
-}
-
-.delete{
+.delete-client{
   width:100%;
-  border:1px solid #6e2929;
-  color:#ff7070;
-  background:#170b0b;
-  border-radius:12px;
-  padding:13px;
-  margin-top:15px;
-  font-weight:700;
+  margin-top:12px;
+
+  border:0;
+  background:transparent;
+
+  color:#d86666;
+
+  padding:12px;
+  font-size:14px;
 }
 
-/* NAVEGACIÓN INFERIOR */
+/* =========================
+   NAVEGACIÓN INFERIOR
+========================= */
 
 .bottom-nav{
   position:fixed;
-  left:0;
-  right:0;
-  bottom:0;
-  z-index:100;
-  height:88px;
-  padding-bottom:env(safe-area-inset-bottom);
-  background:rgba(3,3,3,.97);
-  border-top:1px solid #292929;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
+  z-index:30;
 
-.bottom-inner{
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+
   width:100%;
-  max-width:520px;
-  display:flex;
-  align-items:center;
-  justify-content:space-around;
+  max-width:600px;
+
+  height:92px;
+
+  padding-bottom:env(safe-area-inset-bottom);
+
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+
+  border-top:1px solid rgba(255,255,255,.15);
+
+  background:rgba(3,3,3,.96);
+  backdrop-filter:blur(14px);
 }
 
 .nav-item{
-  width:20%;
   text-decoration:none;
   color:#777;
+
   display:flex;
   flex-direction:column;
-  justify-content:center;
   align-items:center;
+  justify-content:center;
+
+  font-size:12px;
+
   gap:5px;
-  font-size:11px;
 }
 
 .nav-icon{
-  font-size:23px;
+  font-size:24px;
+  line-height:1;
 }
 
-.nav-item.active{
-  color:var(--gold);
+.nav-item.active-nav{
+  color:var(--gold2);
 }
 
-.nav-item.active::after{
+.nav-item.active-nav::after{
   content:"";
-  width:42px;
-  height:2px;
-  background:var(--gold);
-  border-radius:10px;
-  box-shadow:0 0 8px var(--gold);
+  width:38px;
+  height:3px;
+
+  margin-top:2px;
+
+  border-radius:5px;
+
+  background:var(--gold2);
+
+  box-shadow:0 0 8px var(--gold2);
 }
+
+/* =========================
+   RESPONSIVE
+========================= */
 
 @media(max-width:390px){
+
   .content{
-    padding-left:12px;
-    padding-right:12px;
+    padding-left:18px;
+    padding-right:18px;
+  }
+
+  .header{
+    padding-left:18px;
+    padding-right:18px;
+  }
+
+  .welcome h2{
+    font-size:27px;
+  }
+
+  .welcome p{
+    font-size:14px;
+  }
+
+  .stat{
+    padding:13px;
+  }
+
+  .stat-icon{
+    width:43px;
+    font-size:30px;
+  }
+
+  .stat-number{
+    font-size:34px;
+  }
+
+  .phoenix{
+    width:90px;
+    height:90px;
   }
 }
 
-  /* ===== KA-FIT · ACABADO PREMIUM DORADO ===== */
-
-/* Ondas y destellos dorados del fondo */
-.app{
-  position:relative;
-  isolation:isolate;
-  overflow:hidden;
-}
-
-.app::before,
-.app::after{
-  content:"";
-  position:absolute;
-  pointer-events:none;
-  z-index:-1;
-}
-
-/* Onda superior */
-.app::before{
-  width:135%;
-height:180px;
-top:245px;
-left:-18%;
-border-radius:50%;
-border-top:1px solid rgba(247,223,138,.58);
-transform:rotate(7deg);
-  box-shadow:
-  0 -3px 7px rgba(247,223,138,.22),
-  0 -9px 28px rgba(212,175,55,.12);
-  background:
-    radial-gradient(ellipse at 65% 0%,
-    rgba(212,175,55,.20) 0%,
-    rgba(212,175,55,.07) 28%,
-    transparent 58%);
-}
-
-/* Onda grande inferior */
-.app::after{
-  width:135%;
-height:260px;
-left:-20%;
-bottom:165px;
-border-radius:50%;
-border-bottom:1px solid rgba(212,175,55,.55);
-transform:rotate(8deg);
-  box-shadow:
-  0 4px 8px rgba(247,223,138,.20),
-  0 10px 30px rgba(212,175,55,.10);
-  background:
-    radial-gradient(ellipse at 20% 85%,
-    rgba(212,175,55,.16) 0%,
-    rgba(212,175,55,.05) 32%,
-    transparent 62%);
-}
-
-/* Más profundidad en las tarjetas */
-.client-card{
-  position:relative;
-  box-shadow:
-    0 0 8px rgba(212,175,55,.28),
-    0 0 24px rgba(212,175,55,.10),
-    inset 0 0 20px rgba(212,175,55,.05);
-}
-
-/* Brillo del avatar */
-.avatar{
-  box-shadow:
-    0 0 10px rgba(212,175,55,.38),
-    inset 0 0 10px rgba(212,175,55,.08);
-}
-
-/* Botón premium */
-.add-button{
-  box-shadow:
-    0 0 10px rgba(247,223,138,.60),
-    0 0 25px rgba(212,175,55,.35),
-    0 0 45px rgba(212,175,55,.12),
-    inset 0 1px 2px rgba(255,255,255,.55);
-}
-
-/* Resplandor suave en estadísticas */
-.stat-card{
-  box-shadow:
-    0 0 12px rgba(212,175,55,.15),
-    inset 0 0 18px rgba(212,175,55,.04);
-}
-
-  /* FÉNIX DORADO DECORATIVO */
-.phoenix-decoration{
-    position:absolute;
-    top:125px;
-    right:12px;
-    width:150px;
-    height:auto;
-    z-index:2;
-    pointer-events:none;
-    opacity:.88;
-    filter:
-        drop-shadow(0 0 6px rgba(255,215,90,.75))
-        drop-shadow(0 0 16px rgba(212,175,55,.35));
-}
-
-.phoenix-decoration img{
-  width:100%;
-  height:auto;
-  display:block;
-}
-
-.content{
-  position:relative;
-}
 </style>
 </head>
 
 <body>
 
+<div class="background">
+  <div class="wave one"></div>
+  <div class="wave two"></div>
+  <div class="wave three"></div>
+  <div class="sparkles"></div>
+</div>
+
 <div class="app">
 
 <header class="header">
 
-  <div class="header-top">
+  <a href="index.html" class="back">‹</a>
 
-    <a href="index.html" class="back">‹</a>
-
-    <div class="title-area">
-      <h1>MIS CLIENTES</h1>
-      <p>KA-FIT · Entrenadora Personal</p>
-    </div>
-
-    <div class="logo-small">
-      KA
-    </div>
-
+  <div class="header-title">
+    <h1>MIS CLIENTES</h1>
+    <p>KA-FIT · Entrenadora Personal</p>
   </div>
+
+  <div class="avatar">KA</div>
 
 </header>
 
+
 <main class="content">
-<div class="phoenix-decoration">
-  <img src="Fenix-png.PNG?v=10" alt="Fénix KA-FIT">
-</div>
-  <div class="welcome">
-    <h2>Hola, <span>Karina</span> 💪</h2>
-    <p>Administra y da seguimiento a tus clientes.</p>
-  </div>
 
-  <div class="stats">
+  <section class="welcome-area">
 
-    <div class="stat">
-      <div class="stat-number" id="totalClients">0</div>
-      <div class="stat-label">CLIENTES</div>
+    <div class="welcome">
+      <h2>Hola, <span>Karina</span> 💪</h2>
+      <p>Administra y da seguimiento a tus clientes.</p>
     </div>
 
-    <div class="stat">
-      <div class="stat-number" id="activeClients">0</div>
-      <div class="stat-label">ACTIVOS</div>
+    <div class="phoenix">
+      <img src="Fenix-png.PNG?v=20" alt="Fénix KA-FIT">
     </div>
 
-  </div>
+  </section>
 
-  <div class="search-box">
-    <span>⌕</span>
+
+  <section class="stats">
+
+    <div class="stat">
+
+      <div class="stat-icon">♙</div>
+
+      <div class="stat-data">
+        <div class="stat-number" id="totalClients">0</div>
+        <div class="stat-label">CLIENTES</div>
+      </div>
+
+    </div>
+
+
+    <div class="stat">
+
+      <div class="stat-icon">▥</div>
+
+      <div class="stat-data">
+        <div class="stat-number" id="activeClients">0</div>
+        <div class="stat-label">ACTIVOS</div>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <div class="search">
+
+    <div class="search-icon">⌕</div>
+
     <input
-      type="text"
-      id="search"
+      id="searchInput"
+      type="search"
       placeholder="Buscar cliente..."
-      oninput="renderClients()"
+      autocomplete="off"
     >
+
   </div>
 
-  <button class="add-button" onclick="openAddModal()">
-    ＋ AGREGAR NUEVO CLIENTE
+
+  <button
+    class="add-button"
+    id="addClientButton"
+    type="button"
+  >
+    <span>＋</span>
+    AGREGAR NUEVO CLIENTE
   </button>
 
-  <div class="section-title">
+
+  <div class="clients-header">
+
     <h3>Mis clientes</h3>
-    <span id="clientCounter">0 registrados</span>
+
+    <span id="registeredCount">
+      0 registrados
+    </span>
+
   </div>
 
-  <div id="clientList" class="client-list"></div>
+
+  <div
+    class="clients-list"
+    id="clientsList"
+  ></div>
 
 </main>
 
 </div>
 
 
-<!-- MODAL AGREGAR CLIENTE -->
+<!-- =========================
+     MODAL
+========================= -->
 
-<div class="modal" id="addModal">
+<div class="modal" id="clientModal">
 
   <div class="modal-box">
 
-    <div class="modal-header">
-      <h2>Nuevo cliente</h2>
-      <button class="close" onclick="closeAddModal()">×</button>
-    </div>
+    <div class="modal-title">
 
-    <div class="field">
-      <label>Nombre completo *</label>
-      <input id="name" type="text" placeholder="Nombre del cliente">
-    </div>
+      <h3 id="modalHeading">
+        Nuevo cliente
+      </h3>
 
-    <div class="form-grid">
-
-      <div class="field">
-        <label>Edad</label>
-        <input id="age" type="number" placeholder="Edad">
-      </div>
-
-      <div class="field">
-        <label>Peso (kg)</label>
-        <input id="weight" type="number" step="0.1" placeholder="Peso">
-      </div>
+      <button
+        class="close"
+        id="closeModal"
+        type="button"
+      >
+        ×
+      </button>
 
     </div>
 
-    <div class="form-grid">
+
+    <form id="clientForm">
+
+      <input
+        type="hidden"
+        id="editingId"
+      >
+
 
       <div class="field">
-        <label>Estatura (cm)</label>
-        <input id="height" type="number" placeholder="Estatura">
+
+        <label for="clientName">
+          Nombre del cliente
+        </label>
+
+        <input
+          id="clientName"
+          type="text"
+          placeholder="Ej. Karina Rojas"
+          required
+        >
+
       </div>
 
+
       <div class="field">
-        <label>Estado</label>
-        <select id="status">
-          <option value="Activo">Activo</option>
-          <option value="Pausa">En pausa</option>
+
+        <label for="clientGoal">
+          Objetivo
+        </label>
+
+        <input
+          id="clientGoal"
+          type="text"
+          placeholder="Ej. Ganancia muscular"
+          required
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label for="clientStatus">
+          Estado
+        </label>
+
+        <select id="clientStatus">
+
+          <option value="Activo">
+            Activo
+          </option>
+
+          <option value="Inactivo">
+            Inactivo
+          </option>
+
         </select>
+
       </div>
 
-    </div>
 
-    <div class="field">
-      <label>Objetivo</label>
+      <button
+        class="save-client"
+        type="submit"
+      >
+        GUARDAR CLIENTE
+      </button>
 
-      <select id="goal">
-        <option value="Ganancia muscular">Ganancia muscular</option>
-        <option value="Pérdida de grasa">Pérdida de grasa</option>
-        <option value="Recomposición corporal">Recomposición corporal</option>
-        <option value="Fuerza">Fuerza</option>
-        <option value="Acondicionamiento físico">Acondicionamiento físico</option>
-        <option value="Salud y bienestar">Salud y bienestar</option>
-      </select>
 
-    </div>
+      <button
+        class="delete-client"
+        id="deleteClient"
+        type="button"
+        style="display:none"
+      >
+        Eliminar cliente
+      </button>
 
-    <div class="field">
-      <label>Teléfono</label>
-      <input id="phone" type="tel" placeholder="Número de teléfono">
-    </div>
-
-    <div class="field">
-      <label>Notas</label>
-      <textarea
-        id="notes"
-        placeholder="Lesiones, observaciones, preferencias, etc."
-      ></textarea>
-    </div>
-
-    <button class="save" onclick="saveClient()">
-      GUARDAR CLIENTE
-    </button>
+    </form>
 
   </div>
 
 </div>
 
 
-<!-- MODAL FICHA CLIENTE -->
-
-<div class="modal" id="profileModal">
-
-  <div class="modal-box">
-
-    <div class="modal-header">
-      <h2>Ficha del cliente</h2>
-      <button class="close" onclick="closeProfile()">×</button>
-    </div>
-
-    <div id="profileContent"></div>
-
-  </div>
-
-</div>
-
-
-<!-- BARRA INFERIOR -->
+<!-- =========================
+     NAVEGACIÓN
+========================= -->
 
 <nav class="bottom-nav">
 
-  <div class="bottom-inner">
+  <a
+    href="index.html"
+    class="nav-item"
+  >
+    <span class="nav-icon">⌂</span>
+    <span>Inicio</span>
+  </a>
 
-    <a href="index.html" class="nav-item">
-      <span class="nav-icon">⌂</span>
-      <span>Inicio</span>
-    </a>
 
-    <a href="clientes.html" class="nav-item active">
-      <span class="nav-icon">♙</span>
-      <span>Clientes</span>
-    </a>
+  <a
+    href="clientes.html"
+    class="nav-item active-nav"
+  >
+    <span class="nav-icon">♙</span>
+    <span>Clientes</span>
+  </a>
 
-    <a href="#" class="nav-item">
-      <span class="nav-icon">🏋️</span>
-      <span>Rutinas</span>
-    </a>
 
-    <a href="#" class="nav-item">
-      <span class="nav-icon">▥</span>
-      <span>Progreso</span>
-    </a>
+  <a
+    href="rutinas.html"
+    class="nav-item"
+  >
+    <span class="nav-icon">🏋️</span>
+    <span>Rutinas</span>
+  </a>
 
-    <a href="#" class="nav-item">
-      <span class="nav-icon">▣</span>
-      <span>Agenda</span>
-    </a>
 
-  </div>
+  <a
+    href="progreso.html"
+    class="nav-item"
+  >
+    <span class="nav-icon">▥</span>
+    <span>Progreso</span>
+  </a>
+
+
+  <a
+    href="agenda.html"
+    class="nav-item"
+  >
+    <span class="nav-icon">▣</span>
+    <span>Agenda</span>
+  </a>
 
 </nav>
 
 
 <script>
 
-/* CLIENTES GUARDADOS EN EL IPHONE */
+/* =========================
+   DATOS
+========================= */
 
-let clients = JSON.parse(localStorage.getItem("kafit_clients")) || [];
+const STORAGE_KEY = "kafit_clients_v2";
 
+let clients = [];
 
-/* ABRIR FORMULARIO */
-
-function openAddModal(){
-  document.getElementById("addModal").classList.add("show");
-}
-
-
-/* CERRAR FORMULARIO */
-
-function closeAddModal(){
-  document.getElementById("addModal").classList.remove("show");
-}
-
-
-/* GUARDAR CLIENTE */
-
-function saveClient(){
-
-    const name = document.getElementById("name").value.trim();
-
-    if(!name){
-        alert("Escribe el nombre del cliente.");
-        return;
-    }
-
-    const clientData = {
-        name: name,
-        age: document.getElementById("age").value,
-        weight: document.getElementById("weight").value,
-        height: document.getElementById("height").value,
-        status: document.getElementById("status").value,
-        goal: document.getElementById("goal").value,
-        phone: document.getElementById("phone").value,
-        notes: document.getElementById("notes").value
-    };
-
-    if(editingClientId !== null){
-
-        const index = clients.findIndex(
-            client => client.id === editingClientId
-        );
-
-        if(index !== -1){
-            clients[index] = {
-                ...clients[index],
-                ...clientData
-            };
-        }
-
-        editingClientId = null;
-
-    }else{
-
-        const client = {
-            id: Date.now(),
-            ...clientData
-        };
-
-        clients.unshift(client);
-    }
-
-    localStorage.setItem(
-        "kafit_clients",
-        JSON.stringify(clients)
-    );
-
-    clearForm();
-    closeAddModal();
-    renderClients();
-}
-
-
-/* LIMPIAR FORMULARIO */
-
-function clearForm(){
-
-  document.getElementById("name").value="";
-  document.getElementById("age").value="";
-  document.getElementById("weight").value="";
-  document.getElementById("height").value="";
-  document.getElementById("phone").value="";
-  document.getElementById("notes").value="";
-
-}
-
-
-/* INICIALES */
-
-function initials(name){
-
-  return name
-  .split(" ")
-  .slice(0,2)
-  .map(word => word.charAt(0).toUpperCase())
-  .join("");
-
-}
-
-
-/* MOSTRAR CLIENTES */
-
-function renderClients(){
-
-  const container =
-    document.getElementById("clientList");
-
-  const search =
-    document.getElementById("search")
-    .value
-    .toLowerCase();
-
-  const filtered = clients.filter(client =>
-    client.name.toLowerCase().includes(search)
-  );
-
-  document.getElementById("totalClients")
-    .textContent = clients.length;
-
-  document.getElementById("activeClients")
-    .textContent =
-    clients.filter(c => c.status === "Activo").length;
-
-  document.getElementById("clientCounter")
-    .textContent =
-    clients.length + " registrados";
-
-  if(filtered.length === 0){
-
-    container.innerHTML = `
-
-      <div class="empty">
-
-        <div class="empty-icon">♙</div>
-
-        <strong>
-          ${clients.length === 0
-          ? "Aún no tienes clientes"
-          : "No encontramos ese cliente"}
-        </strong>
-
-        <p style="margin-top:7px;font-size:13px;">
-          ${clients.length === 0
-          ? "Pulsa “Agregar nuevo cliente” para comenzar."
-          : "Prueba con otro nombre."}
-        </p>
-
-      </div>
-
-    `;
-
-    return;
-  }
-
-
-  container.innerHTML = filtered.map(client => `
-
-    <div
-      class="client-card"
-      onclick="openProfile(${client.id})"
-    >
-
-      <div class="avatar">
-        ${initials(client.name)}
-      </div>
-
-      <div class="client-info">
-
-        <div class="client-name">
-          ${escapeHTML(client.name)}
-        </div>
-
-        <div class="client-goal">
-          ${escapeHTML(client.goal)} · ${escapeHTML(client.status)}
-        </div>
-
-      </div>
-
-      <div class="arrow">›</div>
-
-    </div>
-
-  `).join("");
-
-}
-
-
-/* ABRIR FICHA */
-
-function openProfile(id){
-
-  const client =
-    clients.find(c => c.id === id);
-
-  if(!client) return;
-
-  document.getElementById("profileContent").innerHTML = `
-
-    <div class="profile-name">
-
-      <div class="profile-avatar">
-        ${initials(client.name)}
-      </div>
-
-      <h2>${escapeHTML(client.name)}</h2>
-
-      <p>${escapeHTML(client.goal)}</p>
-
-    </div>
-
-
-    <div class="profile-data">
-
-      <div class="data-box">
-        <small>Edad</small>
-        <strong>${client.age || "—"}</strong>
-      </div>
-
-      <div class="data-box">
-        <small>Peso</small>
-        <strong>
-          ${client.weight ? client.weight + " kg" : "—"}
-        </strong>
-      </div>
-
-      <div class="data-box">
-        <small>Estatura</small>
-        <strong>
-          ${client.height ? client.height + " cm" : "—"}
-        </strong>
-      </div>
-
-      <div class="data-box">
-        <small>Estado</small>
-        <strong>${escapeHTML(client.status)}</strong>
-      </div>
-
-      <div class="data-box">
-        <small>Teléfono</small>
-        <strong>${escapeHTML(client.phone || "—")}</strong>
-      </div>
-
-      <div class="data-box">
-        <small>Objetivo</small>
-        <strong>${escapeHTML(client.goal)}</strong>
-      </div>
-
-    </div>
-
-
-    <div class="notes">
-
-      <small>Notas</small>
-
-      <p>
-        ${escapeHTML(client.notes || "Sin notas registradas.")}
-      </p>
-
-    </div>
-
-    <button
-  class="edit-client"
-  onclick="editClient(${client.id})"
->
-  ✏️ Editar cliente
-</button>
-    
-    <button
-      class="delete"
-      onclick="deleteClient(${client.id})"
-    >
-      Eliminar cliente
-    </button>
-
-  `;
-
-  document
-  .getElementById("profileModal")
-  .classList.add("show");
-
-}
-
-
-/* CERRAR FICHA */
-
-function closeProfile(){
-
-  document
-  .getElementById("profileModal")
-  .classList.remove("show");
-
-}
-
-let editingClientId = null;
-
-function editClient(id){
-
-    const client = clients.find(client => client.id === id);
-
-    if(!client) return;
-
-    editingClientId = id;
-
-    document.getElementById("name").value = client.name || "";
-    document.getElementById("age").value = client.age || "";
-    document.getElementById("weight").value = client.weight || "";
-    document.getElementById("height").value = client.height || "";
-    document.getElementById("status").value = client.status || "Activo";
-    document.getElementById("goal").value = client.goal || "Ganancia muscular";
-    document.getElementById("phone").value = client.phone || "";
-    document.getElementById("notes").value = client.notes || "";
-
-    closeProfile();
-
-    document.getElementById("addModal").classList.add("show");
-}
-/* ELIMINAR CLIENTE */
-
-function deleteClient(id){
-
-  const confirmDelete =
-    confirm("¿Quieres eliminar este cliente?");
-
-  if(!confirmDelete) return;
+try{
 
   clients =
-    clients.filter(client => client.id !== id);
+    JSON.parse(
+      localStorage.getItem(STORAGE_KEY)
+    ) || [];
+
+}catch(error){
+
+  clients = [];
+
+}
+
+
+/* CLIENTE DE EJEMPLO
+   Solo aparece la primera vez
+*/
+
+if(clients.length === 0){
+
+  clients = [
+
+    {
+      id:Date.now(),
+      name:"Karina Rojas",
+      goal:"Ganancia muscular",
+      status:"Activo"
+    }
+
+  ];
+
+  saveClients();
+
+}
+
+
+/* =========================
+   ELEMENTOS
+========================= */
+
+const clientsList =
+  document.getElementById("clientsList");
+
+const totalClients =
+  document.getElementById("totalClients");
+
+const activeClients =
+  document.getElementById("activeClients");
+
+const registeredCount =
+  document.getElementById("registeredCount");
+
+const searchInput =
+  document.getElementById("searchInput");
+
+const clientModal =
+  document.getElementById("clientModal");
+
+const clientForm =
+  document.getElementById("clientForm");
+
+const clientName =
+  document.getElementById("clientName");
+
+const clientGoal =
+  document.getElementById("clientGoal");
+
+const clientStatus =
+  document.getElementById("clientStatus");
+
+const editingId =
+  document.getElementById("editingId");
+
+const modalHeading =
+  document.getElementById("modalHeading");
+
+const deleteClientButton =
+  document.getElementById("deleteClient");
+
+
+/* =========================
+   GUARDAR
+========================= */
+
+function saveClients(){
 
   localStorage.setItem(
-    "kafit_clients",
+    STORAGE_KEY,
     JSON.stringify(clients)
   );
 
-  closeProfile();
+}
 
-  renderClients();
+
+/* =========================
+   INICIALES
+========================= */
+
+function getInitials(name){
+
+  return name
+    .trim()
+    .split(/\s+/)
+    .slice(0,2)
+    .map(word => word.charAt(0))
+    .join("")
+    .toUpperCase();
 
 }
 
 
-/* PROTEGER TEXTO */
+/* =========================
+   SEGURIDAD TEXTO
+========================= */
 
 function escapeHTML(value){
 
   return String(value)
 
-  .replaceAll("&","&amp;")
-  .replaceAll("<","&lt;")
-  .replaceAll(">","&gt;")
-  .replaceAll('"',"&quot;")
-  .replaceAll("'","&#039;");
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
 
 }
 
 
-/* INICIAR */
+/* =========================
+   CONTADORES
+========================= */
+
+function updateStats(){
+
+  const total = clients.length;
+
+  const active =
+    clients.filter(
+      client =>
+        client.status === "Activo"
+    ).length;
+
+  totalClients.textContent = total;
+
+  activeClients.textContent = active;
+
+  registeredCount.textContent =
+    total === 1
+      ? "1 registrado"
+      : total + " registrados";
+
+}
+
+
+/* =========================
+   MOSTRAR CLIENTES
+========================= */
+
+function renderClients(filter = ""){
+
+  const search =
+    filter
+      .trim()
+      .toLowerCase();
+
+  const filteredClients =
+    clients.filter(client => {
+
+      return (
+        client.name
+          .toLowerCase()
+          .includes(search)
+
+        ||
+
+        client.goal
+          .toLowerCase()
+          .includes(search)
+      );
+
+    });
+
+
+  if(filteredClients.length === 0){
+
+    clientsList.innerHTML = `
+      <div class="empty">
+        No se encontraron clientes.
+      </div>
+    `;
+
+    updateStats();
+
+    return;
+
+  }
+
+
+  clientsList.innerHTML =
+    filteredClients
+      .map(client => {
+
+        const isActive =
+          client.status === "Activo";
+
+        return `
+
+          <article class="client-card">
+
+            <div class="initials">
+              ${escapeHTML(
+                getInitials(client.name)
+              )}
+            </div>
+
+
+            <div class="client-info">
+
+              <h4>
+                ${escapeHTML(client.name)}
+              </h4>
+
+              <p>
+
+                ${escapeHTML(client.goal)}
+
+                ·
+
+                <span class="${
+                  isActive
+                    ? "active"
+                    : ""
+                }">
+
+                  ${escapeHTML(
+                    client.status
+                  )}
+
+                </span>
+
+                ${
+                  isActive
+                    ? '<span class="dot"></span>'
+                    : ""
+                }
+
+              </p>
+
+            </div>
+
+
+            <button
+              class="client-arrow"
+              type="button"
+              onclick="editClient(${client.id})"
+              aria-label="Abrir cliente"
+            >
+              ›
+            </button>
+
+          </article>
+
+        `;
+
+      })
+      .join("");
+
+
+  updateStats();
+
+}
+
+
+/* =========================
+   NUEVO CLIENTE
+========================= */
+
+function openNewClient(){
+
+  editingId.value = "";
+
+  clientForm.reset();
+
+  clientStatus.value = "Activo";
+
+  modalHeading.textContent =
+    "Nuevo cliente";
+
+  deleteClientButton.style.display =
+    "none";
+
+  clientModal.classList.add("show");
+
+  setTimeout(
+    () => clientName.focus(),
+    150
+  );
+
+}
+
+
+/* =========================
+   EDITAR CLIENTE
+========================= */
+
+function editClient(id){
+
+  const client =
+    clients.find(
+      item => item.id === id
+    );
+
+  if(!client){
+    return;
+  }
+
+  editingId.value =
+    String(client.id);
+
+  clientName.value =
+    client.name;
+
+  clientGoal.value =
+    client.goal;
+
+  clientStatus.value =
+    client.status;
+
+  modalHeading.textContent =
+    "Editar cliente";
+
+  deleteClientButton.style.display =
+    "block";
+
+  clientModal.classList.add("show");
+
+}
+
+
+/* =========================
+   CERRAR MODAL
+========================= */
+
+function closeClientModal(){
+
+  clientModal.classList.remove("show");
+
+}
+
+
+/* =========================
+   GUARDAR FORMULARIO
+========================= */
+
+clientForm.addEventListener(
+  "submit",
+  function(event){
+
+    event.preventDefault();
+
+
+    const name =
+      clientName.value.trim();
+
+    const goal =
+      clientGoal.value.trim();
+
+    const status =
+      clientStatus.value;
+
+
+    if(!name || !goal){
+      return;
+    }
+
+
+    const id =
+      editingId.value;
+
+
+    if(id){
+
+      const numericId =
+        Number(id);
+
+      const index =
+        clients.findIndex(
+          client =>
+            client.id === numericId
+        );
+
+
+      if(index !== -1){
+
+        clients[index] = {
+
+          ...clients[index],
+
+          name,
+          goal,
+          status
+
+        };
+
+      }
+
+    }else{
+
+      clients.unshift({
+
+        id:Date.now(),
+
+        name,
+
+        goal,
+
+        status
+
+      });
+
+    }
+
+
+    saveClients();
+
+    renderClients(
+      searchInput.value
+    );
+
+    closeClientModal();
+
+  }
+);
+
+
+/* =========================
+   ELIMINAR
+========================= */
+
+deleteClientButton.addEventListener(
+  "click",
+  function(){
+
+    const id =
+      Number(editingId.value);
+
+    if(!id){
+      return;
+    }
+
+
+    const client =
+      clients.find(
+        item =>
+          item.id === id
+      );
+
+
+    if(!client){
+      return;
+    }
+
+
+    const confirmation =
+      confirm(
+        "¿Eliminar a " +
+        client.name +
+        "?"
+      );
+
+
+    if(!confirmation){
+      return;
+    }
+
+
+    clients =
+      clients.filter(
+        item =>
+          item.id !== id
+      );
+
+
+    saveClients();
+
+    renderClients(
+      searchInput.value
+    );
+
+    closeClientModal();
+
+  }
+);
+
+
+/* =========================
+   BUSCADOR
+========================= */
+
+searchInput.addEventListener(
+  "input",
+  function(){
+
+    renderClients(
+      searchInput.value
+    );
+
+  }
+);
+
+
+/* =========================
+   BOTONES
+========================= */
+
+document
+  .getElementById("addClientButton")
+  .addEventListener(
+    "click",
+    openNewClient
+  );
+
+
+document
+  .getElementById("closeModal")
+  .addEventListener(
+    "click",
+    closeClientModal
+  );
+
+
+clientModal.addEventListener(
+  "click",
+  function(event){
+
+    if(event.target === clientModal){
+
+      closeClientModal();
+
+    }
+
+  }
+);
+
+
+/* =========================
+   INICIAR KA-FIT
+========================= */
 
 renderClients();
 
