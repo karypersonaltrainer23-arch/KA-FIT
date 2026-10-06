@@ -783,6 +783,124 @@ body{
     height:90px;
   }
 }
+  /* =====================================
+   EXPEDIENTE DEL CLIENTE KA-FIT
+===================================== */
+
+#clientFile{
+  width:100%;
+  min-height:100vh;
+  padding:20px 16px 40px;
+  color:#fff;
+}
+
+.client-file-header{
+  display:flex;
+  align-items:center;
+  gap:15px;
+
+  padding:18px;
+  margin-bottom:20px;
+
+  border:1px solid var(--gold);
+  border-radius:20px;
+
+  background:
+    linear-gradient(
+      120deg,
+      rgba(255,203,40,.08),
+      rgba(7,7,7,.96)
+    );
+
+  box-shadow:0 0 15px rgba(212,175,55,.20);
+}
+
+.client-file-header button{
+  border:1px solid var(--gold2);
+  border-radius:12px;
+
+  background:#111;
+  color:var(--gold2);
+
+  padding:10px 12px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.client-file-header h2{
+  margin:0;
+  font-size:22px;
+  color:var(--gold2);
+}
+
+.client-file-header p{
+  margin:4px 0 0;
+  font-size:12px;
+  opacity:.7;
+}
+
+.client-file-content{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.file-card{
+  padding:18px;
+
+  border:1px solid rgba(212,175,55,.55);
+  border-radius:18px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,203,40,.06),
+      rgba(10,10,10,.96)
+    );
+
+  box-shadow:0 0 12px rgba(212,175,55,.12);
+}
+
+.file-card h3{
+  margin:0 0 12px;
+  color:var(--gold2);
+  font-size:17px;
+}
+
+.file-card p{
+  margin:0;
+  font-size:13px;
+  opacity:.75;
+  line-height:1.5;
+}
+
+.file-data-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.file-data-grid div{
+  padding:12px;
+
+  border:1px solid rgba(212,175,55,.25);
+  border-radius:13px;
+
+  background:rgba(255,255,255,.025);
+}
+
+.file-data-grid span{
+  display:block;
+  font-size:11px;
+  opacity:.6;
+  margin-bottom:5px;
+}
+
+.file-data-grid strong{
+  display:block;
+  color:#fff;
+  font-size:15px;
+}
 
 </style>
 </head>
@@ -1364,7 +1482,7 @@ function renderClients(filter = ""){
             <button
               class="client-arrow"
               type="button"
-              onclick="editClient(${client.id})"
+              onclick="openClientFile(${client.id})"
               aria-label="Abrir cliente"
             >
               ›
@@ -1636,7 +1754,51 @@ clientModal.addEventListener(
 
   }
 );
+/* =========================
+   EXPEDIENTE DEL CLIENTE
+========================= */
 
+function openClientFile(clientId){
+
+  const client = clients.find(
+    client => client.id === clientId
+  );
+
+  if(!client){
+    return;
+  }
+
+  document.getElementById("fileClientName").textContent =
+    client.name;
+
+  document.getElementById("fileAge").textContent =
+    client.age ? client.age + " años" : "—";
+
+  document.getElementById("fileWeight").textContent =
+    client.weight ? client.weight + " kg" : "—";
+
+  document.getElementById("fileHeight").textContent =
+    client.height ? client.height + " cm" : "—";
+
+  document.getElementById("fileGoal").textContent =
+    client.goal || "—";
+
+  document.querySelector(".app").style.display = "none";
+
+  document.getElementById("clientFile").style.display = "block";
+
+  window.scrollTo(0, 0);
+}
+
+
+function closeClientFile(){
+
+  document.getElementById("clientFile").style.display = "none";
+
+  document.querySelector(".app").style.display = "block";
+
+  window.scrollTo(0, 0);
+}
 
 /* =========================
    INICIAR KA-FIT
@@ -1645,6 +1807,71 @@ clientModal.addEventListener(
 renderClients();
 
 </script>
+<!-- =====================================
+     EXPEDIENTE DEL CLIENTE KA-FIT
+===================================== -->
 
+<section id="clientFile" style="display:none;">
+
+  <div class="client-file-header">
+    <button type="button" onclick="closeClientFile()">← Volver</button>
+
+    <div>
+      <h2 id="fileClientName">Expediente del cliente</h2>
+      <p>KA-FIT · Seguimiento personalizado</p>
+    </div>
+  </div>
+
+  <div class="client-file-content">
+
+    <div class="file-card">
+      <h3>👤 Datos personales</h3>
+
+      <div class="file-data-grid">
+        <div>
+          <span>Edad</span>
+          <strong id="fileAge">—</strong>
+        </div>
+
+        <div>
+          <span>Peso</span>
+          <strong id="fileWeight">—</strong>
+        </div>
+
+        <div>
+          <span>Estatura</span>
+          <strong id="fileHeight">—</strong>
+        </div>
+
+        <div>
+          <span>Objetivo</span>
+          <strong id="fileGoal">—</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="file-card">
+      <h3>📏 Medidas corporales</h3>
+      <p>Registra y consulta la evolución de las medidas del cliente.</p>
+    </div>
+
+    <div class="file-card">
+      <h3>📈 Progreso</h3>
+      <p>Seguimiento del peso, medidas y avances.</p>
+    </div>
+
+    <div class="file-card">
+      <h3>🏋️ Rutinas</h3>
+      <p>Rutinas y programas asignados al cliente.</p>
+    </div>
+
+    <div class="file-card">
+      <h3>📝 Observaciones</h3>
+      <p>Notas importantes sobre el entrenamiento y seguimiento.</p>
+    </div>
+
+  </div>
+
+</section>
 </body>
 </html>
