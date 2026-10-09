@@ -1811,6 +1811,7 @@ function closeClientFile(){
 ========================= */
 
 renderClients();
+  document.addEventListener("DOMContentLoaded", function() {
 document.getElementById("measurementsCard").addEventListener("click", function() {
   document.getElementById("clientFile").style.display = "none";
   document.getElementById("measurementsPanel").style.display = "block";
@@ -1822,6 +1823,7 @@ document.getElementById("closeMeasurements").addEventListener("click", function(
   document.getElementById("clientFile").style.display = "block";
   window.scrollTo(0, 0);
 });
+    });
 </script>
 <!-- =====================================
      EXPEDIENTE DEL CLIENTE KA-FIT
