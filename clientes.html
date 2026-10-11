@@ -910,6 +910,7 @@ body{
   font-size:15px;
 }
 
+ .edit-file-button { display:block; width:100%; margin:0 0 16px; padding:13px; border:1px solid var(--gold); border-radius:12px; background:#17140b; color:var(--gold2); font-size:15px; font-weight:700; cursor:pointer; }
 #measurementsPanel { position:relative; z-index:2; max-width:760px; margin:0 auto; min-height:100vh; padding-bottom:120px !important; }
 #measurementsPanel h2, #measurementsPanel h3 { margin:12px 0 18px; }
 #measurementsForm { display:grid; gap:10px; }
@@ -1664,6 +1665,11 @@ function closeClientModal(){
 
   closeClientModal();
 
+  // Refrescar el expediente abierto después de editar.
+  if (id && window.currentClientId === Number(id)) {
+    openClientFile(Number(id));
+  }
+
 });
 
 
@@ -1897,6 +1903,12 @@ function openClientFile(clientId){
 }
 
 
+function editCurrentClient(){
+  const id = window.currentClientId;
+  if (id == null) return;
+  editClient(id);
+}
+
 function closeClientFile(){
 
   document.getElementById("clientFile").style.display = "none";
@@ -1970,6 +1982,7 @@ document.getElementById("measurementsForm").addEventListener("submit", function(
 
     <div class="file-card">
       <h3>👤 Datos personales</h3>
+      <button type="button" class="edit-file-button" onclick="editCurrentClient()">✎ Editar datos personales</button>
 
       <div class="file-data-grid">
         <div>
