@@ -1,0 +1,2030 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#050505">
+
+<title>Mis Clientes | KA-FIT</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+:root{
+  --gold:#d4af37;
+  --gold2:#ffd75a;
+  --gold3:#9b7418;
+  --black:#050505;
+  --card:#0d0d0d;
+  --gray:#a8a8a8;
+  --white:#ffffff;
+  --green:#4ee06c;
+}
+
+html,body{
+  min-height:100%;
+  background:#050505;
+  color:white;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+}
+
+body{
+  padding-bottom:105px;
+  overflow-x:hidden;
+}
+
+/* =========================
+   FONDO KA-FIT
+========================= */
+
+.background{
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  overflow:hidden;
+
+  background:
+    radial-gradient(circle at 10% 22%,
+      rgba(212,175,55,.14),
+      transparent 25%),
+
+    radial-gradient(circle at 90% 48%,
+      rgba(212,175,55,.09),
+      transparent 28%),
+
+    radial-gradient(circle at 20% 88%,
+      rgba(255,190,20,.08),
+      transparent 30%),
+
+    linear-gradient(
+      180deg,
+      #050505 0%,
+      #090806 45%,
+      #030303 100%
+    );
+}
+
+.wave{
+  position:absolute;
+  width:150%;
+  height:170px;
+  left:-25%;
+  border-radius:50%;
+  border-top:1px solid rgba(255,199,40,.8);
+  box-shadow:
+    0 -3px 10px rgba(255,193,28,.20),
+    0 -8px 35px rgba(212,175,55,.10);
+  transform:rotate(-8deg);
+}
+
+.wave.one{
+  top:205px;
+}
+
+.wave.two{
+  top:510px;
+  transform:rotate(8deg);
+  opacity:.6;
+}
+
+.wave.three{
+  top:880px;
+  transform:rotate(12deg);
+  opacity:.8;
+}
+
+.sparkles{
+  position:absolute;
+  left:-20px;
+  top:830px;
+  width:180px;
+  height:250px;
+
+  background:
+    radial-gradient(circle at 20% 20%,#d4af37 0 1px,transparent 2px),
+    radial-gradient(circle at 60% 40%,#ffd75a 0 1px,transparent 2px),
+    radial-gradient(circle at 40% 70%,#d4af37 0 1px,transparent 2px),
+    radial-gradient(circle at 80% 85%,#ffd75a 0 1px,transparent 2px);
+
+  opacity:.5;
+}
+
+/* =========================
+   CONTENEDOR
+========================= */
+
+.app{
+  position:relative;
+  z-index:2;
+  max-width:600px;
+  margin:auto;
+  min-height:100vh;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.header{
+  height:125px;
+  padding:38px 24px 15px;
+  display:grid;
+  grid-template-columns:60px 1fr 60px;
+  align-items:center;
+
+  border-bottom:1px solid rgba(255,255,255,.13);
+
+  background:rgba(0,0,0,.80);
+  backdrop-filter:blur(12px);
+}
+
+.back{
+  width:54px;
+  height:54px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border:1px solid var(--gold);
+  border-radius:15px;
+
+  color:var(--gold2);
+  font-size:38px;
+  font-weight:300;
+
+  text-decoration:none;
+
+  box-shadow:
+    0 0 10px rgba(212,175,55,.25),
+    inset 0 0 8px rgba(212,175,55,.08);
+}
+
+.header-title{
+  text-align:center;
+}
+
+.header-title h1{
+  color:var(--gold2);
+  font-size:27px;
+  line-height:1.05;
+  letter-spacing:.5px;
+}
+
+.header-title p{
+  margin-top:7px;
+  color:#d3d3d3;
+  font-size:14px;
+}
+
+.avatar{
+  width:54px;
+  height:54px;
+
+  border:1px solid var(--gold);
+  border-radius:50%;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  color:var(--gold2);
+  font-weight:800;
+
+  box-shadow:
+    0 0 15px rgba(255,200,40,.40),
+    inset 0 0 8px rgba(212,175,55,.12);
+}
+
+/* =========================
+   CONTENIDO
+========================= */
+
+.content{
+  padding:27px 23px 25px;
+}
+
+.welcome-area{
+  position:relative;
+  min-height:105px;
+}
+
+.welcome h2{
+  font-size:30px;
+  line-height:1.1;
+}
+
+.welcome h2 span{
+  color:var(--gold2);
+}
+
+.welcome p{
+  color:#b9b9b9;
+  margin-top:9px;
+  font-size:16px;
+}
+
+/* =========================
+   FÉNIX DECORATIVO
+========================= */
+
+.phoenix{
+  position:absolute;
+  right:-4px;
+  top:-24px;
+
+  width:105px;
+  height:105px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  opacity:.95;
+  pointer-events:none;
+}
+
+.phoenix img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+
+  filter:
+    drop-shadow(0 0 5px rgba(255,213,80,.8))
+    drop-shadow(0 0 14px rgba(212,175,55,.35));
+}
+
+/* =========================
+   ESTADÍSTICAS
+========================= */
+
+.stats{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  margin-top:5px;
+}
+
+.stat{
+  height:105px;
+
+  border:1px solid var(--gold);
+  border-radius:19px;
+
+  display:flex;
+  align-items:center;
+  padding:18px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,205,60,.07),
+      rgba(0,0,0,.75)
+    );
+
+  box-shadow:
+    0 0 12px rgba(212,175,55,.22),
+    inset 0 0 15px rgba(255,215,90,.04);
+}
+
+.stat-icon{
+  width:55px;
+  font-size:37px;
+  color:var(--gold2);
+}
+
+.stat-data{
+  margin-left:8px;
+}
+
+.stat-number{
+  color:var(--gold2);
+  font-size:38px;
+  line-height:1;
+  font-weight:800;
+}
+
+.stat-label{
+  color:#ddd;
+  margin-top:6px;
+  font-size:14px;
+}
+
+/* =========================
+   BUSCADOR
+========================= */
+
+.search{
+  margin-top:28px;
+
+  height:62px;
+
+  border:1px solid var(--gold);
+  border-radius:18px;
+
+  display:flex;
+  align-items:center;
+
+  background:rgba(18,18,18,.90);
+
+  box-shadow:
+    0 0 10px rgba(212,175,55,.17),
+    inset 0 0 10px rgba(255,215,90,.03);
+}
+
+.search-icon{
+  width:60px;
+  text-align:center;
+  color:var(--gold2);
+  font-size:28px;
+}
+
+.search input{
+  flex:1;
+  height:100%;
+
+  border:0;
+  outline:0;
+  background:transparent;
+
+  color:white;
+  font-size:18px;
+
+  padding-right:15px;
+}
+
+.search input::placeholder{
+  color:#aaa;
+}
+
+/* =========================
+   BOTÓN AGREGAR
+========================= */
+
+.add-button{
+  width:100%;
+  height:66px;
+
+  margin-top:25px;
+
+  border:1px solid #ffe278;
+  border-radius:18px;
+
+  color:#090909;
+
+  font-size:17px;
+  font-weight:900;
+
+  background:
+    linear-gradient(
+      100deg,
+      #b98c13,
+      #ffd85b,
+      #d7a929
+    );
+
+  box-shadow:
+    0 0 8px #ffe16a,
+    0 0 22px rgba(255,196,35,.65),
+    inset 0 0 12px rgba(255,255,255,.30);
+
+  cursor:pointer;
+}
+
+.add-button span{
+  font-size:27px;
+  vertical-align:-2px;
+  margin-right:8px;
+}
+
+/* =========================
+   LISTA
+========================= */
+
+.clients-header{
+  margin-top:31px;
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.clients-header h3{
+  font-size:22px;
+}
+
+.clients-header span{
+  color:var(--gold2);
+  font-size:14px;
+}
+
+.clients-list{
+  margin-top:17px;
+}
+
+.client-card{
+  min-height:102px;
+
+  border:1px solid var(--gold);
+  border-radius:21px;
+
+  padding:15px 14px;
+
+  display:flex;
+  align-items:center;
+
+  margin-bottom:15px;
+
+  background:
+    linear-gradient(
+      120deg,
+      rgba(255,203,40,.06),
+      rgba(7,7,7,.94)
+    );
+
+  box-shadow:
+    0 0 12px rgba(212,175,55,.28),
+    inset 0 0 10px rgba(255,215,90,.03);
+}
+
+.initials{
+  width:67px;
+  height:67px;
+
+  flex:none;
+
+  border:1px solid var(--gold2);
+  border-radius:50%;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  color:var(--gold2);
+  font-size:21px;
+  font-weight:900;
+
+  box-shadow:
+    0 0 13px rgba(255,209,55,.45);
+}
+
+.client-info{
+  flex:1;
+  padding-left:17px;
+  min-width:0;
+}
+
+.client-info h4{
+  font-size:18px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.client-info p{
+  margin-top:6px;
+  color:#bbb;
+  font-size:14px;
+}
+
+.active{
+  color:var(--gold2);
+}
+
+.dot{
+  display:inline-block;
+
+  width:8px;
+  height:8px;
+
+  margin-left:5px;
+
+  border-radius:50%;
+
+  background:var(--green);
+
+  box-shadow:0 0 8px var(--green);
+}
+
+.client-arrow{
+  width:52px;
+  height:52px;
+
+  flex:none;
+
+  border:1px solid var(--gold2);
+  border-radius:50%;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  color:var(--gold2);
+  font-size:31px;
+
+  background:rgba(0,0,0,.4);
+
+  box-shadow:0 0 10px rgba(255,205,45,.35);
+
+  cursor:pointer;
+}
+
+/* =========================
+   SIN CLIENTES
+========================= */
+
+.empty{
+  text-align:center;
+  color:#888;
+  padding:35px 15px;
+}
+
+/* =========================
+   MODAL CLIENTE
+========================= */
+
+.modal{
+  position:fixed;
+  inset:0;
+  z-index:50;
+
+  background:rgba(0,0,0,.82);
+
+  display:none;
+  align-items:flex-end;
+  justify-content:center;
+
+  backdrop-filter:blur(8px);
+}
+
+.modal.show{
+  display:flex;
+}
+
+.modal-box{
+  width:100%;
+  max-width:600px;
+
+  padding:25px 23px 35px;
+
+  border-radius:28px 28px 0 0;
+
+  border-top:1px solid var(--gold);
+
+  background:
+    linear-gradient(
+      160deg,
+      #15130d,
+      #080808 50%
+    );
+
+  box-shadow:
+    0 -5px 30px rgba(212,175,55,.25);
+}
+
+.modal-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:22px;
+}
+
+.modal-title h3{
+  color:var(--gold2);
+  font-size:23px;
+}
+
+.close{
+  width:38px;
+  height:38px;
+
+  border:1px solid #555;
+  border-radius:50%;
+
+  background:#111;
+  color:white;
+
+  font-size:20px;
+}
+
+.field{
+  margin-bottom:15px;
+}
+
+.field label{
+  display:block;
+  color:#bbb;
+  font-size:13px;
+  margin-bottom:7px;
+}
+
+.field input,
+.field select{
+  width:100%;
+  height:50px;
+
+  border:1px solid #65541d;
+  border-radius:13px;
+
+  background:#0c0c0c;
+  color:white;
+
+  padding:0 14px;
+  font-size:16px;
+
+  outline:none;
+}
+
+.field input:focus,
+.field select:focus{
+  border-color:var(--gold2);
+}
+
+.save-client{
+  width:100%;
+  height:57px;
+
+  margin-top:8px;
+
+  border:0;
+  border-radius:15px;
+
+  background:linear-gradient(90deg,#b88a10,#ffda58);
+  color:#050505;
+
+  font-size:17px;
+  font-weight:900;
+
+  box-shadow:0 0 15px rgba(255,202,40,.4);
+}
+
+.delete-client{
+  width:100%;
+  margin-top:12px;
+
+  border:0;
+  background:transparent;
+
+  color:#d86666;
+
+  padding:12px;
+  font-size:14px;
+}
+
+/* =========================
+   NAVEGACIÓN INFERIOR
+========================= */
+
+.bottom-nav{
+  position:fixed;
+  z-index:30;
+
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+
+  width:100%;
+  max-width:600px;
+
+  height:92px;
+
+  padding-bottom:env(safe-area-inset-bottom);
+
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+
+  border-top:1px solid rgba(255,255,255,.15);
+
+  background:rgba(3,3,3,.96);
+  backdrop-filter:blur(14px);
+}
+
+.nav-item{
+  text-decoration:none;
+  color:#777;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+
+  font-size:12px;
+
+  gap:5px;
+}
+
+.nav-icon{
+  font-size:24px;
+  line-height:1;
+}
+
+.nav-item.active-nav{
+  color:var(--gold2);
+}
+
+.nav-item.active-nav::after{
+  content:"";
+  width:38px;
+  height:3px;
+
+  margin-top:2px;
+
+  border-radius:5px;
+
+  background:var(--gold2);
+
+  box-shadow:0 0 8px var(--gold2);
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:390px){
+
+  .content{
+    padding-left:18px;
+    padding-right:18px;
+  }
+
+  .header{
+    padding-left:18px;
+    padding-right:18px;
+  }
+
+  .welcome h2{
+    font-size:27px;
+  }
+
+  .welcome p{
+    font-size:14px;
+  }
+
+  .stat{
+    padding:13px;
+  }
+
+  .stat-icon{
+    width:43px;
+    font-size:30px;
+  }
+
+  .stat-number{
+    font-size:34px;
+  }
+
+  .phoenix{
+    width:90px;
+    height:90px;
+  }
+}
+  /* =====================================
+   EXPEDIENTE DEL CLIENTE KA-FIT
+===================================== */
+
+#clientFile{
+  position:relative;
+  z-index:2;
+  width:100%;
+  max-width:760px;
+  min-height:100vh;
+  margin:0 auto;
+  padding:24px 16px 120px;
+  color:#fff;
+  box-sizing:border-box;
+}
+
+.client-file-header{
+  display:flex;
+  align-items:center;
+  gap:15px;
+
+  padding:18px;
+  margin-bottom:20px;
+
+  border:1px solid var(--gold);
+  border-radius:20px;
+
+  background:
+    linear-gradient(
+      120deg,
+      rgba(255,203,40,.08),
+      rgba(7,7,7,.96)
+    );
+
+  box-shadow:0 0 15px rgba(212,175,55,.20);
+}
+
+.client-file-header button{
+  border:1px solid var(--gold2);
+  border-radius:12px;
+
+  background:#111;
+  color:var(--gold2);
+
+  padding:10px 12px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.client-file-header h2{
+  margin:0;
+  font-size:22px;
+  color:var(--gold2);
+}
+
+.client-file-header p{
+  margin:4px 0 0;
+  font-size:12px;
+  opacity:.7;
+}
+
+.client-file-content{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.file-card{
+  padding:18px;
+
+  border:1px solid rgba(212,175,55,.55);
+  border-radius:18px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,203,40,.06),
+      rgba(10,10,10,.96)
+    );
+
+  box-shadow:0 0 12px rgba(212,175,55,.12);
+}
+
+.file-card h3{
+  margin:0 0 12px;
+  color:var(--gold2);
+  font-size:17px;
+}
+
+.file-card p{
+  margin:0;
+  font-size:13px;
+  opacity:.75;
+  line-height:1.5;
+}
+
+.file-data-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.file-data-grid div{
+  padding:12px;
+
+  border:1px solid rgba(212,175,55,.25);
+  border-radius:13px;
+
+  background:rgba(255,255,255,.025);
+}
+
+.file-data-grid span{
+  display:block;
+  font-size:11px;
+  opacity:.6;
+  margin-bottom:5px;
+}
+
+.file-data-grid strong{
+  display:block;
+  color:#fff;
+  font-size:15px;
+}
+
+#measurementsPanel { position:relative; z-index:2; max-width:760px; margin:0 auto; min-height:100vh; padding-bottom:120px !important; }
+#measurementsPanel h2, #measurementsPanel h3 { margin:12px 0 18px; }
+#measurementsForm { display:grid; gap:10px; }
+#measurementsForm label { color:#f0d47a; font-size:14px; margin-top:8px; }
+#measurementsForm input { width:100%; min-height:46px; padding:10px 12px; color:white; background:#181818; border:1px solid #a78636; border-radius:10px; font-size:16px; }
+#measurementsForm button { min-height:48px; border-radius:12px; border:1px solid #d4af37; background:#d4af37; color:#090909; font-weight:700; margin-top:10px; }
+#measurementsForm button[type=button] { background:#222; color:#f0d47a; }
+.measurement-record { padding:14px; margin:12px 0; border:1px solid #9b7418; border-radius:12px; background:#191919; }
+.measurement-record p { margin:7px 0; color:white; }
+</style>
+</head>
+
+<body>
+
+<div class="background">
+  <div class="wave one"></div>
+  <div class="wave two"></div>
+  <div class="wave three"></div>
+  <div class="sparkles"></div>
+</div>
+
+<div class="app">
+
+<header class="header">
+
+  <a href="index.html" class="back">‹</a>
+
+  <div class="header-title">
+    <h1>MIS CLIENTES</h1>
+    <p>KA-FIT · Entrenadora Personal</p>
+  </div>
+
+  <div class="avatar">KA</div>
+
+</header>
+
+
+<main class="content">
+
+  <section class="welcome-area">
+
+    <div class="welcome">
+      <h2>Hola, <span>Karina</span> 💪</h2>
+      <p>Administra y da seguimiento a tus clientes.</p>
+    </div>
+
+    <div class="phoenix">
+      <img src="Fenix-png%20.PNG?v=20" alt="Fénix KA-FIT">
+    </div>
+
+  </section>
+
+
+  <section class="stats">
+
+    <div class="stat">
+
+      <div class="stat-icon">♙</div>
+
+      <div class="stat-data">
+        <div class="stat-number" id="totalClients">0</div>
+        <div class="stat-label">CLIENTES</div>
+      </div>
+
+    </div>
+
+
+    <div class="stat">
+
+      <div class="stat-icon">▥</div>
+
+      <div class="stat-data">
+        <div class="stat-number" id="activeClients">0</div>
+        <div class="stat-label">ACTIVOS</div>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <div class="search">
+
+    <div class="search-icon">⌕</div>
+
+    <input
+      id="searchInput"
+      type="search"
+      placeholder="Buscar cliente..."
+      autocomplete="off"
+    >
+
+  </div>
+
+
+  <button
+    class="add-button"
+    id="addClientButton"
+    type="button"
+  >
+    <span>＋</span>
+    AGREGAR NUEVO CLIENTE
+  </button>
+
+
+  <div class="clients-header">
+
+    <h3>Mis clientes</h3>
+
+    <span id="registeredCount">
+      0 registrados
+    </span>
+
+  </div>
+
+
+  <div
+    class="clients-list"
+    id="clientsList"
+  ></div>
+
+</main>
+
+</div>
+
+
+<!-- =========================
+     MODAL
+========================= -->
+
+<div class="modal" id="clientModal">
+
+  <div class="modal-box">
+
+    <div class="modal-title">
+
+      <h3 id="modalHeading">
+        Nuevo cliente
+      </h3>
+
+      <button
+        class="close"
+        id="closeModal"
+        type="button"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <form id="clientForm">
+
+      <input
+        type="hidden"
+        id="editingId"
+      >
+
+
+      <div class="field">
+
+        <label for="clientName">
+          Nombre del cliente
+        </label>
+
+        <input
+          id="clientName"
+          type="text"
+          placeholder="Ej. Karina Rojas"
+          required
+        >
+
+      </div>
+      <div class="field">
+  <label for="clientAge">Edad</label>
+  <input
+    id="clientAge"
+    type="number"
+    placeholder="Ej. 35"
+    min="1"
+    max="120"
+    required
+  >
+</div>
+
+<div class="field">
+  <label for="clientHeight">Estatura (cm)</label>
+  <input
+    id="clientHeight"
+    type="number"
+    placeholder="Ej. 165"
+    min="50"
+    max="250"
+    step="0.1"
+    required
+  >
+</div>
+
+<div class="field">
+  <label for="clientWeight">Peso (kg)</label>
+  <input
+    id="clientWeight"
+    type="number"
+    placeholder="Ej. 65"
+    min="20"
+    max="400"
+    step="0.1"
+    required
+  >
+</div>
+
+      <div class="field">
+
+        <label for="clientGoal">
+          Objetivo
+        </label>
+
+        <input
+          id="clientGoal"
+          type="text"
+          placeholder="Ej. Ganancia muscular"
+          required
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label for="clientStatus">
+          Estado
+        </label>
+
+        <select id="clientStatus">
+
+          <option value="Activo">
+            Activo
+          </option>
+
+          <option value="Inactivo">
+            Inactivo
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <button
+        class="save-client"
+        type="submit"
+      >
+        GUARDAR CLIENTE
+      </button>
+
+
+      <button
+        class="delete-client"
+        id="deleteClient"
+        type="button"
+        style="display:none"
+      >
+        Eliminar cliente
+      </button>
+
+    </form>
+
+  </div>
+
+</div>
+
+
+<!-- =========================
+     NAVEGACIÓN
+========================= -->
+
+<nav class="bottom-nav">
+
+  <a
+    href="index.html"
+    class="nav-item"
+  >
+    <span class="nav-icon">⌂</span>
+    <span>Inicio</span>
+  </a>
+
+
+  <a
+    href="clientes.html"
+    class="nav-item active-nav"
+  >
+    <span class="nav-icon">♙</span>
+    <span>Clientes</span>
+  </a>
+
+
+  <a
+    href="rutinas.html"
+    class="nav-item"
+  >
+    <span class="nav-icon">🏋️</span>
+    <span>Rutinas</span>
+  </a>
+
+
+  <a
+    href="progreso.html"
+    class="nav-item"
+  >
+    <span class="nav-icon">▥</span>
+    <span>Progreso</span>
+  </a>
+
+
+  <a
+    href="agenda.html"
+    class="nav-item"
+  >
+    <span class="nav-icon">▣</span>
+    <span>Agenda</span>
+  </a>
+
+</nav>
+
+
+<script>
+
+/* =========================
+   DATOS
+========================= */
+
+const STORAGE_KEY = "kafit_clients_v2";
+
+let clients = [];
+
+try{
+
+  clients =
+    JSON.parse(
+      localStorage.getItem(STORAGE_KEY)
+    ) || [];
+
+}catch(error){
+
+  clients = [];
+
+}
+
+
+/* CLIENTE DE EJEMPLO
+   Solo aparece la primera vez
+*/
+
+if(clients.length === 0){
+
+  clients = [
+
+    {
+      id:Date.now(),
+      name:"Karina Rojas",
+      goal:"Ganancia muscular",
+      status:"Activo"
+    }
+
+  ];
+
+  saveClients();
+
+}
+
+
+/* =========================
+   ELEMENTOS
+========================= */
+
+const clientsList =
+  document.getElementById("clientsList");
+
+const totalClients =
+  document.getElementById("totalClients");
+
+const activeClients =
+  document.getElementById("activeClients");
+
+const registeredCount =
+  document.getElementById("registeredCount");
+
+const searchInput =
+  document.getElementById("searchInput");
+
+const clientModal =
+  document.getElementById("clientModal");
+
+const clientForm =
+  document.getElementById("clientForm");
+
+const clientName =
+  document.getElementById("clientName");
+
+const clientGoal =
+  document.getElementById("clientGoal");
+
+const clientStatus =
+  document.getElementById("clientStatus");
+
+const editingId =
+  document.getElementById("editingId");
+
+const modalHeading =
+  document.getElementById("modalHeading");
+
+const deleteClientButton =
+  document.getElementById("deleteClient");
+
+
+/* =========================
+   GUARDAR
+========================= */
+
+function saveClients(){
+
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(clients)
+  );
+
+}
+
+
+/* =========================
+   INICIALES
+========================= */
+
+function getInitials(name){
+
+  return name
+    .trim()
+    .split(/\s+/)
+    .slice(0,2)
+    .map(word => word.charAt(0))
+    .join("")
+    .toUpperCase();
+
+}
+
+
+/* =========================
+   SEGURIDAD TEXTO
+========================= */
+
+function escapeHTML(value){
+
+  return String(value)
+
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+
+}
+
+
+/* =========================
+   CONTADORES
+========================= */
+
+function updateStats(){
+
+  const total = clients.length;
+
+  const active =
+    clients.filter(
+      client =>
+        client.status === "Activo"
+    ).length;
+
+  totalClients.textContent = total;
+
+  activeClients.textContent = active;
+
+  registeredCount.textContent =
+    total === 1
+      ? "1 registrado"
+      : total + " registrados";
+
+}
+
+
+/* =========================
+   MOSTRAR CLIENTES
+========================= */
+
+function renderClients(filter = ""){
+
+  const search =
+    filter
+      .trim()
+      .toLowerCase();
+
+  const filteredClients =
+    clients.filter(client => {
+
+      return (
+        client.name
+          .toLowerCase()
+          .includes(search)
+
+        ||
+
+        client.goal
+          .toLowerCase()
+          .includes(search)
+      );
+
+    });
+
+
+  if(filteredClients.length === 0){
+
+    clientsList.innerHTML = `
+      <div class="empty">
+        No se encontraron clientes.
+      </div>
+    `;
+
+    updateStats();
+
+    return;
+
+  }
+
+
+  clientsList.innerHTML =
+    filteredClients
+      .map(client => {
+
+        const isActive =
+          client.status === "Activo";
+
+        return `
+
+          <article class="client-card">
+
+            <div class="initials">
+              ${escapeHTML(
+                getInitials(client.name)
+              )}
+            </div>
+
+
+            <div class="client-info">
+
+              <h4>
+                ${escapeHTML(client.name)}
+              </h4>
+
+              <p>
+
+                ${escapeHTML(client.goal)}
+
+                ·
+
+                <span class="${
+                  isActive
+                    ? "active"
+                    : ""
+                }">
+
+                  ${escapeHTML(
+                    client.status
+                  )}
+
+                </span>
+
+                ${
+                  isActive
+                    ? '<span class="dot"></span>'
+                    : ""
+                }
+
+              </p>
+
+            </div>
+
+
+            <button
+              class="client-arrow"
+              type="button"
+              onclick="openClientFile(${client.id})"
+              aria-label="Abrir cliente"
+            >
+              ›
+            </button>
+
+          </article>
+
+        `;
+
+      })
+      .join("");
+
+
+  updateStats();
+
+}
+
+
+/* =========================
+   NUEVO CLIENTE
+========================= */
+
+function openNewClient(){
+
+  editingId.value = "";
+
+  clientForm.reset();
+
+  clientStatus.value = "Activo";
+
+  modalHeading.textContent =
+    "Nuevo cliente";
+
+  deleteClientButton.style.display =
+    "none";
+
+  clientModal.classList.add("show");
+
+  setTimeout(
+    () => clientName.focus(),
+    150
+  );
+
+}
+
+
+/* =========================
+   EDITAR CLIENTE
+========================= */
+
+function editClient(id){
+
+  const client =
+    clients.find(
+      item => item.id === id
+    );
+
+  if(!client){
+    return;
+  }
+
+  editingId.value =
+    String(client.id);
+
+  clientName.value =
+    client.name;
+
+  document.getElementById("clientAge").value = client.age ?? "";
+  document.getElementById("clientHeight").value = client.height ?? "";
+  document.getElementById("clientWeight").value = client.weight ?? "";
+
+  clientGoal.value =
+    client.goal;
+
+  clientStatus.value =
+    client.status;
+
+  modalHeading.textContent =
+    "Editar cliente";
+
+  deleteClientButton.style.display =
+    "block";
+
+  clientModal.classList.add("show");
+
+}
+
+
+/* =========================
+   CERRAR MODAL
+========================= */
+
+function closeClientModal(){
+
+  clientModal.classList.remove("show");
+
+}
+
+
+/* =========================
+   GUARDAR FORMULARIO
+========================= */
+
+  clientForm.addEventListener("submit", function(event){
+
+  event.preventDefault();
+
+  const name = clientName.value.trim();
+  const age = Number(document.getElementById("clientAge").value);
+  const height = Number(document.getElementById("clientHeight").value);
+  const weight = Number(document.getElementById("clientWeight").value);
+  const goal = clientGoal.value.trim();
+  const status = clientStatus.value;
+
+  if(!name || !age || !height || !weight || !goal){
+    return;
+  }
+
+  const id = editingId.value;
+
+  if(id){
+
+    const numericId = Number(id);
+
+    const index = clients.findIndex(
+      client => client.id === numericId
+    );
+
+    if(index !== -1){
+
+      clients[index] = {
+        ...clients[index],
+        name,
+        age,
+        height,
+        weight,
+        goal,
+        status
+      };
+
+    }
+
+  }else{
+
+    clients.unshift({
+      id: Date.now(),
+      name,
+      age,
+      height,
+      weight,
+      goal,
+      status
+    });
+
+  }
+
+  saveClients();
+
+  renderClients(
+    searchInput.value
+  );
+
+  closeClientModal();
+
+});
+
+
+/* =========================
+   ELIMINAR
+========================= */
+
+deleteClientButton.addEventListener(
+  "click",
+  function(){
+
+    const id =
+      Number(editingId.value);
+
+    if(!id){
+      return;
+    }
+
+
+    const client =
+      clients.find(
+        item =>
+          item.id === id
+      );
+
+
+    if(!client){
+      return;
+    }
+
+
+    const confirmation =
+      confirm(
+        "¿Eliminar a " +
+        client.name +
+        "?"
+      );
+
+
+    if(!confirmation){
+      return;
+    }
+
+
+    clients =
+      clients.filter(
+        item =>
+          item.id !== id
+      );
+
+
+    saveClients();
+
+    renderClients(
+      searchInput.value
+    );
+
+    closeClientModal();
+
+  }
+);
+
+
+/* =========================
+   BUSCADOR
+========================= */
+
+searchInput.addEventListener(
+  "input",
+  function(){
+
+    renderClients(
+      searchInput.value
+    );
+
+  }
+);
+
+
+/* =========================
+   BOTONES
+========================= */
+
+document
+  .getElementById("addClientButton")
+  .addEventListener(
+    "click",
+    openNewClient
+  );
+
+
+document
+  .getElementById("closeModal")
+  .addEventListener(
+    "click",
+    closeClientModal
+  );
+
+
+clientModal.addEventListener(
+  "click",
+  function(event){
+
+    if(event.target === clientModal){
+
+      closeClientModal();
+
+    }
+
+  }
+);
+/* =========================
+   EXPEDIENTE DEL CLIENTE
+========================= */
+
+/* =========================================
+   EVALUACIONES CORPORALES POR CLIENTE
+========================================= */
+const MEASUREMENTS_STORAGE_KEY = "kafit_measurements_v1";
+const measurementFields = [
+  ["measurementWaist", "Cintura"],
+  ["measurementHip", "Cadera"],
+  ["measurementChest", "Pecho"],
+  ["measurementArm", "Brazo"],
+  ["measurementThigh", "Muslo"],
+  ["measurementCalf", "Pantorrilla"]
+];
+
+function readMeasurements() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(MEASUREMENTS_STORAGE_KEY) || "{}");
+    return stored && typeof stored === "object" && !Array.isArray(stored) ? stored : {};
+  } catch (error) {
+    return {};
+  }
+}
+
+function renderMeasurementsHistory() {
+  const container = document.getElementById("measurementsHistory");
+  const id = window.currentClientId;
+  if (!container) return;
+  if (id == null) {
+    container.textContent = "Selecciona un cliente para consultar sus evaluaciones.";
+    return;
+  }
+  const all = readMeasurements();
+  const records = Array.isArray(all[String(id)]) ? all[String(id)] : [];
+  container.replaceChildren();
+  if (!records.length) {
+    const empty = document.createElement("p");
+    empty.textContent = "Aún no hay evaluaciones registradas para este cliente.";
+    container.appendChild(empty);
+    return;
+  }
+  [...records].sort((a, b) => b.date.localeCompare(a.date)).forEach(record => {
+    const card = document.createElement("div");
+    card.className = "measurement-record";
+    const heading = document.createElement("h4");
+    heading.textContent = "Evaluación: " + record.date;
+    card.appendChild(heading);
+    measurementFields.forEach(([field, label]) => {
+      const value = record[field];
+      if (value === "" || value == null) return;
+      const line = document.createElement("p");
+      line.textContent = label + ": " + value + " cm";
+      card.appendChild(line);
+    });
+    container.appendChild(card);
+  });
+}
+
+function openMeasurements() {
+  if (window.currentClientId == null) return;
+  document.getElementById("measurementsForm").reset();
+  const today = new Date();
+  const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000)
+    .toISOString().slice(0, 10);
+  document.getElementById("measurementDate").value = localDate;
+  renderMeasurementsHistory();
+  document.getElementById("clientFile").style.display = "none";
+  document.getElementById("measurementsPanel").style.display = "block";
+  window.scrollTo(0, 0);
+}
+
+function closeMeasurementsPanel() {
+  document.getElementById("measurementsPanel").style.display = "none";
+  document.getElementById("clientFile").style.display = "block";
+  window.scrollTo(0, 0);
+}
+
+function openClientFile(clientId){
+
+  window.currentClientId = clientId;
+  const client = clients.find(
+    client => client.id === clientId
+  );
+
+  if(!client){
+    return;
+  }
+
+  document.getElementById("fileClientName").textContent =
+    client.name;
+
+  document.getElementById("fileAge").textContent =
+    client.age ? client.age + " años" : "—";
+
+  document.getElementById("fileWeight").textContent =
+    client.weight ? client.weight + " kg" : "—";
+
+  document.getElementById("fileHeight").textContent =
+    client.height ? client.height + " cm" : "—";
+
+  document.getElementById("fileGoal").textContent =
+    client.goal || "—";
+
+  document.querySelector(".app").style.display = "none";
+
+  document.getElementById("clientFile").style.display = "block";
+  document.getElementById("measurementsPanel").style.display = "none";
+  renderMeasurementsHistory();
+
+  window.scrollTo(0, 0);
+}
+
+
+function closeClientFile(){
+
+  document.getElementById("clientFile").style.display = "none";
+
+  document.querySelector(".app").style.display = "block";
+
+  window.scrollTo(0, 0);
+}
+
+/* =========================
+   INICIAR KA-FIT
+========================= */
+
+renderClients();
+  document.addEventListener("DOMContentLoaded", function() {
+const measurementsCard = document.getElementById("measurementsCard");
+measurementsCard.addEventListener("click", openMeasurements);
+measurementsCard.addEventListener("keydown", function(event) {
+  if (event.key === "Enter" || event.key === " ") {
+    event.preventDefault();
+    openMeasurements();
+  }
+});
+document.getElementById("closeMeasurements").addEventListener("click", closeMeasurementsPanel);
+
+document.getElementById("measurementsForm").addEventListener("submit", function(event) {
+  event.preventDefault();
+  const id = window.currentClientId;
+  if (id == null) return;
+  const date = document.getElementById("measurementDate").value;
+  if (!date) return;
+  const record = { date };
+  measurementFields.forEach(([field]) => {
+    record[field] = document.getElementById(field).value;
+  });
+  const all = readMeasurements();
+  const key = String(id);
+  if (!Array.isArray(all[key])) all[key] = [];
+  all[key].push(record);
+  try {
+    localStorage.setItem(MEASUREMENTS_STORAGE_KEY, JSON.stringify(all));
+  } catch (error) {
+    alert("No se pudo guardar la evaluación. Comprueba el almacenamiento del navegador.");
+    return;
+  }
+  renderMeasurementsHistory();
+  alert("Evaluación guardada correctamente.");
+});
+    });
+</script>
+<!-- =====================================
+     EXPEDIENTE DEL CLIENTE KA-FIT
+===================================== -->
+
+<section id="clientFile" style="display:none;">
+
+  <div class="client-file-header">
+    <button type="button" onclick="closeClientFile()">← Volver</button>
+
+    <div>
+      <h2 id="fileClientName">Expediente del cliente</h2>
+      <p>KA-FIT · Seguimiento personalizado</p>
+    </div>
+  </div>
+
+  <div class="client-file-content">
+
+    <div class="file-card">
+      <h3>👤 Datos personales</h3>
+
+      <div class="file-data-grid">
+        <div>
+          <span>Edad</span>
+          <strong id="fileAge">—</strong>
+        </div>
+
+        <div>
+          <span>Peso</span>
+          <strong id="fileWeight">—</strong>
+        </div>
+
+        <div>
+          <span>Estatura</span>
+          <strong id="fileHeight">—</strong>
+        </div>
+
+        <div>
+          <span>Objetivo</span>
+          <strong id="fileGoal">—</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="file-card" id="measurementsCard" role="button" tabindex="0">
+      <h3>📏 Medidas corporales</h3>
+      <p>Registra y consulta la evolución de las medidas del cliente.</p>
+    </div>
+
+    <div class="file-card">
+      <h3>📈 Progreso</h3>
+      <p>Seguimiento del peso, medidas y avances.</p>
+    </div>
+
+    <div class="file-card">
+      <h3>🏋️ Rutinas</h3>
+      <p>Rutinas y programas asignados al cliente.</p>
+    </div>
+
+    <div class="file-card">
+      <h3>📝 Observaciones</h3>
+      <p>Notas importantes sobre el entrenamiento y seguimiento.</p>
+    </div>
+
+  </div>
+
+</section>
+  <section id="measurementsPanel" style="display:none; padding:20px; background:#111; color:#e8bf52;">
+  <h2>📏 Medidas corporales</h2>
+  <form id="measurementsForm">
+    <label>Fecha de evaluación</label>
+    <input type="date" id="measurementDate" required>
+    <label>Cintura (cm)</label>
+    <input type="number" id="measurementWaist" step="0.1" min="0">
+    <label>Cadera (cm)</label>
+    <input type="number" id="measurementHip" step="0.1" min="0">
+    <label>Pecho (cm)</label>
+    <input type="number" id="measurementChest" step="0.1" min="0">
+    <label>Brazo (cm)</label>
+    <input type="number" id="measurementArm" step="0.1" min="0">
+    <label>Muslo (cm)</label>
+    <input type="number" id="measurementThigh" step="0.1" min="0">
+    <label>Pantorrilla (cm)</label>
+    <input type="number" id="measurementCalf" step="0.1" min="0">
+    <button type="submit">Guardar evaluación</button>
+    <button type="button" id="closeMeasurements">Volver al expediente</button>
+  </form>
+  <h3>Historial de evaluaciones</h3>
+  <div id="measurementsHistory"></div>
+</section>
+</body>
+</html>
