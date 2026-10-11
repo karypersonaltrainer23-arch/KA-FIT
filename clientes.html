@@ -35,6 +35,7 @@ html,body{
 body{
   padding-bottom:105px;
   overflow-x:hidden;
+  overscroll-behavior-x:none;
 }
 
 /* =========================
@@ -911,7 +912,7 @@ body{
 }
 
  .edit-file-button { display:block; width:100%; margin:0 0 16px; padding:13px; border:1px solid var(--gold); border-radius:12px; background:#17140b; color:var(--gold2); font-size:15px; font-weight:700; cursor:pointer; }
-#measurementsPanel { position:relative; z-index:2; max-width:760px; margin:0 auto; min-height:100vh; padding-bottom:120px !important; }
+#measurementsPanel { background:transparent; position:relative; z-index:2; max-width:760px; margin:0 auto; min-height:100vh; padding-bottom:120px !important; }
 #measurementsPanel h2, #measurementsPanel h3 { margin:12px 0 18px; }
 #measurementsForm { display:grid; gap:10px; }
 #measurementsForm label { color:#f0d47a; font-size:14px; margin-top:8px; }
@@ -921,7 +922,7 @@ body{
 .measurement-record { padding:14px; margin:12px 0; border:1px solid #9b7418; border-radius:12px; background:#191919; }
 .measurement-record p { margin:7px 0; color:white; }
 #evaluationSchedule {padding:14px; margin:16px 0; border:1px solid #a78636; border-radius:12px; background:#19160d; color:#f0d47a; line-height:1.6;}
-#progressPanel {position:relative; z-index:2; max-width:760px; min-height:100vh; margin:auto; padding:24px 18px 120px;}
+#progressPanel {background:transparent;position:relative; z-index:2; max-width:760px; min-height:100vh; margin:auto; padding:24px 18px 120px;}
 #progressPanel h2 {color:var(--gold2);margin-bottom:12px;}
 #progressPanel p {color:#ddd;line-height:1.5;margin-bottom:14px;}
 #progressMetric {width:100%;height:48px;background:#171717;color:#fff;border:1px solid var(--gold);border-radius:12px;padding:8px;margin:12px 0;}
@@ -1909,7 +1910,7 @@ function renderProgressChart() {
   const metric = document.getElementById("progressMetric").value;
   const all = readMeasurements();
   const records = (all[String(window.currentClientId)] || []).filter(r => /^\d{4}-\d{2}-\d{2}$/.test(r.date)).sort((a,b) => a.date.localeCompare(b.date));
-  const values = records.map(r => ({date:r.date, value:Number(r[metric])})).filter((r,i) => records[i][metric] !== "" && records[i][metric] != null && Number.isFinite(r.value));
+  const values = records.filter(r => r[metric] !== "" && r[metric] != null && Number.isFinite(Number(r[metric]))).map(r => ({date:r.date, value:Number(r[metric])}));
   target.replaceChildren();
   if (!values.length) {target.textContent = "Todavía no hay registros para esta medida.";return;}
   const ns="http://www.w3.org/2000/svg";
@@ -1921,6 +1922,7 @@ function renderProgressChart() {
   node("line",{x1:35,y1:30,x2:35,y2:175,stroke:"#8d793d"});
   if(points.length>1)node("polyline",{points:points.map(p=>p.x+","+p.y).join(" "),fill:"none",stroke:"#ffd75a","stroke-width":3});
   points.forEach((p,i)=>{node("circle",{cx:p.x,cy:p.y,r:4,fill:"#ffd75a"});node("text",{x:p.x,y:Math.max(p.y-10,15),fill:"#fff","font-size":11,"text-anchor":"middle"},String(p.value));if(points.length<=6 || i===0 || i===points.length-1)node("text",{x:p.x,y:194,fill:"#ddd","font-size":9,"text-anchor":"middle"},p.date.slice(5));});
+  svg.style.width="100%";svg.style.height="auto";
   target.appendChild(svg);
   const summary=document.createElement("p");const change=values[values.length-1].value-values[0].value;summary.textContent="Registros: "+values.length+" · Cambio entre primera y última evaluación: "+(change>0?"+":"")+change.toFixed(1)+" cm";target.appendChild(summary);
 }
@@ -1955,6 +1957,7 @@ function openClientFile(clientId){
 
   document.getElementById("clientFile").style.display = "block";
   document.getElementById("measurementsPanel").style.display = "none";
+  document.getElementById("progressPanel").style.display = "none";
   document.querySelector(".bottom-nav").style.display = "grid";
   renderMeasurementsHistory();
 
@@ -1972,6 +1975,7 @@ function closeClientFile(){
 
   document.getElementById("clientFile").style.display = "none";
   document.getElementById("measurementsPanel").style.display = "none";
+  document.getElementById("progressPanel").style.display = "none";
   window.currentClientId = null;
 
   document.querySelector(".app").style.display = "block";
@@ -1994,6 +1998,16 @@ measurementsCard.addEventListener("keydown", function(event) {
   }
 });
 document.getElementById("closeMeasurements").addEventListener("click", closeMeasurementsPanel);
+const progressCard = document.getElementById("progressCard");
+progressCard.addEventListener("click", openProgress);
+progressCard.addEventListener("keydown", function(event) {
+  if (event.key === "Enter" || event.key === " ") {
+    event.preventDefault();
+    openProgress();
+  }
+});
+document.getElementById("closeProgress").addEventListener("click", closeProgress);
+document.getElementById("progressMetric").addEventListener("change", renderProgressChart);
 
 document.getElementById("measurementsForm").addEventListener("submit", function(event) {
   event.preventDefault();
@@ -2071,7 +2085,7 @@ document.getElementById("measurementsForm").addEventListener("submit", function(
       <p>Registra y consulta la evolución de las medidas del cliente.</p>
     </div>
 
-    <div class="file-card">
+    <div class="file-card" id="progressCard" role="button" tabindex="0" aria-label="Abrir progreso" style="cursor:pointer">
       <h3>📈 Progreso</h3>
       <p>Seguimiento del peso, medidas y avances.</p>
     </div>
@@ -2089,7 +2103,7 @@ document.getElementById("measurementsForm").addEventListener("submit", function(
   </div>
 
 </section>
-  <section id="measurementsPanel" style="display:none; padding:20px; background:#111; color:#e8bf52;">
+  <section id="measurementsPanel" style="display:none; padding:20px; color:#e8bf52;">
   <h2>📏 Medidas corporales</h2>
   <p id="measurementsClientName" style="margin-bottom:14px;color:#fff"></p>
   <form id="measurementsForm">
@@ -2113,6 +2127,23 @@ document.getElementById("measurementsForm").addEventListener("submit", function(
   <div id="evaluationSchedule" aria-live="polite"></div>
   <h3>Historial de evaluaciones</h3>
   <div id="measurementsHistory"></div>
+</section>
+<section id="progressPanel" style="display:none; color:#fff;">
+  <h2>📈 Progreso del cliente</h2>
+  <p>Consulta la evolución de las medidas corporales registradas.</p>
+  <div class="file-card">
+    <label for="progressMetric" style="display:block;color:#ffd75a;margin-bottom:10px">Selecciona una medida</label>
+    <select id="progressMetric" style="width:100%;min-height:48px;background:#171717;color:white;border:1px solid #d4af37;border-radius:12px;padding:10px;font-size:16px">
+      <option value="measurementWaist">Cintura</option>
+      <option value="measurementHip">Cadera</option>
+      <option value="measurementChest">Pecho</option>
+      <option value="measurementArm">Brazo</option>
+      <option value="measurementThigh">Muslo</option>
+      <option value="measurementCalf">Pantorrilla</option>
+    </select>
+    <div id="progressChart" style="margin-top:18px;overflow-x:auto" aria-live="polite"></div>
+  </div>
+  <button type="button" id="closeProgress" class="edit-file-button" style="margin-top:20px">← Volver al expediente</button>
 </section>
 </body>
 </html>
