@@ -929,6 +929,22 @@ body{
 #progressChart {width:100%;min-height:220px;border:1px solid #725c20;border-radius:14px;background:#141414;padding:12px;}
 #progressChart svg {width:100%;height:auto;display:block;}
 .progress-back {padding:14px 20px;border:1px solid var(--gold);border-radius:12px;background:#242015;color:var(--gold2);font-weight:bold;margin:14px 0;}
+
+/* KA-FIT: resumen y ampliación de progreso */
+.progress-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:18px 0}
+.progress-tile{border:1px solid #a78636;border-radius:16px;padding:16px 12px;background:linear-gradient(130deg,#211a0c,#090909);min-width:0}
+.progress-tile small{display:block;color:#d8c7a0;font-size:12px;margin-bottom:8px}
+.progress-tile strong{color:#ffd75a;font-size:22px;overflow-wrap:anywhere}
+.progress-measures{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:15px 0 22px}
+.progress-measure{padding:14px 10px;border:1px solid #856a2c;border-radius:14px;background:#14120d;color:#fff;text-align:left;font-size:13px;cursor:pointer}
+.progress-measure strong{display:block;color:#ffd75a;margin-top:7px;font-size:17px}
+.progress-measure.selected{border-color:#ffe278;box-shadow:0 0 12px #b78c3440}
+.progress-expand{width:100%;margin-top:14px;padding:13px;background:#27200e;color:#ffda58;border:1px solid #d4af37;border-radius:12px;font-weight:700;font-size:15px}
+#progressFullscreen{position:fixed;inset:0;z-index:100;background:linear-gradient(150deg,#21190a,#050505 55%);padding:calc(20px + env(safe-area-inset-top)) 16px calc(20px + env(safe-area-inset-bottom));overflow:auto}
+#progressFullscreen[hidden]{display:none}
+#progressFullscreen .progress-zoom-inner{max-width:760px;margin:auto}
+#progressFullscreenChart{background:#141414;border:1px solid #a78636;border-radius:16px;padding:12px;margin-top:16px}
+#progressFullscreenChart svg{width:100%;height:auto;display:block}
 </style>
 </head>
 
@@ -1902,12 +1918,53 @@ function openProgress() {
   window.scrollTo(0,0);
 }
 function closeProgress() {
+  closeProgressFullscreen();
   document.getElementById("progressPanel").style.display = "none";
   if (kafitProgressMode) { closeClientFile(); return; }
   document.getElementById("clientFile").style.display = "block";
   document.querySelector(".bottom-nav").style.display = "grid";
   window.scrollTo(0,0);
 }
+function progressRecords() {
+  const all=readMeasurements();
+  const rows=Array.isArray(all[String(window.currentClientId)]) ? all[String(window.currentClientId)] : [];
+  return rows.filter(r=>typeof r.date==='string' && /^\d{4}-\d{2}-\d{2}$/.test(r.date)).sort((a,b)=>a.date.localeCompare(b.date));
+}
+function progressValues(metric){
+  return progressRecords().filter(r=>r[metric]!=='' && r[metric]!=null && Number.isFinite(Number(r[metric])))
+    .map(r=>({date:r.date,value:Number(r[metric])}));
+}
+function renderProgressDashboard(){
+  const client=clients.find(c=>c.id===window.currentClientId);
+  if(!client)return;
+  document.getElementById('progressClientLabel').textContent=client.name;
+  const records=progressRecords();
+  const summary=document.getElementById('progressSummary');
+  summary.replaceChildren();
+  const items=[['Peso actual',client.weight!=null && client.weight!==''?client.weight+' kg':'—'],
+    ['Evaluaciones',String(records.length)],['Última evaluación',records.length?records[records.length-1].date:'Pendiente'],
+    ['Medidas registradas',String(measurementFields.filter(([key])=>progressValues(key).length).length)+' de 6']];
+  items.forEach(([label,value])=>{const tile=document.createElement('div');tile.className='progress-tile';const a=document.createElement('small');a.textContent=label;const b=document.createElement('strong');b.textContent=value;tile.append(a,b);summary.appendChild(tile)});
+  const list=document.getElementById('progressMeasures');list.replaceChildren();
+  const selected=document.getElementById('progressMetric').value;
+  measurementFields.forEach(([key,label])=>{
+    const values=progressValues(key);const btn=document.createElement('button');btn.type='button';btn.className='progress-measure'+(selected===key?' selected':'');
+    const title=document.createElement('span');title.textContent=label;const detail=document.createElement('strong');
+    if(!values.length)detail.textContent='Sin datos';
+    else if(values.length===1)detail.textContent=values[0].value+' cm · 1 registro';
+    else {const change=values[values.length-1].value-values[0].value;detail.textContent=values[values.length-1].value+' cm · '+(change>0?'+':'')+change.toFixed(1)+' cm';}
+    btn.append(title,detail);btn.addEventListener('click',()=>{document.getElementById('progressMetric').value=key;renderProgressDashboard();renderProgressChart();document.getElementById('progressChart').scrollIntoView({behavior:'smooth',block:'center'});});list.appendChild(btn);
+  });
+}
+function openProgressFullscreen(){
+  const overlay=document.getElementById('progressFullscreen');
+  const metric=document.getElementById('progressMetric');
+  document.getElementById('progressFullscreenTitle').textContent='Evolución de '+metric.options[metric.selectedIndex].text;
+  const dest=document.getElementById('progressFullscreenChart');dest.replaceChildren();
+  const source=document.getElementById('progressChart');Array.from(source.childNodes).forEach(node=>dest.appendChild(node.cloneNode(true)));
+  overlay.hidden=false;document.body.style.overflow='hidden';
+}
+function closeProgressFullscreen(){document.getElementById('progressFullscreen').hidden=true;document.body.style.overflow='';}
 function renderProgressChart() {
   const target = document.getElementById("progressChart");
   const metric = document.getElementById("progressMetric").value;
@@ -2033,7 +2090,9 @@ progressCard.addEventListener("keydown", function(event) {
   }
 });
 document.getElementById("closeProgress").addEventListener("click", closeProgress);
-document.getElementById("progressMetric").addEventListener("change", renderProgressChart);
+document.getElementById("progressMetric").addEventListener("change", function(){renderProgressDashboard();renderProgressChart();});
+ document.getElementById("expandProgress").addEventListener("click",openProgressFullscreen);
+ document.getElementById("closeProgressFullscreen").addEventListener("click",closeProgressFullscreen);
 
 document.getElementById("measurementsForm").addEventListener("submit", function(event) {
   event.preventDefault();
@@ -2157,6 +2216,10 @@ document.getElementById("measurementsForm").addEventListener("submit", function(
 <section id="progressPanel" style="display:none; color:#fff;">
   <h2>📈 Progreso del cliente</h2>
   <p>Consulta la evolución de las medidas corporales registradas.</p>
+  <div id="progressClientLabel" style="color:#ffd75a;font-weight:700;margin-bottom:12px"></div>
+  <div id="progressSummary" class="progress-summary"></div>
+  <h3 style="color:#ffd75a;margin:18px 0 8px">Medidas corporales</h3>
+  <div id="progressMeasures" class="progress-measures"></div>
   <div class="file-card">
     <label for="progressMetric" style="display:block;color:#ffd75a;margin-bottom:10px">Selecciona una medida</label>
     <select id="progressMetric" style="width:100%;min-height:48px;background:#171717;color:white;border:1px solid #d4af37;border-radius:12px;padding:10px;font-size:16px">
@@ -2168,8 +2231,16 @@ document.getElementById("measurementsForm").addEventListener("submit", function(
       <option value="measurementCalf">Pantorrilla</option>
     </select>
     <div id="progressChart" style="margin-top:18px;overflow-x:auto" aria-live="polite"></div>
+    <button type="button" class="progress-expand" id="expandProgress">⛶ Ampliar gráfica</button>
   </div>
   <button type="button" id="closeProgress" class="edit-file-button" style="margin-top:20px">← Volver al expediente</button>
+</section>
+<section id="progressFullscreen" hidden role="dialog" aria-modal="true" aria-label="Gráfica ampliada">
+ <div class="progress-zoom-inner">
+  <button type="button" id="closeProgressFullscreen" class="progress-back">← Cerrar gráfica ampliada</button>
+  <h2 id="progressFullscreenTitle" style="color:#ffd75a;margin:15px 0">Evolución</h2>
+  <div id="progressFullscreenChart"></div>
+ </div>
 </section>
 </body>
 </html>
