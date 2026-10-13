@@ -1858,6 +1858,7 @@ function renderMeasurementsHistory() {
   const all = readMeasurements();
   const records = Array.isArray(all[String(id)]) ? all[String(id)] : [];
   container.replaceChildren();
+  
   updateEvaluationSchedule();
   if (!records.length) {
     const empty = document.createElement("p");
@@ -1871,6 +1872,7 @@ function renderMeasurementsHistory() {
     const heading = document.createElement("h4");
     heading.textContent = "Evaluación: " + record.date;
     card.appendChild(heading);
+    if (record.measurementWeight !== "" && record.measurementWeight != null) { const line=document.createElement("p");line.textContent="Peso: "+record.measurementWeight+" kg";card.appendChild(line); }
     measurementFields.forEach(([field, label]) => {
       const value = record[field];
       if (value === "" || value == null) return;
@@ -1914,6 +1916,7 @@ function openProgress() {
   document.getElementById("clientFile").style.display = "none";
   document.getElementById("progressPanel").style.display = "block";
   document.querySelector(".bottom-nav").style.display = "none";
+  renderProgressDashboard();
   renderProgressChart();
   window.scrollTo(0,0);
 }
@@ -1941,18 +1944,21 @@ function renderProgressDashboard(){
   const records=progressRecords();
   const summary=document.getElementById('progressSummary');
   summary.replaceChildren();
-  const items=[['Peso actual',client.weight!=null && client.weight!==''?client.weight+' kg':'—'],
+  const weightValues=progressValues('measurementWeight');
+  const latestWeight=weightValues.length ? weightValues[weightValues.length-1].value : client.weight;
+  const items=[['Peso actual',latestWeight!=null && latestWeight!==''?latestWeight+' kg':'—'],
     ['Evaluaciones',String(records.length)],['Última evaluación',records.length?records[records.length-1].date:'Pendiente'],
     ['Medidas registradas',String(measurementFields.filter(([key])=>progressValues(key).length).length)+' de 6']];
   items.forEach(([label,value])=>{const tile=document.createElement('div');tile.className='progress-tile';const a=document.createElement('small');a.textContent=label;const b=document.createElement('strong');b.textContent=value;tile.append(a,b);summary.appendChild(tile)});
   const list=document.getElementById('progressMeasures');list.replaceChildren();
   const selected=document.getElementById('progressMetric').value;
-  measurementFields.forEach(([key,label])=>{
+  [['measurementWeight','Peso corporal'],...measurementFields].forEach(([key,label])=>{
+    const unit=key==='measurementWeight'?'kg':'cm';
     const values=progressValues(key);const btn=document.createElement('button');btn.type='button';btn.className='progress-measure'+(selected===key?' selected':'');
     const title=document.createElement('span');title.textContent=label;const detail=document.createElement('strong');
     if(!values.length)detail.textContent='Sin datos';
-    else if(values.length===1)detail.textContent=values[0].value+' cm · 1 registro';
-    else {const change=values[values.length-1].value-values[0].value;detail.textContent=values[values.length-1].value+' cm · '+(change>0?'+':'')+change.toFixed(1)+' cm';}
+    else if(values.length===1)detail.textContent=values[0].value+' '+unit+' · Esperando segunda evaluación';
+    else {const change=values[values.length-1].value-values[0].value;const pct=values[0].value!==0?change/values[0].value*100:null;detail.textContent=values[values.length-1].value+' '+unit+' · '+(change>0?'+':'')+change.toFixed(1)+' '+unit+(pct===null?'':' ('+(pct>0?'+':'')+pct.toFixed(1)+'%)');}
     btn.append(title,detail);btn.addEventListener('click',()=>{document.getElementById('progressMetric').value=key;renderProgressDashboard();renderProgressChart();document.getElementById('progressChart').scrollIntoView({behavior:'smooth',block:'center'});});list.appendChild(btn);
   });
 }
@@ -1984,7 +1990,7 @@ function renderProgressChart() {
   points.forEach((p,i)=>{node("circle",{cx:p.x,cy:p.y,r:4,fill:"#ffd75a"});node("text",{x:p.x,y:Math.max(p.y-10,15),fill:"#fff","font-size":11,"text-anchor":"middle"},String(p.value));if(points.length<=6 || i===0 || i===points.length-1)node("text",{x:p.x,y:194,fill:"#ddd","font-size":9,"text-anchor":"middle"},p.date.slice(5));});
   svg.style.width="100%";svg.style.height="auto";
   target.appendChild(svg);
-  const summary=document.createElement("p");const change=values[values.length-1].value-values[0].value;summary.textContent="Registros: "+values.length+" · Cambio entre primera y última evaluación: "+(change>0?"+":"")+change.toFixed(1)+" cm";target.appendChild(summary);
+  const summary=document.createElement("p");const change=values[values.length-1].value-values[0].value;const unit=metric==="measurementWeight"?"kg":"cm";const pct=values[0].value!==0?change/values[0].value*100:null;summary.textContent=values.length===1?"Registros: 1 · Esperando segunda evaluación": "Registros: "+values.length+" · Cambio entre primera y última evaluación: "+(change>0?"+":"")+change.toFixed(1)+" "+unit+(pct===null?"":" ("+(pct>0?"+":"")+pct.toFixed(1)+"%)");target.appendChild(summary);
 }
 
 function openClientFile(clientId){
@@ -2101,14 +2107,18 @@ document.getElementById("measurementsForm").addEventListener("submit", function(
   const date = document.getElementById("measurementDate").value;
   if (!date) return;
   const record = { date };
+  record.measurementWeight = document.getElementById("measurementWeight").value;
   measurementFields.forEach(([field]) => {
     record[field] = document.getElementById(field).value;
   });
+  const allExisting = readMeasurements();
+  const previous = (allExisting[String(id)] || []).find(item => item.date === date);
+  if (previous && record.measurementWeight === "") record.measurementWeight = previous.measurementWeight ?? "";
   const all = readMeasurements();
   const key = String(id);
   if (!Array.isArray(all[key])) all[key] = [];
   const existingIndex = all[key].findIndex(item => item.date === date);
-  if (existingIndex >= 0) all[key][existingIndex] = record;
+  if (existingIndex >= 0) { const old=all[key][existingIndex]; measurementFields.forEach(([field])=>{if(record[field]==="")record[field]=old[field]??"";}); all[key][existingIndex] = record; }
   else all[key].push(record);
   try {
     localStorage.setItem(MEASUREMENTS_STORAGE_KEY, JSON.stringify(all));
@@ -2194,6 +2204,8 @@ document.getElementById("measurementsForm").addEventListener("submit", function(
   <form id="measurementsForm">
     <label>Fecha de evaluación</label>
     <input type="date" id="measurementDate" required>
+    <label>Peso de esta evaluación (kg)</label>
+    <input type="number" id="measurementWeight" step="0.1" min="1" max="500" placeholder="Ej. 58.5">
     <label>Cintura (cm)</label>
     <input type="number" id="measurementWaist" step="0.1" min="0">
     <label>Cadera (cm)</label>
@@ -2223,6 +2235,7 @@ document.getElementById("measurementsForm").addEventListener("submit", function(
   <div class="file-card">
     <label for="progressMetric" style="display:block;color:#ffd75a;margin-bottom:10px">Selecciona una medida</label>
     <select id="progressMetric" style="width:100%;min-height:48px;background:#171717;color:white;border:1px solid #d4af37;border-radius:12px;padding:10px;font-size:16px">
+      <option value="measurementWeight">Peso corporal</option>
       <option value="measurementWaist">Cintura</option>
       <option value="measurementHip">Cadera</option>
       <option value="measurementChest">Pecho</option>
