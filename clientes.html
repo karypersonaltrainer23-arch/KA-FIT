@@ -945,6 +945,14 @@ body{
 #progressFullscreen .progress-zoom-inner{max-width:760px;margin:auto}
 #progressFullscreenChart{background:#141414;border:1px solid #a78636;border-radius:16px;padding:12px;margin-top:16px}
 #progressFullscreenChart svg{width:100%;height:auto;display:block}
+
+/* Controles de edición del historial KA-FIT */
+.measurement-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.measurement-actions button{min-height:44px;border-radius:11px;font-size:14px;font-weight:700;cursor:pointer;background:#211b10;color:#ffd75a;border:1px solid #d4af37}
+.measurement-actions .remove-evaluation{color:#ffaaa2;border-color:#b76560;background:#201313}
+#evaluationEditNotice{padding:12px;border:1px solid #d4af37;border-radius:12px;background:#231d0f;color:#ffd75a;line-height:1.5}
+#cancelEvaluationEdit[hidden],#evaluationEditNotice[hidden]{display:none!important}
+#cancelEvaluationEdit{background:#242424!important;color:#ffd75a!important}
 </style>
 </head>
 
@@ -1847,6 +1855,8 @@ function updateEvaluationSchedule() {
   el.textContent = "Última evaluación: " + last + ". Próxima evaluación recomendada: " + nextText + " (30 días). Puedes guardar una evaluación antes de esa fecha.";
 }
 
+let editingEvaluationIndex = null;
+
 function renderMeasurementsHistory() {
   const container = document.getElementById("measurementsHistory");
   const id = window.currentClientId;
@@ -1866,7 +1876,7 @@ function renderMeasurementsHistory() {
     container.appendChild(empty);
     return;
   }
-  [...records].sort((a, b) => b.date.localeCompare(a.date)).forEach(record => {
+  records.map((record,index)=>({record,index})).sort((a,b)=>b.record.date.localeCompare(a.record.date)).forEach(({record,index}) => {
     const card = document.createElement("div");
     card.className = "measurement-record";
     const heading = document.createElement("h4");
@@ -1880,15 +1890,66 @@ function renderMeasurementsHistory() {
       line.textContent = label + ": " + value + " cm";
       card.appendChild(line);
     });
+    const actions=document.createElement("div");
+    actions.className="measurement-actions";
+    const edit=document.createElement("button");
+    edit.type="button";edit.textContent="✎ Editar";
+    edit.addEventListener("click",()=>startEvaluationEdit(index));
+    const remove=document.createElement("button");
+    remove.type="button";remove.className="remove-evaluation";remove.textContent="🗑 Eliminar";
+    remove.addEventListener("click",()=>deleteEvaluation(index));
+    actions.append(edit,remove);card.appendChild(actions);
     container.appendChild(card);
   });
+}
+
+function cancelEvaluationEdit(){
+  editingEvaluationIndex=null;
+  const form=document.getElementById("measurementsForm");
+  form.reset();
+  const now=new Date();
+  document.getElementById("measurementDate").value=new Date(now.getTime()-now.getTimezoneOffset()*60000).toISOString().slice(0,10);
+  document.getElementById("evaluationEditNotice").hidden=true;
+  document.getElementById("cancelEvaluationEdit").hidden=true;
+  document.getElementById("saveEvaluationButton").textContent="Guardar evaluación";
+}
+
+function startEvaluationEdit(index){
+  const all=readMeasurements();
+  const records=all[String(window.currentClientId)] || [];
+  const record=records[index];
+  if(!record)return;
+  editingEvaluationIndex=index;
+  document.getElementById("measurementDate").value=record.date;
+  document.getElementById("measurementWeight").value=record.measurementWeight??"";
+  measurementFields.forEach(([field])=>document.getElementById(field).value=record[field]??"");
+  document.getElementById("evaluationEditNotice").textContent="Editando evaluación del "+record.date+". Guarda los cambios o cancela la edición.";
+  document.getElementById("evaluationEditNotice").hidden=false;
+  document.getElementById("cancelEvaluationEdit").hidden=false;
+  document.getElementById("saveEvaluationButton").textContent="Guardar cambios";
+  document.getElementById("measurementsForm").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function deleteEvaluation(index){
+  const id=window.currentClientId;
+  const all=readMeasurements();
+  const records=all[String(id)];
+  if(!Array.isArray(records)||!records[index])return;
+  if(!confirm("¿Eliminar definitivamente la evaluación del "+records[index].date+"? Esta acción no se puede deshacer."))return;
+  records.splice(index,1);
+  try{localStorage.setItem(MEASUREMENTS_STORAGE_KEY,JSON.stringify(all));}
+  catch(error){alert("No se pudo eliminar la evaluación.");return;}
+  cancelEvaluationEdit();renderMeasurementsHistory();
+  if(document.getElementById("progressPanel").style.display==="block"){
+    renderProgressDashboard();renderProgressChart();
+  }
 }
 
 function openMeasurements() {
   if (window.currentClientId == null) return;
   const form = document.getElementById("measurementsForm");
   if (!form) { alert("No se encontró el formulario de medidas."); return; }
-  form.reset();
+  cancelEvaluationEdit();
   const today = new Date();
   const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000)
     .toISOString().slice(0, 10);
@@ -2112,22 +2173,33 @@ document.getElementById("measurementsForm").addEventListener("submit", function(
     record[field] = document.getElementById(field).value;
   });
   const allExisting = readMeasurements();
-  const previous = (allExisting[String(id)] || []).find(item => item.date === date);
-  if (previous && record.measurementWeight === "") record.measurementWeight = previous.measurementWeight ?? "";
   const all = readMeasurements();
   const key = String(id);
   if (!Array.isArray(all[key])) all[key] = [];
-  const existingIndex = all[key].findIndex(item => item.date === date);
-  if (existingIndex >= 0) { const old=all[key][existingIndex]; measurementFields.forEach(([field])=>{if(record[field]==="")record[field]=old[field]??"";}); all[key][existingIndex] = record; }
-  else all[key].push(record);
+  const existingIndex = all[key].findIndex((item,index) => item.date === date && index !== editingEvaluationIndex);
+  if (existingIndex >= 0) {
+    alert("Ya existe una evaluación con esa fecha. Selecciona otra fecha o edita el registro existente.");
+    return;
+  }
+  if (editingEvaluationIndex !== null) {
+    if (!all[key][editingEvaluationIndex]) {alert("No se encontró la evaluación para editar.");return;}
+    all[key][editingEvaluationIndex] = record;
+  } else {
+    if (record.measurementWeight === "" && measurementFields.every(([field]) => record[field] === "")) {
+      alert("Introduce al menos un dato para guardar la evaluación.");return;
+    }
+    all[key].push(record);
+  }
   try {
     localStorage.setItem(MEASUREMENTS_STORAGE_KEY, JSON.stringify(all));
   } catch (error) {
     alert("No se pudo guardar la evaluación. Comprueba el almacenamiento del navegador.");
     return;
   }
+  const wasEditing = editingEvaluationIndex !== null;
+  cancelEvaluationEdit();
   renderMeasurementsHistory();
-  alert("Evaluación guardada correctamente.");
+  alert(wasEditing ? "Evaluación actualizada correctamente." : "Evaluación guardada correctamente.");
 });
     });
 </script>
@@ -2218,7 +2290,9 @@ document.getElementById("measurementsForm").addEventListener("submit", function(
     <input type="number" id="measurementThigh" step="0.1" min="0">
     <label>Pantorrilla (cm)</label>
     <input type="number" id="measurementCalf" step="0.1" min="0">
-    <button type="submit">Guardar evaluación</button>
+    <p id="evaluationEditNotice" hidden></p>
+    <button type="submit" id="saveEvaluationButton">Guardar evaluación</button>
+    <button type="button" id="cancelEvaluationEdit" hidden onclick="cancelEvaluationEdit()">Cancelar edición</button>
     <button type="button" id="closeMeasurements">Volver al expediente</button>
   </form>
   <div id="evaluationSchedule" aria-live="polite"></div>
