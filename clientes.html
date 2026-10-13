@@ -2161,6 +2161,8 @@ document.getElementById("progressMetric").addEventListener("change", function(){
  document.getElementById("expandProgress").addEventListener("click",openProgressFullscreen);
  document.getElementById("closeProgressFullscreen").addEventListener("click",closeProgressFullscreen);
 
+document.getElementById("cancelEvaluationEdit").addEventListener("click", cancelEvaluationEdit);
+
 document.getElementById("measurementsForm").addEventListener("submit", function(event) {
   event.preventDefault();
   const id = window.currentClientId;
@@ -2292,7 +2294,7 @@ document.getElementById("measurementsForm").addEventListener("submit", function(
     <input type="number" id="measurementCalf" step="0.1" min="0">
     <p id="evaluationEditNotice" hidden></p>
     <button type="submit" id="saveEvaluationButton">Guardar evaluación</button>
-    <button type="button" id="cancelEvaluationEdit" hidden onclick="cancelEvaluationEdit()">Cancelar edición</button>
+    <button type="button" id="cancelEvaluationEdit" hidden>Cancelar edición</button>
     <button type="button" id="closeMeasurements">Volver al expediente</button>
   </form>
   <div id="evaluationSchedule" aria-live="polite"></div>
