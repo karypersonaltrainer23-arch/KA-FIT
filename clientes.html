@@ -1892,6 +1892,8 @@ function closeMeasurementsPanel() {
 }
 
 function openProgress() {
+  const backButton = document.getElementById("closeProgress");
+  if (backButton) backButton.textContent = kafitProgressMode ? "← Volver a Progreso" : "← Volver al expediente";
   if (window.currentClientId == null) return;
   document.getElementById("clientFile").style.display = "none";
   document.getElementById("progressPanel").style.display = "block";
