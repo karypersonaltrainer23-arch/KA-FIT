@@ -1901,6 +1901,7 @@ function openProgress() {
 }
 function closeProgress() {
   document.getElementById("progressPanel").style.display = "none";
+  if (kafitProgressMode) { closeClientFile(); return; }
   document.getElementById("clientFile").style.display = "block";
   document.querySelector(".bottom-nav").style.display = "grid";
   window.scrollTo(0,0);
@@ -1961,6 +1962,7 @@ function openClientFile(clientId){
   document.querySelector(".bottom-nav").style.display = "grid";
   renderMeasurementsHistory();
 
+  if (kafitProgressMode) openProgress();
   window.scrollTo(0, 0);
 }
 
@@ -1979,6 +1981,7 @@ function closeClientFile(){
   window.currentClientId = null;
 
   document.querySelector(".app").style.display = "block";
+  document.querySelector(".bottom-nav").style.display = "grid";
 
   window.scrollTo(0, 0);
 }
@@ -1987,7 +1990,28 @@ function closeClientFile(){
    INICIAR KA-FIT
 ========================= */
 
+
+/* Acceso directo desde Inicio > Progreso, sin alterar los registros */
+const kafitProgressMode = new URLSearchParams(location.search).get('modo') === 'progreso';
+function setupProgressMode() {
+  if (!kafitProgressMode) return;
+  document.title = 'Progreso | KA-FIT';
+  document.querySelector('.header-title h1').textContent = 'PROGRESO';
+  document.querySelector('.header-title p').textContent = 'Selecciona un cliente';
+  document.querySelector('.welcome p').textContent = 'Elige un cliente para consultar su evolución.';
+  document.querySelector('.clients-header h3').textContent = 'Progreso de clientes';
+  document.getElementById('addClientButton').style.display = 'none';
+  document.querySelectorAll('.bottom-nav .nav-item').forEach(a => a.classList.remove('active-nav'));
+  const progressLink = document.querySelector('.bottom-nav a[href="progreso.html"]');
+  if (progressLink) {
+    progressLink.href = 'clientes.html?modo=progreso';
+    progressLink.classList.add('active-nav');
+  }
+  document.querySelectorAll('.client-arrow').forEach(b => b.setAttribute('aria-label', 'Ver progreso del cliente'));
+}
+
 renderClients();
+setupProgressMode();
   document.addEventListener("DOMContentLoaded", function() {
 const measurementsCard = document.getElementById("measurementsCard");
 measurementsCard.addEventListener("click", openMeasurements);
