@@ -986,6 +986,43 @@ body{
 .routine-exercise a{color:#ffd75a}
 .routine-muted{color:#bbb;font-size:13px;line-height:1.5}
 </style>
+<style>
+/* KA-FIT: visor e impresión de reporte, compatible con iPhone */
+#kafitReportViewer{display:none;position:fixed;inset:0;z-index:9999;overflow:auto;-webkit-overflow-scrolling:touch;background:#ededed;color:#242424;font:14px -apple-system,BlinkMacSystemFont,Arial,sans-serif;padding-bottom:30px}
+.kafit-report-open{overflow:hidden}
+.kafit-report-toolbar{padding:calc(12px + env(safe-area-inset-top)) 12px 14px;text-align:center;background:#151515;color:#fff}
+.kafit-report-toolbar button{background:#d4af37;color:#111;border:0;border-radius:10px;padding:12px 16px;font-size:15px;font-weight:700;margin:4px;cursor:pointer}
+.kafit-report-toolbar button:first-child{background:#211b10;color:#ffd75a;border:1px solid #d4af37}
+.kafit-report-toolbar p{font-size:12px;margin:8px auto;max-width:400px}
+#kafitReportViewer .sheet{max-width:820px;margin:18px auto;background:white;padding:32px 28px;box-shadow:0 3px 16px #0002}
+#kafitReportViewer .brand{display:flex;align-items:center;gap:14px;border-bottom:3px solid #c69c28;padding-bottom:12px}
+#kafitReportViewer .brand img{width:60px;height:60px;object-fit:contain}
+#kafitReportViewer .brand h1{font-size:29px;margin:0;color:#9c761c}
+#kafitReportViewer .brand p{margin:3px 0;color:#555}
+#kafitReportViewer .meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:22px 0}
+#kafitReportViewer .meta div{padding:10px;background:#faf7ed;border-left:3px solid #c69c28;overflow-wrap:anywhere}
+#kafitReportViewer h2{font-size:18px;color:#8e6914;margin:25px 0 12px}
+#kafitReportViewer table{border-collapse:collapse;width:100%;font-size:12px}
+#kafitReportViewer th{background:#201c13;color:#fff;text-align:left}
+#kafitReportViewer td,#kafitReportViewer th{padding:9px 5px;border-bottom:1px solid #ddd}
+#kafitReportViewer .barrow{margin:12px 0;break-inside:avoid}
+#kafitReportViewer .barrow b,#kafitReportViewer .barrow small{display:block;margin:5px 0}
+#kafitReportViewer .track{height:11px;border-radius:8px;background:#eee;overflow:hidden}
+#kafitReportViewer .track span{display:block;height:100%}
+#kafitReportViewer .initial{background:#9d9d9d}
+#kafitReportViewer .final{background:#c69c28}
+#kafitReportViewer .notes{white-space:pre-wrap;background:#faf7ed;padding:14px;min-height:55px;border-radius:6px}
+#kafitReportViewer .foot{font-size:11px;color:#666;margin-top:24px;border-top:1px solid #ddd;padding-top:10px}
+@media(max-width:480px){#kafitReportViewer .sheet{padding:20px 12px;margin:0}#kafitReportViewer table{font-size:10px}#kafitReportViewer td,#kafitReportViewer th{padding:7px 3px}}
+@media print{
+  body.kafit-report-open{background:white!important;overflow:visible!important;padding:0!important}
+  body.kafit-report-open > :not(#kafitReportViewer){display:none!important}
+  body.kafit-report-open #kafitReportViewer{display:block!important;position:static!important;inset:auto!important;overflow:visible!important;padding:0!important;background:white!important;color:#242424!important}
+  body.kafit-report-open #kafitReportViewer .kafit-report-toolbar{display:none!important}
+  body.kafit-report-open #kafitReportViewer .sheet{box-shadow:none!important;margin:0!important;padding:0!important;max-width:none!important}
+  @page{size:A4;margin:12mm}
+}
+</style>
 </head>
 
 <body>
@@ -2347,18 +2384,50 @@ function createProgressReport(){
 .routine-muted{color:#bbb;font-size:13px;line-height:1.5}
 </style>
 </head><body><div class="actions"><button type="button" class="return" onclick="if(window.opener && !window.opener.closed){window.opener.focus();window.close()}else{history.back()}">← Volver a KA-FIT</button><button onclick="window.print()">Imprimir / Guardar PDF</button><p>En iPhone, abre la vista de impresión y comparte el documento como PDF.</p></div><article class="sheet"><div class="brand">${logoUrl?'<img src="'+esc(logoUrl)+'" alt="Logo KA-FIT">':''}<div><h1>KA-FIT</h1><p>Reporte de progreso corporal</p></div></div><div class="meta"><div><b>Cliente</b><br>${esc(client.name)}</div><div><b>Objetivo</b><br>${esc(client.goal||'No especificado')}</div><div><b>Evaluación inicial</b><br>${esc(a.date)}</div><div><b>Evaluación final</b><br>${esc(b.date)}</div></div><h2>Comparación de medidas</h2><table><thead><tr><th>Medida</th><th>Inicial</th><th>Final</th><th>Cambio</th></tr></thead><tbody>${lines}</tbody></table><h2>Comparación visual</h2>${bars}<h2>Observaciones y recomendaciones</h2><div class="notes">${esc(notes||'Sin observaciones registradas.')}</div><div class="foot">KA-FIT · El cambio positivo o negativo de una medida no implica por sí solo una mejora. Reporte generado el ${esc(new Date().toLocaleDateString('es-MX'))}.</div></article></body></html>`;
-  // Abrir el reporte en la misma pestaña: compatible con Safari en iPhone
-  // y sin depender de permisos para ventanas emergentes.
+  // Vista integrada: evita navegación blob: y bloqueos de Safari en iPhone.
   try {
-    const reportBlob = new Blob([report], {type:'text/html;charset=utf-8'});
-    const reportUrl = URL.createObjectURL(reportBlob);
-    window.location.assign(reportUrl);
+    let viewer = document.getElementById('kafitReportViewer');
+    if (!viewer) {
+      viewer = document.createElement('section');
+      viewer.id = 'kafitReportViewer';
+      viewer.setAttribute('aria-label', 'Reporte profesional KA-FIT');
+      document.body.appendChild(viewer);
+    }
+    const parsed = new DOMParser().parseFromString(report, 'text/html');
+    const sheet = parsed.querySelector('.sheet');
+    if (!sheet) throw new Error('No se encontró el contenido del reporte');
+    viewer.replaceChildren();
+    const toolbar = document.createElement('div');
+    toolbar.className = 'kafit-report-toolbar';
+    const back = document.createElement('button');
+    back.type = 'button';
+    back.textContent = '← Volver a KA-FIT';
+    back.addEventListener('click', closeKafitReport);
+    const print = document.createElement('button');
+    print.type = 'button';
+    print.textContent = 'Imprimir / Guardar PDF';
+    print.addEventListener('click', () => window.print());
+    const help = document.createElement('p');
+    help.textContent = 'En iPhone, utiliza Imprimir y luego Compartir para guardar el documento como PDF.';
+    toolbar.append(back, print, help);
+    viewer.append(toolbar, document.importNode(sheet, true));
+    viewer.style.display = 'block';
+    document.body.classList.add('kafit-report-open');
+    window.scrollTo(0, 0);
   } catch (error) {
     console.error('KA-FIT: error al preparar el reporte', error);
-    alert('No se pudo abrir el reporte. Inténtalo nuevamente.');
+    alert('No se pudo preparar el reporte: ' + error.message);
   }
 }
+function closeKafitReport(){
+  const viewer=document.getElementById('kafitReportViewer');
+  if(viewer)viewer.style.display='none';
+  document.body.classList.remove('kafit-report-open');
+  const button=document.getElementById('createProgressReport');
+  if(button)button.scrollIntoView({block:'center'});
+}
 // El botón del reporte llama directamente a createProgressReport desde HTML.
+document.getElementById("createProgressReport").addEventListener("click", createProgressReport);
 
 document.getElementById('compareStart').addEventListener('change',updateEvaluationCompare);
 document.getElementById('compareEnd').addEventListener('change',updateEvaluationCompare);
@@ -2549,7 +2618,7 @@ document.getElementById("measurementsForm").addEventListener("submit", function(
     <p>Utiliza las dos fechas seleccionadas arriba. Añade tus observaciones y abre una versión lista para imprimir o guardar como PDF.</p>
     <label for="reportNotes" style="display:block;color:#ffd75a;margin:12px 0 8px">Observaciones y recomendaciones del entrenador</label>
     <textarea id="reportNotes" rows="4" placeholder="Ej. Evolución, técnica, próximos objetivos..." style="width:100%;padding:12px;border:1px solid #a78636;border-radius:12px;background:#151515;color:#fff;font:inherit;resize:vertical"></textarea>
-    <button type="button" id="createProgressReport" class="progress-expand" onclick="createProgressReport()">▤ Preparar reporte PDF</button>
+    <button type="button" id="createProgressReport" class="progress-expand">▤ Preparar reporte PDF</button>
     <p style="font-size:12px;color:#bbb;margin-top:10px">En iPhone: en la vista del reporte, pulsa Imprimir y utiliza Compartir para guardar el PDF en Archivos o enviarlo por WhatsApp. El reporte no se sube a un servidor.</p>
   </div>
   <a href="clientes.html?modo=progreso" id="closeProgress" class="edit-file-button" style="margin-top:20px;text-align:center;text-decoration:none">← Volver a Progreso</a>
