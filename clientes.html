@@ -2346,10 +2346,17 @@ function createProgressReport(){
 .routine-exercise a{color:#ffd75a}
 .routine-muted{color:#bbb;font-size:13px;line-height:1.5}
 </style>
-</head><body><div class="actions"><button type="button" class="return" onclick="if(window.opener && !window.opener.closed){window.opener.focus();window.close()}else if(history.length>1){history.back()}else{location.href='clientes.html'}">← Volver a KA-FIT</button><button onclick="window.print()">Imprimir / Guardar PDF</button><p>En iPhone, abre la vista de impresión y comparte el documento como PDF.</p></div><article class="sheet"><div class="brand">${logoUrl?'<img src="'+esc(logoUrl)+'" alt="Logo KA-FIT">':''}<div><h1>KA-FIT</h1><p>Reporte de progreso corporal</p></div></div><div class="meta"><div><b>Cliente</b><br>${esc(client.name)}</div><div><b>Objetivo</b><br>${esc(client.goal||'No especificado')}</div><div><b>Evaluación inicial</b><br>${esc(a.date)}</div><div><b>Evaluación final</b><br>${esc(b.date)}</div></div><h2>Comparación de medidas</h2><table><thead><tr><th>Medida</th><th>Inicial</th><th>Final</th><th>Cambio</th></tr></thead><tbody>${lines}</tbody></table><h2>Comparación visual</h2>${bars}<h2>Observaciones y recomendaciones</h2><div class="notes">${esc(notes||'Sin observaciones registradas.')}</div><div class="foot">KA-FIT · El cambio positivo o negativo de una medida no implica por sí solo una mejora. Reporte generado el ${esc(new Date().toLocaleDateString('es-MX'))}.</div></article></body></html>`;
-  const popup=window.open('','_blank');
-  if(!popup){alert('Safari bloqueó la ventana del reporte. Permite ventanas emergentes para este sitio e inténtalo de nuevo.');return;}
-  popup.document.open();popup.document.write(report);popup.document.close();
+</head><body><div class="actions"><button type="button" class="return" onclick="if(window.opener && !window.opener.closed){window.opener.focus();window.close()}else{history.back()}">← Volver a KA-FIT</button><button onclick="window.print()">Imprimir / Guardar PDF</button><p>En iPhone, abre la vista de impresión y comparte el documento como PDF.</p></div><article class="sheet"><div class="brand">${logoUrl?'<img src="'+esc(logoUrl)+'" alt="Logo KA-FIT">':''}<div><h1>KA-FIT</h1><p>Reporte de progreso corporal</p></div></div><div class="meta"><div><b>Cliente</b><br>${esc(client.name)}</div><div><b>Objetivo</b><br>${esc(client.goal||'No especificado')}</div><div><b>Evaluación inicial</b><br>${esc(a.date)}</div><div><b>Evaluación final</b><br>${esc(b.date)}</div></div><h2>Comparación de medidas</h2><table><thead><tr><th>Medida</th><th>Inicial</th><th>Final</th><th>Cambio</th></tr></thead><tbody>${lines}</tbody></table><h2>Comparación visual</h2>${bars}<h2>Observaciones y recomendaciones</h2><div class="notes">${esc(notes||'Sin observaciones registradas.')}</div><div class="foot">KA-FIT · El cambio positivo o negativo de una medida no implica por sí solo una mejora. Reporte generado el ${esc(new Date().toLocaleDateString('es-MX'))}.</div></article></body></html>`;
+  // Abrir el reporte en la misma pestaña: compatible con Safari en iPhone
+  // y sin depender de permisos para ventanas emergentes.
+  try {
+    const reportBlob = new Blob([report], {type:'text/html;charset=utf-8'});
+    const reportUrl = URL.createObjectURL(reportBlob);
+    window.location.assign(reportUrl);
+  } catch (error) {
+    console.error('KA-FIT: error al preparar el reporte', error);
+    alert('No se pudo abrir el reporte. Inténtalo nuevamente.');
+  }
 }
 // El botón del reporte llama directamente a createProgressReport desde HTML.
 
