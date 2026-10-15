@@ -2365,8 +2365,10 @@ function updateEvaluationCompare(){
 
 function createProgressReport(){
   const rows=progressRecords();
-  const a=rows[Number(document.getElementById('compareStart').value)];
-  const b=rows[Number(document.getElementById('compareEnd').value)];
+  const startValue=document.getElementById('compareStart')?.value;
+  const endValue=document.getElementById('compareEnd')?.value;
+  const a=startValue!==''?rows[Number(startValue)]:null;
+  const b=endValue!==''?rows[Number(endValue)]:null;
   if(!a||!b||a.date===b.date){alert('Selecciona dos evaluaciones diferentes para crear el reporte.');return;}
   const client=clients.find(c=>c.id===window.currentClientId);
   if(!client){alert('No se encontró el cliente.');return;}
@@ -2415,8 +2417,9 @@ function createProgressReport(){
       viewer.setAttribute('aria-label', 'Reporte profesional KA-FIT');
       document.body.appendChild(viewer);
     }
-    const parsed = new DOMParser().parseFromString(report, 'text/html');
-    const sheet = parsed.querySelector('.sheet');
+    const template = document.createElement('template');
+    template.innerHTML = report;
+    const sheet = template.content.querySelector('.sheet');
     if (!sheet) throw new Error('No se encontró el contenido del reporte');
     viewer.replaceChildren();
     const toolbar = document.createElement('div');
@@ -2432,7 +2435,7 @@ function createProgressReport(){
     const help = document.createElement('p');
     help.textContent = 'En iPhone, utiliza Imprimir y luego Compartir para guardar el documento como PDF.';
     toolbar.append(back, print, help);
-    viewer.append(toolbar, document.importNode(sheet, true));
+    viewer.append(toolbar, sheet.cloneNode(true));
     viewer.style.display = 'block';
     document.body.classList.add('kafit-report-open');
     window.scrollTo(0, 0);
@@ -2449,7 +2452,17 @@ function closeKafitReport(){
   if(button)button.scrollIntoView({block:'center'});
 }
 // El botón del reporte llama directamente a createProgressReport desde HTML.
-document.getElementById("createProgressReport").addEventListener("click", createProgressReport);
+// Delegación resistente a reconstrucciones del panel y Safari iOS.
+document.addEventListener('click', function(event) {
+  const trigger = event.target.closest('#createProgressReport');
+  if (!trigger) return;
+  event.preventDefault();
+  try { createProgressReport(); }
+  catch(error) {
+    console.error('KA-FIT reporte PDF:', error);
+    alert('No se pudo preparar el reporte: ' + (error.message || String(error)));
+  }
+});
 
 document.getElementById('compareStart').addEventListener('change',updateEvaluationCompare);
 document.getElementById('compareEnd').addEventListener('change',updateEvaluationCompare);
