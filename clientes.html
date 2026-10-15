@@ -2011,7 +2011,8 @@ function openProgress() {
   document.querySelector(".bottom-nav").style.display = "none";
   renderProgressDashboard();
   renderProgressChart();
-  if (typeof window.renderEvaluationCompare === "function") window.renderEvaluationCompare();
+  // Refrescar el comparador al abrir el progreso del cliente.
+  refreshKafitCompare();
   window.scrollTo(0,0);
 }
 function closeProgress() {
@@ -2025,6 +2026,37 @@ function closeProgress() {
   document.querySelector(".bottom-nav").style.display = "grid";
   window.scrollTo(0,0);
 }
+// Inicialización independiente de los selectores de comparación.
+// Lee las mismas evaluaciones que utilizan las gráficas y el historial.
+function refreshKafitCompare() {
+  const start = document.getElementById('compareStart');
+  const end = document.getElementById('compareEnd');
+  if (!start || !end || window.currentClientId == null) return;
+  const rows = progressRecords();
+  start.replaceChildren();
+  end.replaceChildren();
+  rows.forEach((record, index) => {
+    [start, end].forEach(select => {
+      const option = document.createElement('option');
+      option.value = String(index);
+      option.textContent = record.date + ' · Evaluación ' + (index + 1);
+      select.appendChild(option);
+    });
+  });
+  const result = document.getElementById('compareResults');
+  if (!rows.length) {
+    if (result) result.textContent = 'No se encontraron evaluaciones con fecha válida para este cliente. Comprueba su historial en Medidas corporales.';
+    return;
+  }
+  start.value = '0';
+  end.value = String(rows.length - 1);
+  if (typeof window.renderEvaluationCompare === 'function') {
+    window.renderEvaluationCompare();
+  } else if (result) {
+    result.textContent = 'Fechas disponibles. Si la comparación no se muestra, revisaremos la inicialización del comparador.';
+  }
+}
+
 function progressRecords() {
   const all=readMeasurements();
   const rows=Array.isArray(all[String(window.currentClientId)]) ? all[String(window.currentClientId)] : [];
