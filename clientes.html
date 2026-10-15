@@ -1282,7 +1282,7 @@ body{
 
 
   <a
-    href="progreso.html"
+    href="clientes.html?modo=progreso"
     class="nav-item"
   >
     <span class="nav-icon">▥</span>
@@ -2004,7 +2004,7 @@ function closeMeasurementsPanel() {
 
 function openProgress() {
   const backButton = document.getElementById("closeProgress");
-  if (backButton) backButton.textContent = kafitProgressMode ? "← Volver a Progreso" : "← Volver al expediente";
+  if (backButton) backButton.textContent = "← Volver a " + (kafitProgressMode ? "Progreso" : "Clientes");
   if (window.currentClientId == null) return;
   document.getElementById("clientFile").style.display = "none";
   document.getElementById("progressPanel").style.display = "block";
@@ -2176,7 +2176,7 @@ function setupProgressMode() {
   document.querySelector('.clients-header h3').textContent = 'Progreso de clientes';
   document.getElementById('addClientButton').style.display = 'none';
   document.querySelectorAll('.bottom-nav .nav-item').forEach(a => a.classList.remove('active-nav'));
-  const progressLink = document.querySelector('.bottom-nav a[href="progreso.html"]');
+  const progressLink = document.querySelector('.bottom-nav a[href="clientes.html?modo=progreso"]');
   if (progressLink) {
     progressLink.href = 'clientes.html?modo=progreso';
     progressLink.classList.add('active-nav');
@@ -2419,13 +2419,6 @@ document.getElementById("measurementsForm").addEventListener("submit", function(
       <p>Registra y consulta la evolución de las medidas del cliente.</p>
     </div>
 
-    <div class="file-card" id="progressCard" role="button" tabindex="0" aria-label="Abrir progreso" style="cursor:pointer">
-      <h3>📈 Progreso</h3>
-      <p>Seguimiento del peso, medidas y avances.</p>
-    </div>
-
-    <button type="button" class="file-card routine-entry" onclick="openRoutines()"><h3>🏋️ Rutinas</h3><p>Crear, editar y asignar entrenamientos personalizados.</p></button>
-
     <div class="file-card">
       <h3>📝 Observaciones</h3>
       <p>Notas importantes sobre el entrenamiento y seguimiento.</p>
@@ -2514,7 +2507,7 @@ document.getElementById("measurementsForm").addEventListener("submit", function(
     <button type="button" id="createProgressReport" class="progress-expand">▤ Preparar reporte PDF</button>
     <p style="font-size:12px;color:#bbb;margin-top:10px">En iPhone: en la vista del reporte, pulsa Imprimir y utiliza Compartir para guardar el PDF en Archivos o enviarlo por WhatsApp. El reporte no se sube a un servidor.</p>
   </div>
-  <button type="button" id="closeProgress" class="edit-file-button" style="margin-top:20px">← Volver al expediente</button>
+  <button type="button" id="closeProgress" class="edit-file-button" style="margin-top:20px">← Volver a Progreso</button>
 </section>
 <section id="progressFullscreen" hidden role="dialog" aria-modal="true" aria-label="Gráfica ampliada">
  <div class="progress-zoom-inner">
@@ -2524,7 +2517,7 @@ document.getElementById("measurementsForm").addEventListener("submit", function(
  </div>
 </section>
 <section id="routinesPanel" style="display:none">
- <button type="button" class="routine-btn" onclick="closeRoutines()">← Volver al expediente</button>
+ <button type="button" class="routine-btn" onclick="closeRoutines()">← Volver a Rutinas</button>
  <h2>🏋️ Rutinas personalizadas</h2><p id="routineClientName" class="routine-muted"></p>
  <div class="file-card"><h3>Programas del cliente</h3><div id="routineList"></div><button type="button" class="routine-btn primary" id="routineNew">＋ Crear nueva rutina</button></div>
  <div class="file-card" id="routineEditor" hidden style="margin-top:16px">
