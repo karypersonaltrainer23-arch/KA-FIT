@@ -971,6 +971,21 @@ body{
 .compare-note{font-size:12px!important;color:#c6b993!important;margin:10px 0!important}
 @media(max-width:390px){.compare-table{font-size:11px}.compare-table th,.compare-table td{padding:9px 3px}}
 </style>
+<style>
+.routine-entry{width:100%;text-align:left;color:white;cursor:pointer;font:inherit}.routine-entry p{color:#ddd}
+#routinesPanel{position:relative;z-index:2;max-width:760px;margin:auto;min-height:100vh;padding:24px 18px 125px;color:white}
+#routinesPanel h2,#routinesPanel h3{color:#ffd75a;margin:8px 0 14px}
+.routine-field{display:block;margin:12px 0;color:#e5d1a1;font-size:14px}
+.routine-field input,.routine-field select,.routine-field textarea{display:block;width:100%;min-height:46px;margin-top:7px;background:#171717;color:white;border:1px solid #a78636;border-radius:12px;padding:11px;font:inherit}
+.routine-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.routine-btn{padding:13px;border:1px solid #d4af37;border-radius:12px;background:#242015;color:#ffd75a;font-weight:700;font-size:15px;cursor:pointer}
+.routine-btn.primary{background:linear-gradient(90deg,#b88a10,#ffda58);color:#080808}
+.routine-actions{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}.routine-actions button{flex:1}
+.routine-exercise{padding:12px;border:1px solid #65541d;border-radius:12px;margin:10px 0;background:#14120d}
+.routine-exercise p{margin:6px 0;color:#ddd;overflow-wrap:anywhere}
+.routine-exercise a{color:#ffd75a}
+.routine-muted{color:#bbb;font-size:13px;line-height:1.5}
+</style>
 </head>
 
 <body>
@@ -1258,7 +1273,7 @@ body{
 
 
   <a
-    href="rutinas.html"
+    href="clientes.html?modo=rutinas"
     class="nav-item"
   >
     <span class="nav-icon">🏋️</span>
@@ -2114,10 +2129,12 @@ function openClientFile(clientId){
   document.getElementById("clientFile").style.display = "block";
   document.getElementById("measurementsPanel").style.display = "none";
   document.getElementById("progressPanel").style.display = "none";
+  document.getElementById("routinesPanel").style.display = "none";
   document.querySelector(".bottom-nav").style.display = "grid";
   renderMeasurementsHistory();
 
   if (kafitProgressMode) openProgress();
+  if (kafitRoutineMode) openRoutines();
   window.scrollTo(0, 0);
 }
 
@@ -2133,6 +2150,7 @@ function closeClientFile(){
   document.getElementById("clientFile").style.display = "none";
   document.getElementById("measurementsPanel").style.display = "none";
   document.getElementById("progressPanel").style.display = "none";
+  document.getElementById("routinesPanel").style.display = "none";
   window.currentClientId = null;
 
   document.querySelector(".app").style.display = "block";
@@ -2148,6 +2166,7 @@ function closeClientFile(){
 
 /* Acceso directo desde Inicio > Progreso, sin alterar los registros */
 const kafitProgressMode = new URLSearchParams(location.search).get('modo') === 'progreso';
+const kafitRoutineMode = new URLSearchParams(location.search).get('modo') === 'rutinas';
 function setupProgressMode() {
   if (!kafitProgressMode) return;
   document.title = 'Progreso | KA-FIT';
@@ -2167,6 +2186,15 @@ function setupProgressMode() {
 
 renderClients();
 setupProgressMode();
+if(kafitRoutineMode){
+  document.title='Rutinas | KA-FIT';
+  document.querySelector('.header-title h1').textContent='RUTINAS';
+  document.querySelector('.welcome p').textContent='Selecciona un cliente para gestionar sus rutinas.';
+  document.querySelector('.clients-header h3').textContent='Rutinas por cliente';
+  document.getElementById('addClientButton').style.display='none';
+  document.querySelectorAll('.bottom-nav .nav-item').forEach(a=>a.classList.remove('active-nav'));
+  const link=document.querySelector('.bottom-nav a[href="clientes.html?modo=rutinas"]');if(link)link.classList.add('active-nav');
+}
   document.addEventListener("DOMContentLoaded", function() {
 const measurementsCard = document.getElementById("measurementsCard");
 measurementsCard.addEventListener("click", openMeasurements);
@@ -2268,7 +2296,22 @@ function createProgressReport(){
   const logoUrl=logo?logo.src:'';
   const report=`<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reporte KA-FIT - ${esc(client.name)}</title><style>
   *{box-sizing:border-box}body{margin:0;background:#eee;color:#242424;font:14px -apple-system,BlinkMacSystemFont,Arial,sans-serif}.actions{padding:16px;text-align:center;background:#151515;color:#fff}.actions button{background:#d4af37;color:#111;border:0;border-radius:10px;padding:12px 22px;font-size:16px;font-weight:bold;margin:5px;cursor:pointer}.actions .return{background:#211b10;color:#ffd75a;border:1px solid #d4af37}.sheet{max-width:820px;margin:18px auto;background:white;padding:32px 36px;box-shadow:0 3px 16px #0002}.brand{display:flex;align-items:center;gap:14px;border-bottom:3px solid #c69c28;padding-bottom:12px}.brand img{width:60px;height:60px;object-fit:contain}.brand h1{font-size:29px;margin:0;color:#9c761c}.brand p{margin:3px 0;color:#555}.meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:22px 0}.meta div{padding:10px;background:#faf7ed;border-left:3px solid #c69c28}h2{font-size:18px;color:#8e6914;margin-top:25px}table{border-collapse:collapse;width:100%;font-size:12px}th{background:#201c13;color:#fff;text-align:left}td,th{padding:10px 7px;border-bottom:1px solid #ddd}.barrow{margin:12px 0;break-inside:avoid}.barrow b,.barrow small{display:block;margin:5px 0}.track{height:11px;border-radius:8px;background:#eee;overflow:hidden}.track span{display:block;height:100%}.initial{background:#9d9d9d}.final{background:#c69c28}.notes{white-space:pre-wrap;background:#faf7ed;padding:14px;min-height:55px;border-radius:6px}.foot{font-size:11px;color:#666;margin-top:24px;border-top:1px solid #ddd;padding-top:10px}@media print{body{background:white}.actions{display:none}.sheet{box-shadow:none;margin:0;padding:10mm;max-width:none}@page{size:A4;margin:10mm}}
-  </style></head><body><div class="actions"><button type="button" class="return" onclick="if(window.opener && !window.opener.closed){window.opener.focus();window.close()}else if(history.length>1){history.back()}else{location.href='clientes.html'}">← Volver a KA-FIT</button><button onclick="window.print()">Imprimir / Guardar PDF</button><p>En iPhone, abre la vista de impresión y comparte el documento como PDF.</p></div><article class="sheet"><div class="brand">${logoUrl?'<img src="'+esc(logoUrl)+'" alt="Logo KA-FIT">':''}<div><h1>KA-FIT</h1><p>Reporte de progreso corporal</p></div></div><div class="meta"><div><b>Cliente</b><br>${esc(client.name)}</div><div><b>Objetivo</b><br>${esc(client.goal||'No especificado')}</div><div><b>Evaluación inicial</b><br>${esc(a.date)}</div><div><b>Evaluación final</b><br>${esc(b.date)}</div></div><h2>Comparación de medidas</h2><table><thead><tr><th>Medida</th><th>Inicial</th><th>Final</th><th>Cambio</th></tr></thead><tbody>${lines}</tbody></table><h2>Comparación visual</h2>${bars}<h2>Observaciones y recomendaciones</h2><div class="notes">${esc(notes||'Sin observaciones registradas.')}</div><div class="foot">KA-FIT · El cambio positivo o negativo de una medida no implica por sí solo una mejora. Reporte generado el ${esc(new Date().toLocaleDateString('es-MX'))}.</div></article></body></html>`;
+  </style><style>
+.routine-entry{width:100%;text-align:left;color:white;cursor:pointer;font:inherit}.routine-entry p{color:#ddd}
+#routinesPanel{position:relative;z-index:2;max-width:760px;margin:auto;min-height:100vh;padding:24px 18px 125px;color:white}
+#routinesPanel h2,#routinesPanel h3{color:#ffd75a;margin:8px 0 14px}
+.routine-field{display:block;margin:12px 0;color:#e5d1a1;font-size:14px}
+.routine-field input,.routine-field select,.routine-field textarea{display:block;width:100%;min-height:46px;margin-top:7px;background:#171717;color:white;border:1px solid #a78636;border-radius:12px;padding:11px;font:inherit}
+.routine-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.routine-btn{padding:13px;border:1px solid #d4af37;border-radius:12px;background:#242015;color:#ffd75a;font-weight:700;font-size:15px;cursor:pointer}
+.routine-btn.primary{background:linear-gradient(90deg,#b88a10,#ffda58);color:#080808}
+.routine-actions{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}.routine-actions button{flex:1}
+.routine-exercise{padding:12px;border:1px solid #65541d;border-radius:12px;margin:10px 0;background:#14120d}
+.routine-exercise p{margin:6px 0;color:#ddd;overflow-wrap:anywhere}
+.routine-exercise a{color:#ffd75a}
+.routine-muted{color:#bbb;font-size:13px;line-height:1.5}
+</style>
+</head><body><div class="actions"><button type="button" class="return" onclick="if(window.opener && !window.opener.closed){window.opener.focus();window.close()}else if(history.length>1){history.back()}else{location.href='clientes.html'}">← Volver a KA-FIT</button><button onclick="window.print()">Imprimir / Guardar PDF</button><p>En iPhone, abre la vista de impresión y comparte el documento como PDF.</p></div><article class="sheet"><div class="brand">${logoUrl?'<img src="'+esc(logoUrl)+'" alt="Logo KA-FIT">':''}<div><h1>KA-FIT</h1><p>Reporte de progreso corporal</p></div></div><div class="meta"><div><b>Cliente</b><br>${esc(client.name)}</div><div><b>Objetivo</b><br>${esc(client.goal||'No especificado')}</div><div><b>Evaluación inicial</b><br>${esc(a.date)}</div><div><b>Evaluación final</b><br>${esc(b.date)}</div></div><h2>Comparación de medidas</h2><table><thead><tr><th>Medida</th><th>Inicial</th><th>Final</th><th>Cambio</th></tr></thead><tbody>${lines}</tbody></table><h2>Comparación visual</h2>${bars}<h2>Observaciones y recomendaciones</h2><div class="notes">${esc(notes||'Sin observaciones registradas.')}</div><div class="foot">KA-FIT · El cambio positivo o negativo de una medida no implica por sí solo una mejora. Reporte generado el ${esc(new Date().toLocaleDateString('es-MX'))}.</div></article></body></html>`;
   const popup=window.open('','_blank');
   if(!popup){alert('El navegador bloqueó la ventana del reporte. Permite ventanas emergentes e inténtalo de nuevo.');return;}
   popup.document.open();popup.document.write(report);popup.document.close();
@@ -2381,10 +2424,7 @@ document.getElementById("measurementsForm").addEventListener("submit", function(
       <p>Seguimiento del peso, medidas y avances.</p>
     </div>
 
-    <div class="file-card">
-      <h3>🏋️ Rutinas</h3>
-      <p>Rutinas y programas asignados al cliente.</p>
-    </div>
+    <button type="button" class="file-card routine-entry" onclick="openRoutines()"><h3>🏋️ Rutinas</h3><p>Crear, editar y asignar entrenamientos personalizados.</p></button>
 
     <div class="file-card">
       <h3>📝 Observaciones</h3>
@@ -2483,5 +2523,54 @@ document.getElementById("measurementsForm").addEventListener("submit", function(
   <div id="progressFullscreenChart"></div>
  </div>
 </section>
+<section id="routinesPanel" style="display:none">
+ <button type="button" class="routine-btn" onclick="closeRoutines()">← Volver al expediente</button>
+ <h2>🏋️ Rutinas personalizadas</h2><p id="routineClientName" class="routine-muted"></p>
+ <div class="file-card"><h3>Programas del cliente</h3><div id="routineList"></div><button type="button" class="routine-btn primary" id="routineNew">＋ Crear nueva rutina</button></div>
+ <div class="file-card" id="routineEditor" hidden style="margin-top:16px">
+ <h3 id="routineEditorTitle">Nueva rutina</h3>
+ <form id="routineForm">
+  <label class="routine-field">Nombre del programa<input id="routineName" required maxlength="100" placeholder="Ej. Hipertrofia - 4 días"></label>
+  <div class="routine-grid"><label class="routine-field">Objetivo<input id="routineGoal" maxlength="100" placeholder="Ganancia muscular"></label><label class="routine-field">Nivel<select id="routineLevel"><option>Principiante</option><option>Intermedio</option><option>Avanzado</option></select></label></div>
+  <div class="routine-grid"><label class="routine-field">Duración (semanas)<input id="routineWeeks" type="number" min="1" max="104" value="4" required></label><label class="routine-field">Días por semana<input id="routineDays" type="number" min="1" max="7" value="3" required></label></div>
+  <h3>Ejercicios</h3><p class="routine-muted">Añade ejercicios con el día, series, repeticiones, descanso y video opcional.</p><div id="routineExercises"></div>
+  <button type="button" class="routine-btn" id="routineAddExercise">＋ Agregar ejercicio</button>
+  <div class="routine-actions"><button class="routine-btn primary" type="submit">Guardar rutina</button><button class="routine-btn" type="button" id="routineCancel">Cancelar</button></div>
+ </form></div>
+</section>
+<script>
+(function(){
+'use strict';
+const KEY='kafit_routines_v1';let editing=null;
+const $=id=>document.getElementById(id);
+function read(){try{const v=JSON.parse(localStorage.getItem(KEY)||'{}');return v&&typeof v==='object'&&!Array.isArray(v)?v:{}}catch(e){return {}}}
+function rows(){return read()[String(window.currentClientId)]||[]}
+function el(tag,txt,cls){const e=document.createElement(tag);if(txt!==undefined)e.textContent=txt;if(cls)e.className=cls;return e}
+function field(label,type,value,opts={}){const wrap=el('label',label,'routine-field'),input=document.createElement('input');input.type=type;input.value=value??'';input.placeholder=opts.placeholder||'';if(opts.min!==undefined)input.min=opts.min;if(opts.max!==undefined)input.max=opts.max;if(opts.step)input.step=opts.step;input.dataset.key=opts.key||'';wrap.appendChild(input);return wrap}
+function addExercise(data={}){
+ const box=el('div',undefined,'routine-exercise');
+ box.appendChild(field('Ejercicio','text',data.name,{key:'name',placeholder:'Ej. Sentadilla'}));
+ box.appendChild(field('Día / sesión','text',data.day||'Día 1',{key:'day',placeholder:'Ej. Lunes o Día 1'}));
+ const grid=el('div',undefined,'routine-grid');
+ grid.append(field('Series','number',data.sets??3,{key:'sets',min:1,max:30}),field('Repeticiones','text',data.reps??'10-12',{key:'reps',placeholder:'8-12'}),field('Descanso (segundos)','number',data.rest??90,{key:'rest',min:0,max:3600}),field('Peso sugerido (kg, opcional)','number',data.weight??'',{key:'weight',min:0,step:'0.5'}));box.appendChild(grid);
+ box.appendChild(field('Video (enlace HTTPS, opcional)','url',data.video??'',{key:'video',placeholder:'https://...'}));
+ box.appendChild(field('Indicaciones técnicas','text',data.notes??'',{key:'notes'}));
+ const remove=el('button','Eliminar ejercicio','routine-btn');remove.type='button';remove.addEventListener('click',()=>box.remove());box.appendChild(remove);$('routineExercises').appendChild(box);
+}
+function render(){const list=$('routineList');list.replaceChildren();const all=rows();if(!all.length)list.appendChild(el('p','Todavía no hay rutinas asignadas.','routine-muted'));
+ all.forEach(r=>{const card=el('div',undefined,'routine-exercise');card.appendChild(el('h3',r.name));card.appendChild(el('p',(r.goal||'Sin objetivo')+' · '+r.days+' días/semana · '+r.weeks+' semanas · '+r.level));card.appendChild(el('p',(r.exercises||[]).length+' ejercicios'));
+ (r.exercises||[]).forEach(x=>{const p=el('p',(x.day||'Día 1')+' · '+x.name+' · '+x.sets+' × '+x.reps+' · '+x.rest+' s de descanso'+(x.weight!==''&&x.weight!=null?' · '+x.weight+' kg':'')+(x.notes?' · '+x.notes:''));card.appendChild(p);if(x.video&&/^https:\/\//i.test(x.video)){const a=el('a','Ver video demostrativo');a.href=x.video;a.target='_blank';a.rel='noopener noreferrer';card.appendChild(a)}});
+ const actions=el('div',undefined,'routine-actions');const edit=el('button','Editar','routine-btn');edit.type='button';edit.onclick=()=>start(r);const del=el('button','Eliminar','routine-btn');del.type='button';del.onclick=()=>{if(!confirm('¿Eliminar la rutina «'+r.name+'»?'))return;const data=read();data[String(window.currentClientId)]=rows().filter(x=>x.id!==r.id);try{localStorage.setItem(KEY,JSON.stringify(data));render()}catch(e){alert('No se pudo eliminar.')}};actions.append(edit,del);card.appendChild(actions);list.appendChild(card)})}
+function start(r){editing=r?r.id:null;$('routineForm').reset();$('routineExercises').replaceChildren();$('routineName').value=r?.name||'';$('routineGoal').value=r?.goal||'';$('routineLevel').value=r?.level||'Principiante';$('routineWeeks').value=r?.weeks||4;$('routineDays').value=r?.days||3;(r?.exercises||[]).forEach(addExercise);if(!r)addExercise();$('routineEditorTitle').textContent=r?'Editar rutina':'Nueva rutina';$('routineEditor').hidden=false;$('routineEditor').scrollIntoView({behavior:'smooth',block:'start'})}
+function cancel(){$('routineEditor').hidden=true;editing=null}
+window.openRoutines=function(){if(window.currentClientId==null)return;$('clientFile').style.display='none';$('measurementsPanel').style.display='none';$('progressPanel').style.display='none';$('routinesPanel').style.display='block';document.querySelector('.bottom-nav').style.display='none';$('routineClientName').textContent=clients.find(c=>c.id===window.currentClientId)?.name||'';cancel();render();window.scrollTo(0,0)};
+window.closeRoutines=function(){$('routinesPanel').style.display='none';if(kafitRoutineMode){closeClientFile();return}$('clientFile').style.display='block';document.querySelector('.bottom-nav').style.display='grid';window.scrollTo(0,0)};
+$('routineNew').onclick=()=>start(null);$('routineCancel').onclick=cancel;$('routineAddExercise').onclick=()=>addExercise();
+$('routineForm').addEventListener('submit',e=>{e.preventDefault();const boxes=[...$('routineExercises').children];if(!boxes.length){alert('Agrega al menos un ejercicio.');return}const exercises=[];for(const box of boxes){const obj={};box.querySelectorAll('[data-key]').forEach(input=>obj[input.dataset.key]=input.value.trim());if(!obj.name||!obj.day||!obj.reps||Number(obj.sets)<1){alert('Completa nombre, día, series y repeticiones de cada ejercicio.');return}if(obj.video&&!/^https:\/\//i.test(obj.video)){alert('Los videos deben tener un enlace que comience con https://');return}exercises.push(obj)}
+ const data=read(),key=String(window.currentClientId),all=Array.isArray(data[key])?data[key]:[];
+ const routine={id:editing||('r'+Date.now()),name:$('routineName').value.trim(),goal:$('routineGoal').value.trim(),level:$('routineLevel').value,weeks:Number($('routineWeeks').value),days:Number($('routineDays').value),exercises};if(!routine.name)return;
+ const idx=all.findIndex(r=>r.id===editing);if(idx>=0)all[idx]=routine;else all.unshift(routine);data[key]=all;
+ try{localStorage.setItem(KEY,JSON.stringify(data));cancel();render();alert('Rutina guardada correctamente.')}catch(err){alert('No se pudo guardar la rutina. Revisa el almacenamiento de Safari.')}});
+})();
+</script>
 </body>
-</html>
