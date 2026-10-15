@@ -2216,11 +2216,7 @@ progressCard.addEventListener("keydown", function(event) {
     openProgress();
   }
 });
-document.getElementById("closeProgress").addEventListener("click", function(event) {
-  event.preventDefault();
-  // Regresa al listado de Progreso sin recargar la misma URL.
-  closeProgress();
-});
+// El regreso a Progreso utiliza un enlace HTML directo, sin depender de JavaScript.
 document.getElementById("progressMetric").addEventListener("change", function(){renderProgressDashboard();renderProgressChart();});
 
 function renderEvaluationCompare(){
@@ -2236,7 +2232,7 @@ function renderEvaluationCompare(){
       opt.textContent=row.date+' · Evaluación '+(i+1);select.appendChild(opt);
     }
   });
-  if(!rows.length){document.getElementById('compareResults').textContent='Aún no hay evaluaciones registradas.';return;}
+  if(!rows.length){document.getElementById('compareResults').textContent='No hay evaluaciones registradas para este cliente. Regístralas desde Medidas corporales.';return;}
   start.value=previousStart!==''&&Number(previousStart)<rows.length?previousStart:'0';
   end.value=previousEnd!==''&&Number(previousEnd)<rows.length?previousEnd:String(rows.length-1);
   if(rows.length>1&&start.value===end.value&&previousStart==='')end.value=String(rows.length-1);
@@ -2373,6 +2369,9 @@ document.getElementById("measurementsForm").addEventListener("submit", function(
   const wasEditing = editingEvaluationIndex !== null;
   cancelEvaluationEdit();
   renderMeasurementsHistory();
+  if (document.getElementById("progressPanel").style.display === "block") {
+    renderProgressDashboard(); renderProgressChart(); renderEvaluationCompare();
+  }
   alert(wasEditing ? "Evaluación actualizada correctamente." : "Evaluación guardada correctamente.");
 });
     });
@@ -2514,7 +2513,7 @@ document.getElementById("measurementsForm").addEventListener("submit", function(
     <button type="button" id="createProgressReport" class="progress-expand">▤ Preparar reporte PDF</button>
     <p style="font-size:12px;color:#bbb;margin-top:10px">En iPhone: en la vista del reporte, pulsa Imprimir y utiliza Compartir para guardar el PDF en Archivos o enviarlo por WhatsApp. El reporte no se sube a un servidor.</p>
   </div>
-  <button type="button" id="closeProgress" class="edit-file-button" style="margin-top:20px">← Volver a Progreso</button>
+  <a href="clientes.html?modo=progreso" id="closeProgress" class="edit-file-button" style="margin-top:20px;text-align:center;text-decoration:none">← Volver a Progreso</a>
 </section>
 <section id="progressFullscreen" hidden role="dialog" aria-modal="true" aria-label="Gráfica ampliada">
  <div class="progress-zoom-inner">
