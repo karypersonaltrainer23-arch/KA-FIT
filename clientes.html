@@ -2136,7 +2136,7 @@ function renderProgressDashboard(){
     if(!values.length)detail.textContent='Sin datos';
     else if(values.length===1)detail.textContent=values[0].value+' '+unit+' · Esperando segunda evaluación';
     else {const change=values[values.length-1].value-values[0].value;const pct=values[0].value!==0?change/values[0].value*100:null;detail.textContent=values[values.length-1].value+' '+unit+' · '+(change>0?'+':'')+change.toFixed(1)+' '+unit+(pct===null?'':' ('+(pct>0?'+':'')+pct.toFixed(1)+'%)');}
-    btn.append(title,detail);btn.addEventListener('click',()=>{document.getElementById('progressMetric').value=key;renderProgressDashboard();renderProgressChart();document.getElementById('progressChart').scrollIntoView({behavior:'smooth',block:'center'});});list.appendChild(btn);
+    btn.append(title,detail);btn.addEventListener('click',()=>{document.getElementById('progressMetric').value=key;lastRenderedProgressMetric=key;renderProgressDashboard();renderProgressChart();document.getElementById('progressChart').scrollIntoView({behavior:'smooth',block:'center'});});list.appendChild(btn);
   });
 }
 function openProgressFullscreen(){
@@ -2155,7 +2155,12 @@ function renderProgressChart() {
   const records = filteredProgressRecords();
   const values = records.filter(r => r[metric] !== "" && r[metric] != null && Number.isFinite(Number(r[metric]))).map(r => ({date:r.date, value:Number(r[metric])}));
   target.replaceChildren();
-  if (!values.length) {target.textContent = "Todavía no hay registros para esta medida.";return;}
+  const metricSelector=document.getElementById("progressMetric");
+  const chartHeading=document.createElement("p");
+  chartHeading.style.cssText="color:#ffd75a;font-weight:700;margin:4px 0 10px";
+  chartHeading.textContent="Evolución: "+metricSelector.options[metricSelector.selectedIndex].text;
+  target.appendChild(chartHeading);
+  if (!values.length) {const empty=document.createElement("p");empty.textContent="Todavía no hay registros para esta medida.";target.appendChild(empty);return;}
   const ns="http://www.w3.org/2000/svg";
   const svg=document.createElementNS(ns,"svg");svg.setAttribute("viewBox","0 0 340 220");svg.setAttribute("role","img");svg.setAttribute("aria-label","Gráfica de evolución de medidas corporales");
   const numbers=values.map(v=>v.value), lo=Math.min(...numbers), hi=Math.max(...numbers), range=Math.max(hi-lo,1);
@@ -2286,7 +2291,23 @@ progressCard.addEventListener("keydown", function(event) {
   }
 });
 // El regreso a Progreso utiliza un enlace HTML directo, sin depender de JavaScript.
-document.getElementById("progressMetric").addEventListener("change", function(){renderProgressDashboard();renderProgressChart();});
+// KA-FIT: actualizar al confirmar una selección, también en Safari para iPhone.
+const progressMetricSelector = document.getElementById("progressMetric");
+let lastRenderedProgressMetric = null;
+function syncProgressMetric() {
+  const selectedMetric = progressMetricSelector.value;
+  if (lastRenderedProgressMetric === selectedMetric) return;
+  lastRenderedProgressMetric = selectedMetric;
+  renderProgressDashboard();
+  renderProgressChart();
+}
+progressMetricSelector.addEventListener("input", syncProgressMetric);
+progressMetricSelector.addEventListener("change", syncProgressMetric);
+progressMetricSelector.addEventListener("blur", syncProgressMetric);
+// Safari puede confirmar la opción después del evento de cierre del selector.
+progressMetricSelector.addEventListener("touchend", function(){
+  setTimeout(syncProgressMetric, 150);
+}, {passive:true});
 
 function renderEvaluationCompare(){
   const rows=progressRecords();
