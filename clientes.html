@@ -2218,11 +2218,8 @@ progressCard.addEventListener("keydown", function(event) {
 });
 document.getElementById("closeProgress").addEventListener("click", function(event) {
   event.preventDefault();
-  if (kafitProgressMode) {
-    window.location.assign("clientes.html?modo=progreso");
-  } else {
-    closeProgress();
-  }
+  // Regresa al listado de Progreso sin recargar la misma URL.
+  closeProgress();
 });
 document.getElementById("progressMetric").addEventListener("change", function(){renderProgressDashboard();renderProgressChart();});
 
