@@ -2348,10 +2348,10 @@ function createProgressReport(){
 </style>
 </head><body><div class="actions"><button type="button" class="return" onclick="if(window.opener && !window.opener.closed){window.opener.focus();window.close()}else if(history.length>1){history.back()}else{location.href='clientes.html'}">← Volver a KA-FIT</button><button onclick="window.print()">Imprimir / Guardar PDF</button><p>En iPhone, abre la vista de impresión y comparte el documento como PDF.</p></div><article class="sheet"><div class="brand">${logoUrl?'<img src="'+esc(logoUrl)+'" alt="Logo KA-FIT">':''}<div><h1>KA-FIT</h1><p>Reporte de progreso corporal</p></div></div><div class="meta"><div><b>Cliente</b><br>${esc(client.name)}</div><div><b>Objetivo</b><br>${esc(client.goal||'No especificado')}</div><div><b>Evaluación inicial</b><br>${esc(a.date)}</div><div><b>Evaluación final</b><br>${esc(b.date)}</div></div><h2>Comparación de medidas</h2><table><thead><tr><th>Medida</th><th>Inicial</th><th>Final</th><th>Cambio</th></tr></thead><tbody>${lines}</tbody></table><h2>Comparación visual</h2>${bars}<h2>Observaciones y recomendaciones</h2><div class="notes">${esc(notes||'Sin observaciones registradas.')}</div><div class="foot">KA-FIT · El cambio positivo o negativo de una medida no implica por sí solo una mejora. Reporte generado el ${esc(new Date().toLocaleDateString('es-MX'))}.</div></article></body></html>`;
   const popup=window.open('','_blank');
-  if(!popup){alert('El navegador bloqueó la ventana del reporte. Permite ventanas emergentes e inténtalo de nuevo.');return;}
+  if(!popup){alert('Safari bloqueó la ventana del reporte. Permite ventanas emergentes para este sitio e inténtalo de nuevo.');return;}
   popup.document.open();popup.document.write(report);popup.document.close();
 }
-document.getElementById('createProgressReport').addEventListener('click',createProgressReport);
+// El botón del reporte llama directamente a createProgressReport desde HTML.
 
 document.getElementById('compareStart').addEventListener('change',updateEvaluationCompare);
 document.getElementById('compareEnd').addEventListener('change',updateEvaluationCompare);
@@ -2542,7 +2542,7 @@ document.getElementById("measurementsForm").addEventListener("submit", function(
     <p>Utiliza las dos fechas seleccionadas arriba. Añade tus observaciones y abre una versión lista para imprimir o guardar como PDF.</p>
     <label for="reportNotes" style="display:block;color:#ffd75a;margin:12px 0 8px">Observaciones y recomendaciones del entrenador</label>
     <textarea id="reportNotes" rows="4" placeholder="Ej. Evolución, técnica, próximos objetivos..." style="width:100%;padding:12px;border:1px solid #a78636;border-radius:12px;background:#151515;color:#fff;font:inherit;resize:vertical"></textarea>
-    <button type="button" id="createProgressReport" class="progress-expand">▤ Preparar reporte PDF</button>
+    <button type="button" id="createProgressReport" class="progress-expand" onclick="createProgressReport()">▤ Preparar reporte PDF</button>
     <p style="font-size:12px;color:#bbb;margin-top:10px">En iPhone: en la vista del reporte, pulsa Imprimir y utiliza Compartir para guardar el PDF en Archivos o enviarlo por WhatsApp. El reporte no se sube a un servidor.</p>
   </div>
   <a href="clientes.html?modo=progreso" id="closeProgress" class="edit-file-button" style="margin-top:20px;text-align:center;text-decoration:none">← Volver a Progreso</a>
