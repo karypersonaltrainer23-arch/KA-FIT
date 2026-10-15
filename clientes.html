@@ -953,6 +953,23 @@ body{
 #evaluationEditNotice{padding:12px;border:1px solid #d4af37;border-radius:12px;background:#231d0f;color:#ffd75a;line-height:1.5}
 #cancelEvaluationEdit[hidden],#evaluationEditNotice[hidden]{display:none!important}
 #cancelEvaluationEdit{background:#242424!important;color:#ffd75a!important}
+
+/* KA-FIT: comparador de evaluaciones */
+.compare-selects{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+.compare-selects label{display:block;color:#e5d1a1;font-size:13px;margin-bottom:7px}
+.compare-selects select{width:100%;min-width:0;background:#171717;color:white;border:1px solid #a78636;border-radius:11px;padding:12px 6px;font-size:14px}
+.compare-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:14px}
+.compare-table th,.compare-table td{padding:11px 5px;text-align:right;border-bottom:1px solid #55441f}
+.compare-table th:first-child,.compare-table td:first-child{text-align:left}
+.compare-table th{color:#ffd75a;font-weight:600}
+.compare-table td{color:#f5f5f5}
+.compare-bar{display:flex;height:13px;overflow:hidden;border-radius:9px;background:#252525;margin:5px 0 9px}
+.compare-bar span{display:block;height:100%;background:linear-gradient(90deg,#a47a15,#ffdb64)}
+.compare-bar.secondary span{background:linear-gradient(90deg,#696969,#c7c7c7)}
+.compare-item{padding:12px 0;border-bottom:1px solid #44381d}
+.compare-item-title{display:flex;justify-content:space-between;gap:10px;color:#ffda58;font-size:14px}
+.compare-note{font-size:12px!important;color:#c6b993!important;margin:10px 0!important}
+@media(max-width:390px){.compare-table{font-size:11px}.compare-table th,.compare-table td{padding:9px 3px}}
 </style>
 </head>
 
@@ -1979,6 +1996,7 @@ function openProgress() {
   document.querySelector(".bottom-nav").style.display = "none";
   renderProgressDashboard();
   renderProgressChart();
+  renderEvaluationCompare();
   window.scrollTo(0,0);
 }
 function closeProgress() {
@@ -2169,6 +2187,63 @@ progressCard.addEventListener("keydown", function(event) {
 });
 document.getElementById("closeProgress").addEventListener("click", closeProgress);
 document.getElementById("progressMetric").addEventListener("change", function(){renderProgressDashboard();renderProgressChart();});
+
+function renderEvaluationCompare(){
+  const rows=progressRecords();
+  const start=document.getElementById('compareStart');
+  const end=document.getElementById('compareEnd');
+  if(!start||!end)return;
+  const previousStart=start.value,previousEnd=end.value;
+  for(const select of [start,end])select.replaceChildren();
+  rows.forEach((row,i)=>{
+    for(const select of [start,end]){
+      const opt=document.createElement('option');opt.value=String(i);
+      opt.textContent=row.date+' · Evaluación '+(i+1);select.appendChild(opt);
+    }
+  });
+  if(!rows.length){document.getElementById('compareResults').textContent='Aún no hay evaluaciones registradas.';return;}
+  start.value=previousStart!==''&&Number(previousStart)<rows.length?previousStart:'0';
+  end.value=previousEnd!==''&&Number(previousEnd)<rows.length?previousEnd:String(rows.length-1);
+  if(rows.length>1&&start.value===end.value&&previousStart==='')end.value=String(rows.length-1);
+  updateEvaluationCompare();
+}
+function updateEvaluationCompare(){
+  const rows=progressRecords(),a=rows[Number(document.getElementById('compareStart').value)],b=rows[Number(document.getElementById('compareEnd').value)];
+  const target=document.getElementById('compareResults');target.replaceChildren();
+  if(!a||!b)return;
+  const note=document.createElement('p');note.className='compare-note';
+  note.textContent=a.date===b.date?'Selecciona dos fechas diferentes para comparar cambios.':'Cambio = evaluación final − evaluación inicial. Un aumento o disminución no implica por sí solo una mejora.';
+  target.appendChild(note);
+  const table=document.createElement('table');table.className='compare-table';
+  const head=document.createElement('thead');const header=document.createElement('tr');
+  ['Medida','Inicial','Final','Cambio'].forEach(t=>{const th=document.createElement('th');th.textContent=t;header.appendChild(th)});head.appendChild(header);table.appendChild(head);
+  const body=document.createElement('tbody');
+  const chart=document.createElement('div');chart.style.marginTop='18px';
+  let count=0;
+  [['measurementWeight','Peso','kg'],...measurementFields.map(([key,label])=>[key,label,'cm'])].forEach(([key,label,unit])=>{
+    const va=a[key]===''||a[key]==null?null:Number(a[key]);
+    const vb=b[key]===''||b[key]==null?null:Number(b[key]);
+    if(!Number.isFinite(va)||!Number.isFinite(vb)||va===null||vb===null)return;
+    count++;
+    const diff=vb-va,pct=va!==0?diff/va*100:null;
+    const tr=document.createElement('tr');
+    [label,va.toFixed(1)+' '+unit,vb.toFixed(1)+' '+unit,(diff>0?'+':'')+diff.toFixed(1)+' '+unit+(pct===null?'':' ('+(pct>0?'+':'')+pct.toFixed(1)+'%)')].forEach(t=>{const td=document.createElement('td');td.textContent=t;tr.appendChild(td)});body.appendChild(tr);
+    const item=document.createElement('div');item.className='compare-item';
+    const title=document.createElement('div');title.className='compare-item-title';title.textContent=label+' · '+va.toFixed(1)+' → '+vb.toFixed(1)+' '+unit;item.appendChild(title);
+    const max=Math.max(va,vb,1);
+    for(const [value,secondary,tag] of [[va,true,'Inicial'],[vb,false,'Final']]){
+      const lbl=document.createElement('small');lbl.textContent=tag+' · '+value.toFixed(1)+' '+unit;lbl.style.color='#c9c9c9';item.appendChild(lbl);
+      const bar=document.createElement('div');bar.className='compare-bar'+(secondary?' secondary':'');const fill=document.createElement('span');fill.style.width=Math.max(0,value/max*100)+'%';bar.appendChild(fill);item.appendChild(bar);
+    }
+    chart.appendChild(item);
+  });
+  if(!count){const empty=document.createElement('p');empty.textContent='No hay medidas numéricas presentes en ambas evaluaciones.';target.appendChild(empty);return;}
+  table.appendChild(body);target.appendChild(table);
+  const heading=document.createElement('h3');heading.textContent='Comparación visual';heading.style.color='#ffd75a';heading.style.marginTop='22px';target.append(heading,chart);
+}
+document.getElementById('compareStart').addEventListener('change',updateEvaluationCompare);
+document.getElementById('compareEnd').addEventListener('change',updateEvaluationCompare);
+
 document.getElementById("progressPeriod").addEventListener("change",function(){renderProgressDashboard();renderProgressChart();});
  document.getElementById("expandProgress").addEventListener("click",openProgressFullscreen);
  document.getElementById("closeProgressFullscreen").addEventListener("click",closeProgressFullscreen);
@@ -2344,6 +2419,16 @@ document.getElementById("measurementsForm").addEventListener("submit", function(
     </select>
     <div id="progressChart" style="margin-top:18px;overflow-x:auto" aria-live="polite"></div>
     <button type="button" class="progress-expand" id="expandProgress">⛶ Ampliar gráfica</button>
+  </div>
+
+  <div class="file-card" id="evaluationCompare" style="margin:16px 0">
+    <h3 style="color:#ffd75a">Comparar dos evaluaciones</h3>
+    <p>Selecciona las fechas que deseas comparar. Este comparador utiliza todo el historial, independientemente del filtro de la gráfica.</p>
+    <div class="compare-selects">
+      <div><label for="compareStart">Evaluación inicial</label><select id="compareStart"></select></div>
+      <div><label for="compareEnd">Evaluación final</label><select id="compareEnd"></select></div>
+    </div>
+    <div id="compareResults" aria-live="polite"></div>
   </div>
   <button type="button" id="closeProgress" class="edit-file-button" style="margin-top:20px">← Volver al expediente</button>
 </section>
