@@ -1994,21 +1994,32 @@ function progressRecords() {
   const rows=Array.isArray(all[String(window.currentClientId)]) ? all[String(window.currentClientId)] : [];
   return rows.filter(r=>typeof r.date==='string' && /^\d{4}-\d{2}-\d{2}$/.test(r.date)).sort((a,b)=>a.date.localeCompare(b.date));
 }
+function filteredProgressRecords(){
+  const records=progressRecords();
+  const selector=document.getElementById('progressPeriod');
+  const period=selector ? selector.value : 'all';
+  if(period==='all')return records;
+  const days=Number(period);
+  const cutoff=new Date();cutoff.setHours(0,0,0,0);cutoff.setDate(cutoff.getDate()-days);
+  return records.filter(r=>new Date(r.date+'T12:00:00')>=cutoff);
+}
 function progressValues(metric){
-  return progressRecords().filter(r=>r[metric]!=='' && r[metric]!=null && Number.isFinite(Number(r[metric])))
+  return filteredProgressRecords().filter(r=>r[metric]!=='' && r[metric]!=null && Number.isFinite(Number(r[metric])))
     .map(r=>({date:r.date,value:Number(r[metric])}));
 }
 function renderProgressDashboard(){
   const client=clients.find(c=>c.id===window.currentClientId);
   if(!client)return;
   document.getElementById('progressClientLabel').textContent=client.name;
-  const records=progressRecords();
+  const records=filteredProgressRecords();
+  const notice=document.getElementById("progressPeriodNotice");
+  if(notice)notice.textContent=records.length+" evaluaciones en el periodo seleccionado. Las demás permanecen guardadas.";
   const summary=document.getElementById('progressSummary');
   summary.replaceChildren();
   const weightValues=progressValues('measurementWeight');
   const latestWeight=weightValues.length ? weightValues[weightValues.length-1].value : client.weight;
   const items=[['Peso actual',latestWeight!=null && latestWeight!==''?latestWeight+' kg':'—'],
-    ['Evaluaciones',String(records.length)],['Última evaluación',records.length?records[records.length-1].date:'Pendiente'],
+    ['Evaluaciones del periodo',String(records.length)],['Última evaluación',records.length?records[records.length-1].date:'Pendiente'],
     ['Medidas registradas',String(measurementFields.filter(([key])=>progressValues(key).length).length)+' de 6']];
   items.forEach(([label,value])=>{const tile=document.createElement('div');tile.className='progress-tile';const a=document.createElement('small');a.textContent=label;const b=document.createElement('strong');b.textContent=value;tile.append(a,b);summary.appendChild(tile)});
   const list=document.getElementById('progressMeasures');list.replaceChildren();
@@ -2036,7 +2047,7 @@ function renderProgressChart() {
   const target = document.getElementById("progressChart");
   const metric = document.getElementById("progressMetric").value;
   const all = readMeasurements();
-  const records = (all[String(window.currentClientId)] || []).filter(r => /^\d{4}-\d{2}-\d{2}$/.test(r.date)).sort((a,b) => a.date.localeCompare(b.date));
+  const records = filteredProgressRecords();
   const values = records.filter(r => r[metric] !== "" && r[metric] != null && Number.isFinite(Number(r[metric]))).map(r => ({date:r.date, value:Number(r[metric])}));
   target.replaceChildren();
   if (!values.length) {target.textContent = "Todavía no hay registros para esta medida.";return;}
@@ -2158,6 +2169,7 @@ progressCard.addEventListener("keydown", function(event) {
 });
 document.getElementById("closeProgress").addEventListener("click", closeProgress);
 document.getElementById("progressMetric").addEventListener("change", function(){renderProgressDashboard();renderProgressChart();});
+document.getElementById("progressPeriod").addEventListener("change",function(){renderProgressDashboard();renderProgressChart();});
  document.getElementById("expandProgress").addEventListener("click",openProgressFullscreen);
  document.getElementById("closeProgressFullscreen").addEventListener("click",closeProgressFullscreen);
 
@@ -2308,6 +2320,17 @@ document.getElementById("measurementsForm").addEventListener("submit", function(
   <div id="progressSummary" class="progress-summary"></div>
   <h3 style="color:#ffd75a;margin:18px 0 8px">Medidas corporales</h3>
   <div id="progressMeasures" class="progress-measures"></div>
+  <div class="file-card" style="margin-bottom:14px">
+    <label for="progressPeriod" style="display:block;color:#ffd75a;margin-bottom:10px">Periodo de comparación</label>
+    <select id="progressPeriod" style="width:100%;min-height:48px;background:#171717;color:white;border:1px solid #d4af37;border-radius:12px;padding:10px;font-size:16px">
+      <option value="all">Todo el historial</option>
+      <option value="30">Últimos 30 días</option>
+      <option value="90">Últimos 90 días</option>
+      <option value="180">Últimos 6 meses</option>
+      <option value="365">Últimos 12 meses</option>
+    </select>
+    <p id="progressPeriodNotice" style="font-size:13px;color:#d8c7a0;margin:10px 0 0" aria-live="polite"></p>
+  </div>
   <div class="file-card">
     <label for="progressMetric" style="display:block;color:#ffd75a;margin-bottom:10px">Selecciona una medida</label>
     <select id="progressMetric" style="width:100%;min-height:48px;background:#171717;color:white;border:1px solid #d4af37;border-radius:12px;padding:10px;font-size:16px">
