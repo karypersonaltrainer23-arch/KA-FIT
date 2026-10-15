@@ -1996,7 +1996,7 @@ function openProgress() {
   document.querySelector(".bottom-nav").style.display = "none";
   renderProgressDashboard();
   renderProgressChart();
-  renderEvaluationCompare();
+  if (typeof window.renderEvaluationCompare === "function") window.renderEvaluationCompare();
   window.scrollTo(0,0);
 }
 function closeProgress() {
@@ -2243,6 +2243,7 @@ function updateEvaluationCompare(){
 }
 document.getElementById('compareStart').addEventListener('change',updateEvaluationCompare);
 document.getElementById('compareEnd').addEventListener('change',updateEvaluationCompare);
+window.renderEvaluationCompare = renderEvaluationCompare;
 
 document.getElementById("progressPeriod").addEventListener("change",function(){renderProgressDashboard();renderProgressChart();});
  document.getElementById("expandProgress").addEventListener("click",openProgressFullscreen);
