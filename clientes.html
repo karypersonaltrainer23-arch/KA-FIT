@@ -2017,7 +2017,10 @@ function openProgress() {
 function closeProgress() {
   closeProgressFullscreen();
   document.getElementById("progressPanel").style.display = "none";
-  if (kafitProgressMode) { closeClientFile(); return; }
+  if (kafitProgressMode) {
+    closeClientFile();
+    return;
+  }
   document.getElementById("clientFile").style.display = "block";
   document.querySelector(".bottom-nav").style.display = "grid";
   window.scrollTo(0,0);
@@ -2213,7 +2216,14 @@ progressCard.addEventListener("keydown", function(event) {
     openProgress();
   }
 });
-document.getElementById("closeProgress").addEventListener("click", closeProgress);
+document.getElementById("closeProgress").addEventListener("click", function(event) {
+  event.preventDefault();
+  if (kafitProgressMode) {
+    window.location.assign("clientes.html?modo=progreso");
+  } else {
+    closeProgress();
+  }
+});
 document.getElementById("progressMetric").addEventListener("change", function(){renderProgressDashboard();renderProgressChart();});
 
 function renderEvaluationCompare(){
