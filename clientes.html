@@ -2404,7 +2404,8 @@ function createProgressReport(){
 .routine-exercise a{color:#ffd75a}
 .routine-muted{color:#bbb;font-size:13px;line-height:1.5}
 </style>
-</head><body><div class="actions"><button type="button" class="return" onclick="if(window.opener && !window.opener.closed){window.opener.focus();window.close()}else{history.back()}">← Volver a KA-FIT</button><button onclick="window.print()">Imprimir / Guardar PDF</button><p>En iPhone, abre la vista de impresión y comparte el documento como PDF.</p></div><article class="sheet"><div class="brand">${logoUrl?'<img src="'+esc(logoUrl)+'" alt="Logo KA-FIT">':''}<div><h1>KA-FIT</h1><p>Reporte de progreso corporal</p></div></div><div class="meta"><div><b>Cliente</b><br>${esc(client.name)}</div><div><b>Objetivo</b><br>${esc(client.goal||'No especificado')}</div><div><b>Evaluación inicial</b><br>${esc(a.date)}</div><div><b>Evaluación final</b><br>${esc(b.date)}</div></div><h2>Comparación de medidas</h2><table><thead><tr><th>Medida</th><th>Inicial</th><th>Final</th><th>Cambio</th></tr></thead><tbody>${lines}</tbody></table><h2>Comparación visual</h2>${bars}<h2>Observaciones y recomendaciones</h2><div class="notes">${esc(notes||'Sin observaciones registradas.')}</div><div class="foot">KA-FIT · El cambio positivo o negativo de una medida no implica por sí solo una mejora. Reporte generado el ${esc(new Date().toLocaleDateString('es-MX'))}.</div></article></body></html>`;
+</head><body><div class="actions"><button type="button" class="return" onclick="if(window.opener && !window.opener.closed){window.opener.focus();window.close()}else{history.back()}">← Volver a KA-FIT</button><button onclick="window.print()">Imprimir / Guardar PDF</button><p>En iPhone, abre la vista de impresión y comparte el documento como PDF.</p></div><article class="sheet"><div class="brand">${logoUrl?'<img src="'+esc(logoUrl)+'" alt="Logo KA-FIT">':''}<div><h1>KA-FIT</h1><p>Reporte de progreso corporal</p></div></div><div class="meta"><div><b>Cliente</b><br>${esc(client.name)}</div><div><b>Objetivo</b><br>${esc(client.goal||'No especificado')}</div><div><b>Evaluación inicial</b><br>${esc(a.date)}</div><div><b>Evaluación final</b><br>${esc(b.date)}</div></div><h2>Comparación de medidas</h2><table><thead><tr><th>Medida</th><th>Inicial</th><th>Final</th><th>Cambio</th></tr></thead><tbody>${lines}</tbody></table><h2>Comparación visual</h2>${bars}<h2>Observaciones y recomendaciones</h2><div class="notes">${esc(notes||'Sin observaciones registradas.')}</div><div class="foot">KA-FIT · El cambio positivo o negativo de una medida no implica por sí solo una mejora. Reporte generado el ${esc(new Date().toLocaleDateString('es-MX'))}.</div></article>
+</body></html>`;
   // Vista integrada: evita navegación blob: y bloqueos de Safari en iPhone.
   try {
     let viewer = document.getElementById('kafitReportViewer');
@@ -2455,8 +2456,8 @@ document.getElementById('compareEnd').addEventListener('change',updateEvaluation
 window.renderEvaluationCompare = renderEvaluationCompare;
 
 document.getElementById("progressPeriod").addEventListener("change",function(){renderProgressDashboard();renderProgressChart();});
- document.getElementById("expandProgress").addEventListener("click",openProgressFullscreen);
- document.getElementById("closeProgressFullscreen").addEventListener("click",closeProgressFullscreen);
+ // Apertura independiente gestionada por el botón HTML.
+ // Cierre independiente gestionado por el botón HTML.
 
 document.getElementById("cancelEvaluationEdit").addEventListener("click", cancelEvaluationEdit);
 
@@ -2611,7 +2612,7 @@ document.getElementById("measurementsForm").addEventListener("submit", function(
   </div>
   <div class="file-card">
     <label for="progressMetric" style="display:block;color:#ffd75a;margin-bottom:10px">Selecciona una medida</label>
-    <select id="progressMetric" style="width:100%;min-height:48px;background:#171717;color:white;border:1px solid #d4af37;border-radius:12px;padding:10px;font-size:16px">
+    <select id="progressMetric" onchange="window.kafitForceChartUpdate()" oninput="window.kafitForceChartUpdate()" style="width:100%;min-height:48px;background:#171717;color:white;border:1px solid #d4af37;border-radius:12px;padding:10px;font-size:16px">
       <option value="measurementWeight">Peso corporal</option>
       <option value="measurementWaist">Cintura</option>
       <option value="measurementHip">Cadera</option>
@@ -2621,7 +2622,7 @@ document.getElementById("measurementsForm").addEventListener("submit", function(
       <option value="measurementCalf">Pantorrilla</option>
     </select>
     <div id="progressChart" style="margin-top:18px;overflow-x:auto" aria-live="polite"></div>
-    <button type="button" class="progress-expand" id="expandProgress">⛶ Ampliar gráfica</button>
+    <button type="button" class="progress-expand" id="expandProgress" onclick="window.kafitForceChartExpand()">⛶ Ampliar gráfica</button>
   </div>
 
   <div class="file-card" id="evaluationCompare" style="margin:16px 0">
@@ -2646,7 +2647,7 @@ document.getElementById("measurementsForm").addEventListener("submit", function(
 </section>
 <section id="progressFullscreen" hidden role="dialog" aria-modal="true" aria-label="Gráfica ampliada">
  <div class="progress-zoom-inner">
-  <button type="button" id="closeProgressFullscreen" class="progress-back">← Cerrar gráfica ampliada</button>
+  <button type="button" id="closeProgressFullscreen" onclick="window.kafitForceChartClose()" class="progress-back">← Cerrar gráfica ampliada</button>
   <h2 id="progressFullscreenTitle" style="color:#ffd75a;margin:15px 0">Evolución</h2>
   <div id="progressFullscreenChart"></div>
  </div>
@@ -2718,6 +2719,118 @@ $('routineForm').addEventListener('submit',async e=>{e.preventDefault();const bo
  const routine={id:editing||('r'+Date.now()),name:$('routineName').value.trim(),goal:$('routineGoal').value.trim(),level:$('routineLevel').value,weeks:Number($('routineWeeks').value),days:Number($('routineDays').value),exercises};if(!routine.name)return;
  const idx=all.findIndex(r=>r.id===editing);if(idx>=0)all[idx]=routine;else all.unshift(routine);data[key]=all;
  try{localStorage.setItem(KEY,JSON.stringify(data));cancel();render();alert('Rutina guardada correctamente.')}catch(err){alert('No se pudo guardar la rutina. Revisa el almacenamiento de Safari.')}});
+})();
+</script>
+
+<script>
+/* KA-FIT: reparación independiente de controles de gráficas, iOS Safari */
+(function(){
+  var lastMetric='';
+  window.kafitForceChartUpdate=function(){
+    var sel=document.getElementById('progressMetric');
+    if(!sel)return;
+    var requested=sel.value;
+    function refresh(){
+      if(sel.value!==requested)return;
+      try { if(typeof renderProgressChart==='function')renderProgressChart(); }
+      catch(err){ console.error('KA-FIT gráfica:',err); }
+      try { if(typeof renderProgressDashboard==='function')renderProgressDashboard(); }
+      catch(err){ console.error('KA-FIT panel:',err); }
+      var overlay=document.getElementById('progressFullscreen');
+      if(overlay && !overlay.hidden)window.kafitForceChartExpand();
+      lastMetric=requested;
+    }
+    refresh();
+    setTimeout(refresh,80);
+    setTimeout(refresh,350);
+  };
+  window.kafitForceChartExpand=function(){
+    window.kafitForceChartUpdateIfNeeded();
+    var overlay=document.getElementById('progressFullscreen');
+    var source=document.getElementById('progressChart');
+    var dest=document.getElementById('progressFullscreenChart');
+    var sel=document.getElementById('progressMetric');
+    if(!overlay||!source||!dest||!sel)return;
+    var title=document.getElementById('progressFullscreenTitle');
+    if(title)title.textContent='Evolución de '+sel.options[sel.selectedIndex].text;
+    dest.replaceChildren();
+    Array.from(source.childNodes).forEach(function(n){dest.appendChild(n.cloneNode(true));});
+    overlay.hidden=false;
+    overlay.style.display='block';
+    document.body.style.overflow='hidden';
+    overlay.scrollTop=0;
+  };
+  window.kafitForceChartClose=function(){
+    var overlay=document.getElementById('progressFullscreen');
+    if(overlay){overlay.hidden=true;overlay.style.display='none';}
+    document.body.style.overflow='';
+  };
+  window.kafitForceChartUpdateIfNeeded=function(){
+    var sel=document.getElementById('progressMetric');
+    if(sel && sel.value!==lastMetric){
+      try{renderProgressChart();renderProgressDashboard();}catch(e){console.error(e);}
+      lastMetric=sel.value;
+    }
+  };
+  document.addEventListener('visibilitychange',function(){
+    if(!document.hidden)window.kafitForceChartUpdateIfNeeded();
+  });
+})();
+</script>
+
+<script>
+/* KA-FIT: reparación independiente de controles de gráficas, iOS Safari */
+(function(){
+  var lastMetric='';
+  window.kafitForceChartUpdate=function(){
+    var sel=document.getElementById('progressMetric');
+    if(!sel)return;
+    var requested=sel.value;
+    function refresh(){
+      if(sel.value!==requested)return;
+      try { if(typeof renderProgressChart==='function')renderProgressChart(); }
+      catch(err){ console.error('KA-FIT gráfica:',err); }
+      try { if(typeof renderProgressDashboard==='function')renderProgressDashboard(); }
+      catch(err){ console.error('KA-FIT panel:',err); }
+      var overlay=document.getElementById('progressFullscreen');
+      if(overlay && !overlay.hidden)window.kafitForceChartExpand();
+      lastMetric=requested;
+    }
+    refresh();
+    setTimeout(refresh,80);
+    setTimeout(refresh,350);
+  };
+  window.kafitForceChartExpand=function(){
+    window.kafitForceChartUpdateIfNeeded();
+    var overlay=document.getElementById('progressFullscreen');
+    var source=document.getElementById('progressChart');
+    var dest=document.getElementById('progressFullscreenChart');
+    var sel=document.getElementById('progressMetric');
+    if(!overlay||!source||!dest||!sel)return;
+    var title=document.getElementById('progressFullscreenTitle');
+    if(title)title.textContent='Evolución de '+sel.options[sel.selectedIndex].text;
+    dest.replaceChildren();
+    Array.from(source.childNodes).forEach(function(n){dest.appendChild(n.cloneNode(true));});
+    overlay.hidden=false;
+    overlay.style.display='block';
+    document.body.style.overflow='hidden';
+    overlay.scrollTop=0;
+  };
+  window.kafitForceChartClose=function(){
+    var overlay=document.getElementById('progressFullscreen');
+    if(overlay){overlay.hidden=true;overlay.style.display='none';}
+    document.body.style.overflow='';
+  };
+  window.kafitForceChartUpdateIfNeeded=function(){
+    var sel=document.getElementById('progressMetric');
+    if(sel && sel.value!==lastMetric){
+      try{renderProgressChart();renderProgressDashboard();}catch(e){console.error(e);}
+      lastMetric=sel.value;
+    }
+  };
+  document.addEventListener('visibilitychange',function(){
+    if(!document.hidden)window.kafitForceChartUpdateIfNeeded();
+  });
 })();
 </script>
 </body>
