@@ -2445,8 +2445,8 @@ measurementsCard.addEventListener("keydown", function(event) {
 });
 document.getElementById("closeMeasurements").addEventListener("click", closeMeasurementsPanel);
 const progressCard = document.getElementById("progressCard");
-progressCard.addEventListener("click", openProgress);
-progressCard.addEventListener("keydown", function(event) {
+if (progressCard) progressCard.addEventListener("click", openProgress);
+if (progressCard) progressCard.addEventListener("keydown", function(event) {
   if (event.key === "Enter" || event.key === " ") {
     event.preventDefault();
     openProgress();
