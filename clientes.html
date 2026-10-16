@@ -1338,6 +1338,168 @@ body{
 </nav>
 
 
+
+<!-- =====================================
+     EXPEDIENTE DEL CLIENTE KA-FIT
+===================================== -->
+
+<section id="clientFile" style="display:none;">
+
+  <div class="client-file-header">
+    <button type="button" onclick="closeClientFile()">← Volver</button>
+
+    <div>
+      <h2 id="fileClientName">Expediente del cliente</h2>
+      <p>KA-FIT · Seguimiento personalizado</p>
+    </div>
+  </div>
+
+  <div class="client-file-content">
+
+    <div class="file-card">
+      <h3>👤 Datos personales</h3>
+      <button type="button" class="edit-file-button" onclick="editCurrentClient()">✎ Editar datos personales</button>
+
+      <div class="file-data-grid">
+        <div>
+          <span>Edad</span>
+          <strong id="fileAge">—</strong>
+        </div>
+
+        <div>
+          <span>Peso</span>
+          <strong id="fileWeight">—</strong>
+        </div>
+
+        <div>
+          <span>Estatura</span>
+          <strong id="fileHeight">—</strong>
+        </div>
+
+        <div>
+          <span>Objetivo</span>
+          <strong id="fileGoal">—</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="file-card" id="measurementsCard" role="button" tabindex="0" aria-label="Abrir medidas corporales" style="cursor:pointer">
+      <h3>📏 Medidas corporales</h3>
+      <p>Registra y consulta la evolución de las medidas del cliente.</p>
+    </div>
+
+    <div class="file-card">
+      <h3>📝 Observaciones</h3>
+      <p>Notas importantes sobre el entrenamiento y seguimiento.</p>
+    </div>
+
+  </div>
+
+</section>
+  <section id="measurementsPanel" style="display:none; padding:20px; color:#e8bf52;">
+  <h2>📏 Medidas corporales</h2>
+  <p id="measurementsClientName" style="margin-bottom:14px;color:#fff"></p>
+  <form id="measurementsForm">
+    <label>Fecha de evaluación</label>
+    <input type="date" id="measurementDate" required>
+    <label>Peso de esta evaluación (kg)</label>
+    <input type="number" id="measurementWeight" step="0.1" min="1" max="500" placeholder="Ej. 58.5">
+    <label>Cintura (cm)</label>
+    <input type="number" id="measurementWaist" step="0.1" min="0">
+    <label>Cadera (cm)</label>
+    <input type="number" id="measurementHip" step="0.1" min="0">
+    <label>Pecho (cm)</label>
+    <input type="number" id="measurementChest" step="0.1" min="0">
+    <label>Brazo (cm)</label>
+    <input type="number" id="measurementArm" step="0.1" min="0">
+    <label>Muslo (cm)</label>
+    <input type="number" id="measurementThigh" step="0.1" min="0">
+    <label>Pantorrilla (cm)</label>
+    <input type="number" id="measurementCalf" step="0.1" min="0">
+    <p id="evaluationEditNotice" hidden></p>
+    <button type="submit" id="saveEvaluationButton">Guardar evaluación</button>
+    <button type="button" id="cancelEvaluationEdit" hidden>Cancelar edición</button>
+    <button type="button" id="closeMeasurements">Volver al expediente</button>
+  </form>
+  <div id="evaluationSchedule" aria-live="polite"></div>
+  <h3>Historial de evaluaciones</h3>
+  <div id="measurementsHistory"></div>
+</section>
+<section id="progressPanel" style="display:none; color:#fff;">
+  <h2>📈 Progreso del cliente</h2>
+  <p>Consulta la evolución de las medidas corporales registradas.</p>
+  <div id="progressClientLabel" style="color:#ffd75a;font-weight:700;margin-bottom:12px"></div>
+  <div id="progressSummary" class="progress-summary"></div>
+  <h3 style="color:#ffd75a;margin:18px 0 8px">Medidas corporales</h3>
+  <div id="progressMeasures" class="progress-measures"></div>
+  <div class="file-card" style="margin-bottom:14px">
+    <label for="progressPeriod" style="display:block;color:#ffd75a;margin-bottom:10px">Periodo de comparación</label>
+    <select id="progressPeriod" style="width:100%;min-height:48px;background:#171717;color:white;border:1px solid #d4af37;border-radius:12px;padding:10px;font-size:16px">
+      <option value="all">Todo el historial</option>
+      <option value="30">Últimos 30 días</option>
+      <option value="90">Últimos 90 días</option>
+      <option value="180">Últimos 6 meses</option>
+      <option value="365">Últimos 12 meses</option>
+    </select>
+    <p id="progressPeriodNotice" style="font-size:13px;color:#d8c7a0;margin:10px 0 0" aria-live="polite"></p>
+  </div>
+  <div class="file-card">
+    <label for="progressMetric" style="display:block;color:#ffd75a;margin-bottom:10px">Selecciona una medida</label>
+    <select id="progressMetric" onchange="window.kafitForceChartUpdate()" oninput="window.kafitForceChartUpdate()" style="width:100%;min-height:48px;background:#171717;color:white;border:1px solid #d4af37;border-radius:12px;padding:10px;font-size:16px">
+      <option value="measurementWeight">Peso corporal</option>
+      <option value="measurementWaist">Cintura</option>
+      <option value="measurementHip">Cadera</option>
+      <option value="measurementChest">Pecho</option>
+      <option value="measurementArm">Brazo</option>
+      <option value="measurementThigh">Muslo</option>
+      <option value="measurementCalf">Pantorrilla</option>
+    </select>
+    <div id="progressChart" style="margin-top:18px;overflow-x:auto" aria-live="polite"></div>
+    <button type="button" class="progress-expand" id="expandProgress" onclick="window.kafitForceChartExpand()">⛶ Ampliar gráfica</button>
+  </div>
+
+  <div class="file-card" id="evaluationCompare" style="margin:16px 0">
+    <h3 style="color:#ffd75a">Comparar dos evaluaciones</h3>
+    <p>Selecciona las fechas que deseas comparar. Este comparador utiliza todo el historial, independientemente del filtro de la gráfica.</p>
+    <div class="compare-selects">
+      <div><label for="compareStart">Evaluación inicial</label><select id="compareStart"></select></div>
+      <div><label for="compareEnd">Evaluación final</label><select id="compareEnd"></select></div>
+    </div>
+    <div id="compareResults" aria-live="polite"></div>
+  </div>
+
+  <div class="file-card" id="reportControls" style="margin:16px 0">
+    <h3 style="color:#ffd75a">Reporte profesional KA-FIT</h3>
+    <p>Utiliza las dos fechas seleccionadas arriba. Añade tus observaciones y abre una versión lista para imprimir o guardar como PDF.</p>
+    <label for="reportNotes" style="display:block;color:#ffd75a;margin:12px 0 8px">Observaciones y recomendaciones del entrenador</label>
+    <textarea id="reportNotes" rows="4" placeholder="Ej. Evolución, técnica, próximos objetivos..." style="width:100%;padding:12px;border:1px solid #a78636;border-radius:12px;background:#151515;color:#fff;font:inherit;resize:vertical"></textarea>
+    <button type="button" id="createProgressReport" class="progress-expand" onclick="createProgressReport()">▤ Preparar reporte PDF</button>
+    <p style="font-size:12px;color:#bbb;margin-top:10px">En iPhone: en la vista del reporte, pulsa Imprimir y utiliza Compartir para guardar el PDF en Archivos o enviarlo por WhatsApp. El reporte no se sube a un servidor.</p>
+  </div>
+  <a href="clientes.html?modo=progreso" id="closeProgress" class="edit-file-button" style="margin-top:20px;text-align:center;text-decoration:none">← Volver a Progreso</a>
+</section>
+<section id="progressFullscreen" hidden role="dialog" aria-modal="true" aria-label="Gráfica ampliada">
+ <div class="progress-zoom-inner">
+  <button type="button" id="closeProgressFullscreen" onclick="window.kafitForceChartClose()" class="progress-back">← Cerrar gráfica ampliada</button>
+  <h2 id="progressFullscreenTitle" style="color:#ffd75a;margin:15px 0">Evolución</h2>
+  <div id="progressFullscreenChart"></div>
+ </div>
+</section>
+<section id="routinesPanel" style="display:none">
+ <button type="button" class="routine-btn" onclick="closeRoutines()">← Volver a Rutinas</button>
+ <h2>🏋️ Rutinas personalizadas</h2><p id="routineClientName" class="routine-muted"></p>
+ <div class="file-card"><h3>Programas del cliente</h3><div id="routineList"></div><button type="button" class="routine-btn primary" id="routineNew">＋ Crear nueva rutina</button></div>
+ <div class="file-card" id="routineEditor" hidden style="margin-top:16px">
+ <h3 id="routineEditorTitle">Nueva rutina</h3>
+ <form id="routineForm">
+  <label class="routine-field">Nombre del programa<input id="routineName" required maxlength="100" placeholder="Ej. Hipertrofia - 4 días"></label>
+  <div class="routine-grid"><label class="routine-field">Objetivo<input id="routineGoal" maxlength="100" placeholder="Ganancia muscular"></label><label class="routine-field">Nivel<select id="routineLevel"><option>Principiante</option><option>Intermedio</option><option>Avanzado</option></select></label></div>
+  <div class="routine-grid"><label class="routine-field">Duración (semanas)<input id="routineWeeks" type="number" min="1" max="104" value="4" required></label><label class="routine-field">Días por semana<input id="routineDays" type="number" min="1" max="7" value="3" required></label></div>
+  <h3>Ejercicios</h3><p class="routine-muted">Añade ejercicios y selecciona videos cortos directamente desde tu galería. Los videos se guardan solo en este iPhone/navegador por ahora.</p><div id="routineExercises"></div>
+  <button type="button" class="routine-btn" id="routineAddExercise">＋ Agregar ejercicio</button>
+  <div class="routine-actions"><button class="routine-btn primary" type="submit">Guardar rutina</button><button class="routine-btn" type="button" id="routineCancel">Cancelar</button></div>
+ </form></div>
+</section>
 <script>
 
 /* =========================
@@ -2451,18 +2613,7 @@ function closeKafitReport(){
   const button=document.getElementById('createProgressReport');
   if(button)button.scrollIntoView({block:'center'});
 }
-// El botón del reporte llama directamente a createProgressReport desde HTML.
-// Delegación resistente a reconstrucciones del panel y Safari iOS.
-document.addEventListener('click', function(event) {
-  const trigger = event.target.closest('#createProgressReport');
-  if (!trigger) return;
-  event.preventDefault();
-  try { createProgressReport(); }
-  catch(error) {
-    console.error('KA-FIT reporte PDF:', error);
-    alert('No se pudo preparar el reporte: ' + (error.message || String(error)));
-  }
-});
+// El botón de reporte utiliza su manejador onclick directo.
 
 document.getElementById('compareStart').addEventListener('change',updateEvaluationCompare);
 document.getElementById('compareEnd').addEventListener('change',updateEvaluationCompare);
@@ -2519,167 +2670,6 @@ document.getElementById("measurementsForm").addEventListener("submit", function(
 });
     });
 </script>
-<!-- =====================================
-     EXPEDIENTE DEL CLIENTE KA-FIT
-===================================== -->
-
-<section id="clientFile" style="display:none;">
-
-  <div class="client-file-header">
-    <button type="button" onclick="closeClientFile()">← Volver</button>
-
-    <div>
-      <h2 id="fileClientName">Expediente del cliente</h2>
-      <p>KA-FIT · Seguimiento personalizado</p>
-    </div>
-  </div>
-
-  <div class="client-file-content">
-
-    <div class="file-card">
-      <h3>👤 Datos personales</h3>
-      <button type="button" class="edit-file-button" onclick="editCurrentClient()">✎ Editar datos personales</button>
-
-      <div class="file-data-grid">
-        <div>
-          <span>Edad</span>
-          <strong id="fileAge">—</strong>
-        </div>
-
-        <div>
-          <span>Peso</span>
-          <strong id="fileWeight">—</strong>
-        </div>
-
-        <div>
-          <span>Estatura</span>
-          <strong id="fileHeight">—</strong>
-        </div>
-
-        <div>
-          <span>Objetivo</span>
-          <strong id="fileGoal">—</strong>
-        </div>
-      </div>
-    </div>
-
-    <div class="file-card" id="measurementsCard" role="button" tabindex="0" aria-label="Abrir medidas corporales" style="cursor:pointer">
-      <h3>📏 Medidas corporales</h3>
-      <p>Registra y consulta la evolución de las medidas del cliente.</p>
-    </div>
-
-    <div class="file-card">
-      <h3>📝 Observaciones</h3>
-      <p>Notas importantes sobre el entrenamiento y seguimiento.</p>
-    </div>
-
-  </div>
-
-</section>
-  <section id="measurementsPanel" style="display:none; padding:20px; color:#e8bf52;">
-  <h2>📏 Medidas corporales</h2>
-  <p id="measurementsClientName" style="margin-bottom:14px;color:#fff"></p>
-  <form id="measurementsForm">
-    <label>Fecha de evaluación</label>
-    <input type="date" id="measurementDate" required>
-    <label>Peso de esta evaluación (kg)</label>
-    <input type="number" id="measurementWeight" step="0.1" min="1" max="500" placeholder="Ej. 58.5">
-    <label>Cintura (cm)</label>
-    <input type="number" id="measurementWaist" step="0.1" min="0">
-    <label>Cadera (cm)</label>
-    <input type="number" id="measurementHip" step="0.1" min="0">
-    <label>Pecho (cm)</label>
-    <input type="number" id="measurementChest" step="0.1" min="0">
-    <label>Brazo (cm)</label>
-    <input type="number" id="measurementArm" step="0.1" min="0">
-    <label>Muslo (cm)</label>
-    <input type="number" id="measurementThigh" step="0.1" min="0">
-    <label>Pantorrilla (cm)</label>
-    <input type="number" id="measurementCalf" step="0.1" min="0">
-    <p id="evaluationEditNotice" hidden></p>
-    <button type="submit" id="saveEvaluationButton">Guardar evaluación</button>
-    <button type="button" id="cancelEvaluationEdit" hidden>Cancelar edición</button>
-    <button type="button" id="closeMeasurements">Volver al expediente</button>
-  </form>
-  <div id="evaluationSchedule" aria-live="polite"></div>
-  <h3>Historial de evaluaciones</h3>
-  <div id="measurementsHistory"></div>
-</section>
-<section id="progressPanel" style="display:none; color:#fff;">
-  <h2>📈 Progreso del cliente</h2>
-  <p>Consulta la evolución de las medidas corporales registradas.</p>
-  <div id="progressClientLabel" style="color:#ffd75a;font-weight:700;margin-bottom:12px"></div>
-  <div id="progressSummary" class="progress-summary"></div>
-  <h3 style="color:#ffd75a;margin:18px 0 8px">Medidas corporales</h3>
-  <div id="progressMeasures" class="progress-measures"></div>
-  <div class="file-card" style="margin-bottom:14px">
-    <label for="progressPeriod" style="display:block;color:#ffd75a;margin-bottom:10px">Periodo de comparación</label>
-    <select id="progressPeriod" style="width:100%;min-height:48px;background:#171717;color:white;border:1px solid #d4af37;border-radius:12px;padding:10px;font-size:16px">
-      <option value="all">Todo el historial</option>
-      <option value="30">Últimos 30 días</option>
-      <option value="90">Últimos 90 días</option>
-      <option value="180">Últimos 6 meses</option>
-      <option value="365">Últimos 12 meses</option>
-    </select>
-    <p id="progressPeriodNotice" style="font-size:13px;color:#d8c7a0;margin:10px 0 0" aria-live="polite"></p>
-  </div>
-  <div class="file-card">
-    <label for="progressMetric" style="display:block;color:#ffd75a;margin-bottom:10px">Selecciona una medida</label>
-    <select id="progressMetric" onchange="window.kafitForceChartUpdate()" oninput="window.kafitForceChartUpdate()" style="width:100%;min-height:48px;background:#171717;color:white;border:1px solid #d4af37;border-radius:12px;padding:10px;font-size:16px">
-      <option value="measurementWeight">Peso corporal</option>
-      <option value="measurementWaist">Cintura</option>
-      <option value="measurementHip">Cadera</option>
-      <option value="measurementChest">Pecho</option>
-      <option value="measurementArm">Brazo</option>
-      <option value="measurementThigh">Muslo</option>
-      <option value="measurementCalf">Pantorrilla</option>
-    </select>
-    <div id="progressChart" style="margin-top:18px;overflow-x:auto" aria-live="polite"></div>
-    <button type="button" class="progress-expand" id="expandProgress" onclick="window.kafitForceChartExpand()">⛶ Ampliar gráfica</button>
-  </div>
-
-  <div class="file-card" id="evaluationCompare" style="margin:16px 0">
-    <h3 style="color:#ffd75a">Comparar dos evaluaciones</h3>
-    <p>Selecciona las fechas que deseas comparar. Este comparador utiliza todo el historial, independientemente del filtro de la gráfica.</p>
-    <div class="compare-selects">
-      <div><label for="compareStart">Evaluación inicial</label><select id="compareStart"></select></div>
-      <div><label for="compareEnd">Evaluación final</label><select id="compareEnd"></select></div>
-    </div>
-    <div id="compareResults" aria-live="polite"></div>
-  </div>
-
-  <div class="file-card" id="reportControls" style="margin:16px 0">
-    <h3 style="color:#ffd75a">Reporte profesional KA-FIT</h3>
-    <p>Utiliza las dos fechas seleccionadas arriba. Añade tus observaciones y abre una versión lista para imprimir o guardar como PDF.</p>
-    <label for="reportNotes" style="display:block;color:#ffd75a;margin:12px 0 8px">Observaciones y recomendaciones del entrenador</label>
-    <textarea id="reportNotes" rows="4" placeholder="Ej. Evolución, técnica, próximos objetivos..." style="width:100%;padding:12px;border:1px solid #a78636;border-radius:12px;background:#151515;color:#fff;font:inherit;resize:vertical"></textarea>
-    <button type="button" id="createProgressReport" class="progress-expand">▤ Preparar reporte PDF</button>
-    <p style="font-size:12px;color:#bbb;margin-top:10px">En iPhone: en la vista del reporte, pulsa Imprimir y utiliza Compartir para guardar el PDF en Archivos o enviarlo por WhatsApp. El reporte no se sube a un servidor.</p>
-  </div>
-  <a href="clientes.html?modo=progreso" id="closeProgress" class="edit-file-button" style="margin-top:20px;text-align:center;text-decoration:none">← Volver a Progreso</a>
-</section>
-<section id="progressFullscreen" hidden role="dialog" aria-modal="true" aria-label="Gráfica ampliada">
- <div class="progress-zoom-inner">
-  <button type="button" id="closeProgressFullscreen" onclick="window.kafitForceChartClose()" class="progress-back">← Cerrar gráfica ampliada</button>
-  <h2 id="progressFullscreenTitle" style="color:#ffd75a;margin:15px 0">Evolución</h2>
-  <div id="progressFullscreenChart"></div>
- </div>
-</section>
-<section id="routinesPanel" style="display:none">
- <button type="button" class="routine-btn" onclick="closeRoutines()">← Volver a Rutinas</button>
- <h2>🏋️ Rutinas personalizadas</h2><p id="routineClientName" class="routine-muted"></p>
- <div class="file-card"><h3>Programas del cliente</h3><div id="routineList"></div><button type="button" class="routine-btn primary" id="routineNew">＋ Crear nueva rutina</button></div>
- <div class="file-card" id="routineEditor" hidden style="margin-top:16px">
- <h3 id="routineEditorTitle">Nueva rutina</h3>
- <form id="routineForm">
-  <label class="routine-field">Nombre del programa<input id="routineName" required maxlength="100" placeholder="Ej. Hipertrofia - 4 días"></label>
-  <div class="routine-grid"><label class="routine-field">Objetivo<input id="routineGoal" maxlength="100" placeholder="Ganancia muscular"></label><label class="routine-field">Nivel<select id="routineLevel"><option>Principiante</option><option>Intermedio</option><option>Avanzado</option></select></label></div>
-  <div class="routine-grid"><label class="routine-field">Duración (semanas)<input id="routineWeeks" type="number" min="1" max="104" value="4" required></label><label class="routine-field">Días por semana<input id="routineDays" type="number" min="1" max="7" value="3" required></label></div>
-  <h3>Ejercicios</h3><p class="routine-muted">Añade ejercicios y selecciona videos cortos directamente desde tu galería. Los videos se guardan solo en este iPhone/navegador por ahora.</p><div id="routineExercises"></div>
-  <button type="button" class="routine-btn" id="routineAddExercise">＋ Agregar ejercicio</button>
-  <div class="routine-actions"><button class="routine-btn primary" type="submit">Guardar rutina</button><button class="routine-btn" type="button" id="routineCancel">Cancelar</button></div>
- </form></div>
-</section>
 <script>
 (function(){
 'use strict';
