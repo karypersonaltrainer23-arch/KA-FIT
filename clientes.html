@@ -2895,6 +2895,37 @@ function viewRoutine(r){
  if(linked?.notes)card.appendChild(el('p','Instrucciones: '+linked.notes));if(x.notes)card.appendChild(el('p','Indicaciones: '+x.notes));
  if(Array.isArray(x.seriesDetails)&&x.seriesDetails.length){x.seriesDetails.forEach((ss,j)=>{const line=el('div',undefined,'routine-series-card');line.appendChild(el('strong','Serie '+(j+1)));line.appendChild(el('p',(ss.reps||'—')+' repeticiones · '+(ss.weight||'—')+' kg · '+(ss.rest??'—')+' s descanso'));line.appendChild(el('p','Método: '+(ss.method||'Tradicional')));if(ss.rir)line.appendChild(el('p','RIR: '+ss.rir));if(ss.rpe)line.appendChild(el('p','RPE: '+ss.rpe));if(ss.tempo)line.appendChild(el('p','Tempo: '+ss.tempo));if(ss.notes)line.appendChild(el('p',ss.notes));card.appendChild(line)})}else card.appendChild(el('p',(x.sets||'—')+' series · '+(x.reps||'—')+' repeticiones · '+(x.rest||'—')+' s descanso'));
  if(x.video&&/^https:\/\//i.test(x.video)){const link=el('a','Ver video externo');link.href=x.video;link.target='_blank';link.rel='noopener noreferrer';card.appendChild(link)}wrap.appendChild(card)});
+
+ // KA-FIT: bitácora de entrenamiento independiente de la programación.
+ const logKey='kafit_workout_logs_v1';
+ const clientKey=String(window.currentClientId);
+ const routineKey=String(r.id);
+ const getLogs=()=>{try{const v=JSON.parse(localStorage.getItem(logKey)||'{}');return v&&typeof v==='object'?v:{}}catch(e){return {}}};
+ const records=()=>getLogs()[clientKey]?.[routineKey]||[];
+ const panel=el('section',undefined,'file-card');panel.style.marginTop='20px';
+ panel.appendChild(el('h3','📝 Registrar entrenamiento'));
+ panel.appendChild(el('p','Registra las repeticiones y el peso realmente utilizados. La rutina programada no se modifica.','routine-muted'));
+ const dateLabel=el('label','Fecha del entrenamiento','routine-field');
+ const dateInput=document.createElement('input');dateInput.type='date';dateInput.value=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);dateLabel.appendChild(dateInput);panel.appendChild(dateLabel);
+ const entries=[];
+ (r.exercises||[]).forEach((exercise,ei)=>{
+   const section=el('div',undefined,'routine-exercise');section.appendChild(el('h3',(exercise.day||'Día 1')+' · '+exercise.name));
+   const series=Array.isArray(exercise.seriesDetails)&&exercise.seriesDetails.length?exercise.seriesDetails:Array.from({length:Math.max(1,Number(exercise.sets)||1)},()=>({reps:exercise.reps||'',weight:exercise.weight||''}));
+   series.forEach((planned,si)=>{
+     const line=el('div',undefined,'routine-series-card');line.appendChild(el('strong','Serie '+(si+1)));
+     const grid=el('div',undefined,'routine-grid');
+     function numberField(label,value){const l=el('label',label,'routine-field');const input=document.createElement('input');input.type='number';input.min='0';input.step=label.includes('kg')?'0.5':'1';input.inputMode='decimal';input.placeholder=String(value||'');l.appendChild(input);grid.appendChild(l);return input}
+     const reps=numberField('Reps realizadas',planned.reps);const weight=numberField('Peso real (kg)',planned.weight);
+     line.appendChild(grid);const check=el('label',undefined,'routine-field');const completed=document.createElement('input');completed.type='checkbox';completed.style.cssText='width:22px;height:22px;vertical-align:middle;margin-right:10px;accent-color:#d4af37';check.append(completed,document.createTextNode('Serie completada'));line.appendChild(check);section.appendChild(line);
+     entries.push({ei,si,exercise:exercise.name,day:exercise.day||'Día 1',reps,weight,completed});
+   });panel.appendChild(section);
+ });
+ const notesLabel=el('label','Observaciones de la sesión','routine-field');const notes=document.createElement('textarea');notes.rows=3;notes.style.cssText='display:block;width:100%;padding:12px;margin-top:8px;background:#171717;color:white;border:1px solid #a78636;border-radius:12px';notesLabel.appendChild(notes);panel.appendChild(notesLabel);
+ const notice=el('p','','routine-muted');notice.setAttribute('aria-live','polite');panel.appendChild(notice);
+ const history=el('div');
+ function renderHistory(){history.replaceChildren();history.appendChild(el('h3','Historial de entrenamientos'));const saved=[...records()].sort((a,b)=>String(b.date).localeCompare(String(a.date))||String(b.savedAt).localeCompare(String(a.savedAt)));if(!saved.length)history.appendChild(el('p','Aún no hay entrenamientos registrados.','routine-muted'));saved.forEach(item=>{const row=el('div',undefined,'routine-exercise');row.appendChild(el('strong',item.date));row.appendChild(el('p',item.series.filter(x=>x.completed).length+' de '+item.series.length+' series completadas'));item.series.forEach(x=>{if(x.completed||x.reps!==''||x.weight!=='')row.appendChild(el('p',x.day+' · '+x.exercise+' · Serie '+(x.si+1)+': '+(x.reps||'—')+' reps · '+(x.weight||'—')+' kg'+(x.completed?' ✓':'')))});if(item.notes)row.appendChild(el('p','Notas: '+item.notes));history.appendChild(row)})}
+ const save=el('button','💾 Guardar entrenamiento','routine-btn primary');save.type='button';save.style.width='100%';save.onclick=()=>{if(!dateInput.value){notice.textContent='Selecciona una fecha.';return}const series=entries.map(x=>({ei:x.ei,si:x.si,exercise:x.exercise,day:x.day,reps:x.reps.value,weight:x.weight.value,completed:x.completed.checked}));if(!series.some(x=>x.completed||x.reps!==''||x.weight!=='')){notice.textContent='Registra al menos una serie antes de guardar.';return}const all=getLogs();if(!all[clientKey])all[clientKey]={};if(!Array.isArray(all[clientKey][routineKey]))all[clientKey][routineKey]=[];all[clientKey][routineKey].push({date:dateInput.value,savedAt:new Date().toISOString(),series,notes:notes.value.trim()});try{localStorage.setItem(logKey,JSON.stringify(all));notice.textContent='Entrenamiento guardado en este navegador.';renderHistory()}catch(e){notice.textContent='No se pudo guardar. Revisa el almacenamiento disponible.'}};
+ panel.appendChild(save);panel.appendChild(history);renderHistory();wrap.appendChild(panel);
  const bottom=el('button','← Volver a mis rutinas','routine-btn');bottom.style.marginTop='18px';bottom.onclick=close.onclick;wrap.appendChild(bottom);document.body.style.overflow='hidden';overlay.scrollTop=0;
 }
 function render(){const list=$('routineList');list.replaceChildren();const all=rows();if(!all.length)list.appendChild(el('p','Todavía no hay rutinas asignadas.','routine-muted'));
