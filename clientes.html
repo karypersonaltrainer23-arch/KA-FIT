@@ -985,6 +985,15 @@ body{
 .routine-exercise p{margin:6px 0;color:#ddd;overflow-wrap:anywhere}
 .routine-exercise a{color:#ffd75a}
 .routine-muted{color:#bbb;font-size:13px;line-height:1.5}
+
+/* KA-FIT: grupos de ejercicios vinculados */
+.routine-group-settings{margin:14px 0;padding:13px;border:1px solid #a78636;border-radius:12px;background:#201a0e}
+.routine-group-settings h4{color:#ffd75a;margin-bottom:8px}
+.routine-group-settings select,.routine-group-settings input{width:100%;min-height:42px;padding:9px;border-radius:9px;border:1px solid #a78636;background:#101010;color:#fff;font-size:16px}
+.routine-group-settings label{display:block;color:#e5d1a1;font-size:13px;margin:8px 0}
+.routine-group-summary{padding:12px;margin:12px 0;border:1px solid #d4af37;border-radius:12px;background:#191509}
+.routine-group-summary strong{color:#ffd75a}
+.routine-group-summary p{margin:5px 0!important;color:#eee!important}
 </style>
 <style>
 /* KA-FIT: visor e impresión de reporte, compatible con iPhone */
@@ -2708,6 +2717,7 @@ async function showStoredVideo(id,holder){try{const file=await getVideo(id);if(f
 
 const $=id=>document.getElementById(id);
 const INTENSITY_METHODS=['Tradicional','Drop-set','Súper serie','Bi-serie','Tri-serie','Rest-pause','Cluster-set','Fallo muscular','Repeticiones forzadas','Circuito','Myo-reps','Pirámide ascendente','Pirámide descendente','Tempo controlado','Isométricos','Otro / personalizado'];
+const GROUP_TYPES=['Individual','Súper serie','Bi-serie','Tri-serie','Circuito'];
 const EXERCISE_LIBRARY=[['Sentadilla con barra','Piernas'],['Prensa de piernas','Piernas'],['Extensión de cuádriceps','Piernas'],['Curl femoral','Piernas'],['Peso muerto rumano','Piernas'],['Hip thrust','Glúteos'],['Zancadas','Piernas'],['Elevación de talones','Pantorrillas'],['Press de banca','Pecho'],['Press inclinado con mancuernas','Pecho'],['Aperturas con mancuernas','Pecho'],['Flexiones','Pecho'],['Jalón al pecho','Espalda'],['Remo con barra','Espalda'],['Remo sentado','Espalda'],['Dominadas','Espalda'],['Press militar','Hombros'],['Elevaciones laterales','Hombros'],['Pájaros','Hombros'],['Curl de bíceps','Bíceps'],['Curl martillo','Bíceps'],['Extensión de tríceps en polea','Tríceps'],['Fondos','Tríceps'],['Plancha','Core'],['Crunch abdominal','Core']];
 function createSeriesRow(host, data={}){
  const card=el('div',undefined,'routine-series-card');
@@ -2730,6 +2740,14 @@ function addExercise(data={}){
  const lib=el('div',undefined,'routine-library');const choose=document.createElement('select');choose.className='routine-btn';choose.style.maxWidth='100%';const first=document.createElement('option');first.value='';first.textContent='📚 Elegir de la biblioteca';choose.appendChild(first);EXERCISE_LIBRARY.forEach(([name,group])=>{const op=document.createElement('option');op.value=name;op.textContent=group+' · '+name;choose.appendChild(op)});choose.onchange=()=>{if(choose.value)box.querySelector('[data-key="name"]').value=choose.value};lib.appendChild(choose);box.appendChild(lib);
 
  box.appendChild(field('Día / sesión','text',data.day||'Día 1',{key:'day',placeholder:'Ej. Lunes o Día 1'}));
+ const groupBox=el('div',undefined,'routine-group-settings');groupBox.appendChild(el('h4','🔗 Vincular con otros ejercicios'));
+ const typeLabel=el('label','Tipo de agrupación');const typeSel=document.createElement('select');typeSel.dataset.key='groupType';GROUP_TYPES.forEach(t=>{const op=document.createElement('option');op.value=t;op.textContent=t;typeSel.appendChild(op)});typeSel.value=GROUP_TYPES.includes(data.groupType)?data.groupType:'Individual';typeLabel.appendChild(typeSel);groupBox.appendChild(typeLabel);
+ const groupFields=el('div');
+ groupFields.appendChild(field('Identificador del grupo (igual para ejercicios vinculados)','text',data.groupId||'',{key:'groupId',placeholder:'Ej. A, B, Circuito 1'}));
+ const groupGrid=el('div',undefined,'routine-grid');groupGrid.append(field('Rondas del grupo','number',data.groupRounds??3,{key:'groupRounds',min:1,max:30}),field('Descanso al finalizar la ronda (segundos)','number',data.groupRest??90,{key:'groupRest',min:0,max:3600}));groupFields.appendChild(groupGrid);
+ groupFields.appendChild(el('p','Usa el mismo identificador, tipo y día para vincular ejercicios. El orden será el que tengan en la rutina.','routine-muted'));
+ groupBox.appendChild(groupFields);typeSel.onchange=()=>{groupFields.hidden=typeSel.value==='Individual'};groupFields.hidden=typeSel.value==='Individual';box.appendChild(groupBox);
+
  const grid=el('div',undefined,'routine-grid');
  grid.append(field('Series','number',data.sets??3,{key:'sets',min:1,max:30}),field('Repeticiones','text',data.reps??'10-12',{key:'reps',placeholder:'8-12'}),field('Descanso (segundos)','number',data.rest??90,{key:'rest',min:0,max:3600}),field('Peso sugerido (kg, opcional)','number',data.weight??'',{key:'weight',min:0,step:'0.5'}));box.appendChild(grid);
  const seriesTitle=el('h3','Configuración individual por serie');seriesTitle.style.marginTop='15px';box.appendChild(seriesTitle);
@@ -2752,9 +2770,24 @@ function addExercise(data={}){
  box.appendChild(field('Indicaciones técnicas','text',data.notes??'',{key:'notes'}));
  const remove=el('button','Eliminar ejercicio','routine-btn');remove.type='button';remove.addEventListener('click',()=>box.remove());box.appendChild(remove);$('routineExercises').appendChild(box);
 }
+function validateGroups(exercises){
+ const groups=new Map();
+ for(const x of exercises){if(!x.groupType||x.groupType==='Individual')continue;
+  x.groupId=(x.groupId||'').trim();if(!x.groupId)return 'Cada ejercicio vinculado necesita un identificador de grupo.';
+  const key=x.day.toLowerCase()+'|'+x.groupId.toLowerCase();if(!groups.has(key))groups.set(key,[]);groups.get(key).push(x);
+ }
+ for(const items of groups.values()){
+  const type=items[0].groupType,needed=type==='Tri-serie'?3:type==='Circuito'?2:2;
+  if(items.length<needed)return 'El grupo '+items[0].groupId+' necesita al menos '+needed+' ejercicios.';
+  if(type==='Tri-serie'&&items.length!==3)return 'La tri-serie '+items[0].groupId+' debe contener exactamente 3 ejercicios.';
+  if((type==='Súper serie'||type==='Bi-serie')&&items.length!==2)return 'El grupo '+items[0].groupId+' debe contener exactamente 2 ejercicios.';
+  if(items.some(x=>x.groupType!==type||x.groupRounds!==items[0].groupRounds||x.groupRest!==items[0].groupRest))return 'Los ejercicios del grupo '+items[0].groupId+' deben compartir tipo, rondas y descanso.';
+ }
+ return '';
+}
 function render(){const list=$('routineList');list.replaceChildren();const all=rows();if(!all.length)list.appendChild(el('p','Todavía no hay rutinas asignadas.','routine-muted'));
  all.forEach(r=>{const card=el('div',undefined,'routine-exercise');card.appendChild(el('h3',r.name));card.appendChild(el('p',(r.goal||'Sin objetivo')+' · '+r.days+' días/semana · '+r.weeks+' semanas · '+r.level));card.appendChild(el('p',(r.exercises||[]).length+' ejercicios'));
- (r.exercises||[]).forEach(x=>{const p=el('p',(x.day||'Día 1')+' · '+x.name+' · '+x.sets+' × '+x.reps+' · '+x.rest+' s de descanso'+(x.weight!==''&&x.weight!=null?' · '+x.weight+' kg':'')+(x.notes?' · '+x.notes:''));card.appendChild(p);if(Array.isArray(x.seriesDetails)){x.seriesDetails.forEach((ss,i)=>card.appendChild(el('p','   Serie '+(i+1)+': '+ss.reps+' reps · '+(ss.weight||'—')+' kg · '+(ss.rest||'0')+' s · '+(ss.method||'Tradicional')+(ss.notes?' · '+ss.notes:''),'routine-muted')))}if(x.videoId){const holder=el('div');card.appendChild(holder);showStoredVideo(x.videoId,holder)}if(x.video&&/^https:\/\//i.test(x.video)){const a=el('a','Ver video demostrativo');a.href=x.video;a.target='_blank';a.rel='noopener noreferrer';card.appendChild(a)}});
+ const groupsSeen=new Set();(r.exercises||[]).forEach(x=>{if(x.groupType&&x.groupType!=='Individual'&&x.groupId){const groupKey=(x.day||'Día 1')+'|'+x.groupId;if(!groupsSeen.has(groupKey)){groupsSeen.add(groupKey);const linked=r.exercises.filter(y=>y.day===x.day&&y.groupId===x.groupId&&y.groupType===x.groupType);const summary=el('div',undefined,'routine-group-summary');summary.appendChild(el('strong','🔗 '+x.groupType+' · Grupo '+x.groupId));summary.appendChild(el('p',linked.map((y,i)=>(i+1)+'. '+y.name).join(' → ')));summary.appendChild(el('p',(x.groupRounds||3)+' rondas · '+(x.groupRest??90)+' s de descanso después de cada ronda'));card.appendChild(summary)}}const p=el('p',(x.day||'Día 1')+' · '+x.name+' · '+x.sets+' × '+x.reps+' · '+x.rest+' s de descanso'+(x.weight!==''&&x.weight!=null?' · '+x.weight+' kg':'')+(x.notes?' · '+x.notes:''));card.appendChild(p);if(Array.isArray(x.seriesDetails)){x.seriesDetails.forEach((ss,i)=>card.appendChild(el('p','   Serie '+(i+1)+': '+ss.reps+' reps · '+(ss.weight||'—')+' kg · '+(ss.rest||'0')+' s · '+(ss.method||'Tradicional')+(ss.notes?' · '+ss.notes:''),'routine-muted')))}if(x.videoId){const holder=el('div');card.appendChild(holder);showStoredVideo(x.videoId,holder)}if(x.video&&/^https:\/\//i.test(x.video)){const a=el('a','Ver video demostrativo');a.href=x.video;a.target='_blank';a.rel='noopener noreferrer';card.appendChild(a)}});
  const actions=el('div',undefined,'routine-actions');const edit=el('button','Editar','routine-btn');edit.type='button';edit.onclick=()=>start(r);const del=el('button','Eliminar','routine-btn');del.type='button';del.onclick=()=>{if(!confirm('¿Eliminar la rutina «'+r.name+'»?'))return;const data=read();data[String(window.currentClientId)]=rows().filter(x=>x.id!==r.id);try{localStorage.setItem(KEY,JSON.stringify(data));render()}catch(e){alert('No se pudo eliminar.')}};actions.append(edit,del);card.appendChild(actions);list.appendChild(card)})}
 function start(r){editing=r?r.id:null;$('routineForm').reset();$('routineExercises').replaceChildren();$('routineName').value=r?.name||'';$('routineGoal').value=r?.goal||'';$('routineLevel').value=r?.level||'Principiante';$('routineWeeks').value=r?.weeks||4;$('routineDays').value=r?.days||3;(r?.exercises||[]).forEach(addExercise);if(!r)addExercise();$('routineEditorTitle').textContent=r?'Editar rutina':'Nueva rutina';$('routineEditor').hidden=false;document.body.style.overflow='hidden';$('routineEditor').scrollIntoView({behavior:'smooth',block:'start'})}
 function cancel(){$('routineEditor').hidden=true;document.body.style.overflow='';editing=null}
@@ -2762,6 +2795,7 @@ window.openRoutines=function(){if(window.currentClientId==null)return;$('clientF
 window.closeRoutines=function(){$('routinesPanel').style.display='none';if(kafitRoutineMode){closeClientFile();return}$('clientFile').style.display='block';document.querySelector('.bottom-nav').style.display='grid';window.scrollTo(0,0)};
 $('routineEditorClose').onclick=cancel;$('routineNew').onclick=()=>start(null);$('routineCancel').onclick=cancel;$('routineAddExercise').onclick=()=>addExercise();
 $('routineForm').addEventListener('submit',async e=>{e.preventDefault();const boxes=[...$('routineExercises').children];if(!boxes.length){alert('Agrega al menos un ejercicio.');return}const exercises=[];for(const box of boxes){const obj={};box.querySelectorAll('[data-key]').forEach(input=>obj[input.dataset.key]=input.value.trim());if(!obj.name||!obj.day||!obj.reps||Number(obj.sets)<1){alert('Completa nombre, día, series y repeticiones de cada ejercicio.');return}if(obj.video&&!/^https:\/\//i.test(obj.video)){alert('El enlace anterior debe comenzar con https://');return}const seriesHost=box.querySelector('.routine-series-list');obj.seriesDetails=[...seriesHost.children].map(card=>{const v={};card.querySelectorAll('[data-series-key]').forEach(inp=>v[inp.dataset.seriesKey]=inp.value.trim());return v});obj.sets=obj.seriesDetails.length;obj.reps=obj.seriesDetails.map(v=>v.reps).join(' / ');const fileInput=box.querySelector('.routine-video-file');obj.videoId=fileInput?.dataset.videoId||'';const file=fileInput?.files?.[0];if(file){if(!file.type.startsWith('video/')||file.size>25*1024*1024){alert('Video inválido o mayor de 25 MB.');return}obj.videoId='vid_'+Date.now()+'_'+Math.random().toString(36).slice(2);try{await storeVideo(obj.videoId,file)}catch(err){alert('Safari no pudo guardar el video. Verifica el espacio disponible.');return}}exercises.push(obj)}
+ const groupError=validateGroups(exercises);if(groupError){alert(groupError);return}
  const data=read(),key=String(window.currentClientId),all=Array.isArray(data[key])?data[key]:[];
  const routine={id:editing||('r'+Date.now()),name:$('routineName').value.trim(),goal:$('routineGoal').value.trim(),level:$('routineLevel').value,weeks:Number($('routineWeeks').value),days:Number($('routineDays').value),exercises};if(!routine.name)return;
  const idx=all.findIndex(r=>r.id===editing);if(idx>=0)all[idx]=routine;else all.unshift(routine);data[key]=all;
