@@ -2761,11 +2761,30 @@ async function showLibraryCover(id,holder,posterId){
  const button=document.createElement('button');button.type='button';button.className='kl-cover';button.setAttribute('aria-label','Reproducir video demostrativo');
  button.textContent='▶ Ver demostración';holder.replaceChildren(button);
  try{
-  const file=await getVideo(id);if(!file){button.textContent='Video no disponible';button.disabled=true;return}
-  let cover=posterId?await getVideo(posterId):null;if(!cover)cover=await getVideo('thumb:'+id);
+  const file=await getVideo(id);
+  if(!file){button.textContent='Video no disponible';button.disabled=true;return}
+  // La portada elegida manualmente tiene prioridad sobre el fotograma automático.
+  let cover=posterId?await getVideo(posterId):null;
+  if(!cover)cover=await getVideo('thumb:'+id);
   if(!cover){cover=await makeVideoThumbnail(file);if(cover)try{await storeVideo('thumb:'+id,cover)}catch(e){}}
-  if(cover){const url=URL.createObjectURL(cover),img=document.createElement('img');img.src=url;img.alt='Miniatura del ejercicio';img.loading='lazy';button.replaceChildren(img,document.createElement('span'));button.lastChild.textContent='▶';button.addEventListener('click',()=>URL.revokeObjectURL(url),{once:true})}
-  button.onclick=()=>showVideo(file,holder);
+  if(cover && button.isConnected){
+   const url=URL.createObjectURL(cover),img=document.createElement('img');
+   img.src=url;img.alt='Portada del ejercicio';
+   img.onload=()=>URL.revokeObjectURL(url);
+   const play=document.createElement('span');play.textContent='▶';
+   button.replaceChildren(img,play);
+  }
+  button.onclick=()=>{
+   const url=URL.createObjectURL(file),player=document.createElement('video');
+   player.controls=true;player.playsInline=true;player.preload='auto';player.autoplay=true;
+   player.style.cssText='width:100%;max-height:260px;border-radius:12px;margin-top:10px;background:#000';
+   player.src=url;holder.replaceChildren(player);
+   // El gesto del usuario inicia la reproducción inmediatamente, sin segundo toque.
+   const promise=player.play();
+   if(promise&&promise.catch)promise.catch(()=>{player.controls=true});
+   player.addEventListener('loadeddata',()=>{if(player.paused)player.play().catch(()=>{})},{once:true});
+   player.addEventListener('emptied',()=>URL.revokeObjectURL(url),{once:true});
+  };
  }catch(e){button.textContent='▶ Ver demostración';button.onclick=()=>showStoredVideo(id,holder)}
 }
 async function showPosterPreview(id,holder){try{const file=await getVideo(id);if(!file)return;const url=URL.createObjectURL(file);const img=document.createElement('img');img.src=url;img.alt='Portada del ejercicio';img.style.cssText='width:100%;max-height:240px;object-fit:cover;border-radius:12px;margin:9px 0';img.onload=()=>URL.revokeObjectURL(url);holder.replaceChildren(img)}catch(e){}}
