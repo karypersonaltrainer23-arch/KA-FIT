@@ -1023,6 +1023,19 @@ body{
   @page{size:A4;margin:12mm}
 }
 </style>
+<style>
+/* KA-FIT: editor avanzado de rutinas */
+#routineEditor:not([hidden]){position:fixed;inset:0;z-index:200;overflow-y:auto;background:linear-gradient(145deg,#171105,#050505 60%);padding:calc(20px + env(safe-area-inset-top)) 16px 80px;margin:0;border:0;border-radius:0;-webkit-overflow-scrolling:touch}
+#routineEditor[hidden]{display:none!important}
+#routineEditor .routine-series-card{padding:12px;margin:9px 0;border:1px solid #796020;border-radius:12px;background:#100e09}
+#routineEditor .routine-series-card label{display:block;font-size:12px;color:#e8d39c;margin:7px 0}
+#routineEditor .routine-series-card input,#routineEditor .routine-series-card select{width:100%;min-height:40px;background:#1a1a1a;color:#fff;border:1px solid #977b3b;border-radius:9px;padding:8px;font-size:15px}
+#routineEditor .series-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#routineEditor .routine-series-title{color:#ffda58;font-weight:700}
+#routineEditor .routine-library{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+#routineEditor .routine-library button{padding:9px;border:1px solid #9b7418;border-radius:10px;background:#211b10;color:#ffd75a}
+#routineEditor .routine-editor-close{float:right;background:#242015;border:1px solid #d4af37;color:#ffd75a;border-radius:10px;padding:9px}
+</style>
 </head>
 
 <body>
@@ -1490,7 +1503,7 @@ body{
  <h2>🏋️ Rutinas personalizadas</h2><p id="routineClientName" class="routine-muted"></p>
  <div class="file-card"><h3>Programas del cliente</h3><div id="routineList"></div><button type="button" class="routine-btn primary" id="routineNew">＋ Crear nueva rutina</button></div>
  <div class="file-card" id="routineEditor" hidden style="margin-top:16px">
- <h3 id="routineEditorTitle">Nueva rutina</h3>
+ <button type="button" class="routine-editor-close" id="routineEditorClose">✕ Cerrar</button><h3 id="routineEditorTitle">Nueva rutina</h3>
  <form id="routineForm">
   <label class="routine-field">Nombre del programa<input id="routineName" required maxlength="100" placeholder="Ej. Hipertrofia - 4 días"></label>
   <div class="routine-grid"><label class="routine-field">Objetivo<input id="routineGoal" maxlength="100" placeholder="Ganancia muscular"></label><label class="routine-field">Nivel<select id="routineLevel"><option>Principiante</option><option>Intermedio</option><option>Avanzado</option></select></label></div>
@@ -2694,6 +2707,19 @@ function showVideo(file,holder){const url=URL.createObjectURL(file),player=docum
 async function showStoredVideo(id,holder){try{const file=await getVideo(id);if(file)showVideo(file,holder);else holder.appendChild(el('p','Video no disponible en este dispositivo.','routine-muted'))}catch(e){holder.appendChild(el('p','No se pudo abrir el video guardado.','routine-muted'))}}
 
 const $=id=>document.getElementById(id);
+const INTENSITY_METHODS=['Tradicional','Drop-set','Súper serie','Bi-serie','Tri-serie','Rest-pause','Cluster-set','Fallo muscular','Repeticiones forzadas','Circuito','Myo-reps','Pirámide ascendente','Pirámide descendente','Tempo controlado','Isométricos','Otro / personalizado'];
+const EXERCISE_LIBRARY=[['Sentadilla con barra','Piernas'],['Prensa de piernas','Piernas'],['Extensión de cuádriceps','Piernas'],['Curl femoral','Piernas'],['Peso muerto rumano','Piernas'],['Hip thrust','Glúteos'],['Zancadas','Piernas'],['Elevación de talones','Pantorrillas'],['Press de banca','Pecho'],['Press inclinado con mancuernas','Pecho'],['Aperturas con mancuernas','Pecho'],['Flexiones','Pecho'],['Jalón al pecho','Espalda'],['Remo con barra','Espalda'],['Remo sentado','Espalda'],['Dominadas','Espalda'],['Press militar','Hombros'],['Elevaciones laterales','Hombros'],['Pájaros','Hombros'],['Curl de bíceps','Bíceps'],['Curl martillo','Bíceps'],['Extensión de tríceps en polea','Tríceps'],['Fondos','Tríceps'],['Plancha','Core'],['Crunch abdominal','Core']];
+function createSeriesRow(host, data={}){
+ const card=el('div',undefined,'routine-series-card');
+ const header=el('div','Serie '+(host.children.length+1),'routine-series-title');card.appendChild(header);
+ const grid=el('div',undefined,'series-grid');
+ [['Repeticiones','reps',data.reps??'10-12'],['Peso (kg)','weight',data.weight??''],['Descanso (s)','rest',data.rest??90],['RIR','rir',data.rir??''],['RPE','rpe',data.rpe??''],['Tempo','tempo',data.tempo??'']].forEach(([label,key,val])=>{const wrap=el('label',label);const inp=document.createElement('input');inp.value=val;inp.dataset.seriesKey=key;inp.type='text';wrap.appendChild(inp);grid.appendChild(wrap)});
+ card.appendChild(grid);
+ const wrap=el('label','Método de intensificación');const sel=document.createElement('select');sel.dataset.seriesKey='method';INTENSITY_METHODS.forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=m;sel.appendChild(o)});sel.value=INTENSITY_METHODS.includes(data.method)?data.method:'Tradicional';wrap.appendChild(sel);card.appendChild(wrap);
+ const notes=el('label','Instrucciones específicas de esta serie');const ni=document.createElement('input');ni.dataset.seriesKey='notes';ni.value=data.notes||'';ni.placeholder='Ej. Reducir carga 20% o enlazar con ejercicio 2';notes.appendChild(ni);card.appendChild(notes);
+ const del=el('button','Eliminar esta serie','routine-btn');del.type='button';del.style.marginTop='9px';del.onclick=()=>{if(host.children.length<=1){alert('El ejercicio necesita al menos una serie.');return}card.remove();[...host.children].forEach((x,i)=>x.querySelector('.routine-series-title').textContent='Serie '+(i+1))};card.appendChild(del);host.appendChild(card);
+}
+
 function read(){try{const v=JSON.parse(localStorage.getItem(KEY)||'{}');return v&&typeof v==='object'&&!Array.isArray(v)?v:{}}catch(e){return {}}}
 function rows(){return read()[String(window.currentClientId)]||[]}
 function el(tag,txt,cls){const e=document.createElement(tag);if(txt!==undefined)e.textContent=txt;if(cls)e.className=cls;return e}
@@ -2701,9 +2727,15 @@ function field(label,type,value,opts={}){const wrap=el('label',label,'routine-fi
 function addExercise(data={}){
  const box=el('div',undefined,'routine-exercise');
  box.appendChild(field('Ejercicio','text',data.name,{key:'name',placeholder:'Ej. Sentadilla'}));
+ const lib=el('div',undefined,'routine-library');const choose=document.createElement('select');choose.className='routine-btn';choose.style.maxWidth='100%';const first=document.createElement('option');first.value='';first.textContent='📚 Elegir de la biblioteca';choose.appendChild(first);EXERCISE_LIBRARY.forEach(([name,group])=>{const op=document.createElement('option');op.value=name;op.textContent=group+' · '+name;choose.appendChild(op)});choose.onchange=()=>{if(choose.value)box.querySelector('[data-key="name"]').value=choose.value};lib.appendChild(choose);box.appendChild(lib);
+
  box.appendChild(field('Día / sesión','text',data.day||'Día 1',{key:'day',placeholder:'Ej. Lunes o Día 1'}));
  const grid=el('div',undefined,'routine-grid');
  grid.append(field('Series','number',data.sets??3,{key:'sets',min:1,max:30}),field('Repeticiones','text',data.reps??'10-12',{key:'reps',placeholder:'8-12'}),field('Descanso (segundos)','number',data.rest??90,{key:'rest',min:0,max:3600}),field('Peso sugerido (kg, opcional)','number',data.weight??'',{key:'weight',min:0,step:'0.5'}));box.appendChild(grid);
+ const seriesTitle=el('h3','Configuración individual por serie');seriesTitle.style.marginTop='15px';box.appendChild(seriesTitle);
+ const seriesHost=el('div',undefined,'routine-series-list');box.appendChild(seriesHost);
+ const existing=Array.isArray(data.seriesDetails)&&data.seriesDetails.length?data.seriesDetails:Array.from({length:Math.max(1,Math.min(30,Number(data.sets)||3))},()=>({reps:data.reps??'10-12',weight:data.weight??'',rest:data.rest??90,method:'Tradicional'}));existing.forEach(x=>createSeriesRow(seriesHost,x));
+ const addSet=el('button','＋ Agregar serie','routine-btn');addSet.type='button';addSet.style.margin='8px 0';addSet.onclick=()=>{if(seriesHost.children.length>=30){alert('Máximo 30 series por ejercicio.');return}createSeriesRow(seriesHost)};box.appendChild(addSet);
  const videoLabel=el('label','Video corto del ejercicio (desde tu iPhone)','routine-field');
  const file=document.createElement('input');file.type='file';file.accept='video/*';file.className='routine-video-file';file.style.marginTop='8px';file.dataset.videoId=data.videoId||'';
  const preview=el('div',undefined,'routine-video-preview');
@@ -2722,14 +2754,14 @@ function addExercise(data={}){
 }
 function render(){const list=$('routineList');list.replaceChildren();const all=rows();if(!all.length)list.appendChild(el('p','Todavía no hay rutinas asignadas.','routine-muted'));
  all.forEach(r=>{const card=el('div',undefined,'routine-exercise');card.appendChild(el('h3',r.name));card.appendChild(el('p',(r.goal||'Sin objetivo')+' · '+r.days+' días/semana · '+r.weeks+' semanas · '+r.level));card.appendChild(el('p',(r.exercises||[]).length+' ejercicios'));
- (r.exercises||[]).forEach(x=>{const p=el('p',(x.day||'Día 1')+' · '+x.name+' · '+x.sets+' × '+x.reps+' · '+x.rest+' s de descanso'+(x.weight!==''&&x.weight!=null?' · '+x.weight+' kg':'')+(x.notes?' · '+x.notes:''));card.appendChild(p);if(x.videoId){const holder=el('div');card.appendChild(holder);showStoredVideo(x.videoId,holder)}if(x.video&&/^https:\/\//i.test(x.video)){const a=el('a','Ver video demostrativo');a.href=x.video;a.target='_blank';a.rel='noopener noreferrer';card.appendChild(a)}});
+ (r.exercises||[]).forEach(x=>{const p=el('p',(x.day||'Día 1')+' · '+x.name+' · '+x.sets+' × '+x.reps+' · '+x.rest+' s de descanso'+(x.weight!==''&&x.weight!=null?' · '+x.weight+' kg':'')+(x.notes?' · '+x.notes:''));card.appendChild(p);if(Array.isArray(x.seriesDetails)){x.seriesDetails.forEach((ss,i)=>card.appendChild(el('p','   Serie '+(i+1)+': '+ss.reps+' reps · '+(ss.weight||'—')+' kg · '+(ss.rest||'0')+' s · '+(ss.method||'Tradicional')+(ss.notes?' · '+ss.notes:''),'routine-muted')))}if(x.videoId){const holder=el('div');card.appendChild(holder);showStoredVideo(x.videoId,holder)}if(x.video&&/^https:\/\//i.test(x.video)){const a=el('a','Ver video demostrativo');a.href=x.video;a.target='_blank';a.rel='noopener noreferrer';card.appendChild(a)}});
  const actions=el('div',undefined,'routine-actions');const edit=el('button','Editar','routine-btn');edit.type='button';edit.onclick=()=>start(r);const del=el('button','Eliminar','routine-btn');del.type='button';del.onclick=()=>{if(!confirm('¿Eliminar la rutina «'+r.name+'»?'))return;const data=read();data[String(window.currentClientId)]=rows().filter(x=>x.id!==r.id);try{localStorage.setItem(KEY,JSON.stringify(data));render()}catch(e){alert('No se pudo eliminar.')}};actions.append(edit,del);card.appendChild(actions);list.appendChild(card)})}
-function start(r){editing=r?r.id:null;$('routineForm').reset();$('routineExercises').replaceChildren();$('routineName').value=r?.name||'';$('routineGoal').value=r?.goal||'';$('routineLevel').value=r?.level||'Principiante';$('routineWeeks').value=r?.weeks||4;$('routineDays').value=r?.days||3;(r?.exercises||[]).forEach(addExercise);if(!r)addExercise();$('routineEditorTitle').textContent=r?'Editar rutina':'Nueva rutina';$('routineEditor').hidden=false;$('routineEditor').scrollIntoView({behavior:'smooth',block:'start'})}
-function cancel(){$('routineEditor').hidden=true;editing=null}
+function start(r){editing=r?r.id:null;$('routineForm').reset();$('routineExercises').replaceChildren();$('routineName').value=r?.name||'';$('routineGoal').value=r?.goal||'';$('routineLevel').value=r?.level||'Principiante';$('routineWeeks').value=r?.weeks||4;$('routineDays').value=r?.days||3;(r?.exercises||[]).forEach(addExercise);if(!r)addExercise();$('routineEditorTitle').textContent=r?'Editar rutina':'Nueva rutina';$('routineEditor').hidden=false;document.body.style.overflow='hidden';$('routineEditor').scrollIntoView({behavior:'smooth',block:'start'})}
+function cancel(){$('routineEditor').hidden=true;document.body.style.overflow='';editing=null}
 window.openRoutines=function(){if(window.currentClientId==null)return;$('clientFile').style.display='none';$('measurementsPanel').style.display='none';$('progressPanel').style.display='none';$('routinesPanel').style.display='block';document.querySelector('.bottom-nav').style.display='none';$('routineClientName').textContent=clients.find(c=>c.id===window.currentClientId)?.name||'';cancel();render();window.scrollTo(0,0)};
 window.closeRoutines=function(){$('routinesPanel').style.display='none';if(kafitRoutineMode){closeClientFile();return}$('clientFile').style.display='block';document.querySelector('.bottom-nav').style.display='grid';window.scrollTo(0,0)};
-$('routineNew').onclick=()=>start(null);$('routineCancel').onclick=cancel;$('routineAddExercise').onclick=()=>addExercise();
-$('routineForm').addEventListener('submit',async e=>{e.preventDefault();const boxes=[...$('routineExercises').children];if(!boxes.length){alert('Agrega al menos un ejercicio.');return}const exercises=[];for(const box of boxes){const obj={};box.querySelectorAll('[data-key]').forEach(input=>obj[input.dataset.key]=input.value.trim());if(!obj.name||!obj.day||!obj.reps||Number(obj.sets)<1){alert('Completa nombre, día, series y repeticiones de cada ejercicio.');return}if(obj.video&&!/^https:\/\//i.test(obj.video)){alert('El enlace anterior debe comenzar con https://');return}const fileInput=box.querySelector('.routine-video-file');obj.videoId=fileInput?.dataset.videoId||'';const file=fileInput?.files?.[0];if(file){if(!file.type.startsWith('video/')||file.size>25*1024*1024){alert('Video inválido o mayor de 25 MB.');return}obj.videoId='vid_'+Date.now()+'_'+Math.random().toString(36).slice(2);try{await storeVideo(obj.videoId,file)}catch(err){alert('Safari no pudo guardar el video. Verifica el espacio disponible.');return}}exercises.push(obj)}
+$('routineEditorClose').onclick=cancel;$('routineNew').onclick=()=>start(null);$('routineCancel').onclick=cancel;$('routineAddExercise').onclick=()=>addExercise();
+$('routineForm').addEventListener('submit',async e=>{e.preventDefault();const boxes=[...$('routineExercises').children];if(!boxes.length){alert('Agrega al menos un ejercicio.');return}const exercises=[];for(const box of boxes){const obj={};box.querySelectorAll('[data-key]').forEach(input=>obj[input.dataset.key]=input.value.trim());if(!obj.name||!obj.day||!obj.reps||Number(obj.sets)<1){alert('Completa nombre, día, series y repeticiones de cada ejercicio.');return}if(obj.video&&!/^https:\/\//i.test(obj.video)){alert('El enlace anterior debe comenzar con https://');return}const seriesHost=box.querySelector('.routine-series-list');obj.seriesDetails=[...seriesHost.children].map(card=>{const v={};card.querySelectorAll('[data-series-key]').forEach(inp=>v[inp.dataset.seriesKey]=inp.value.trim());return v});obj.sets=obj.seriesDetails.length;obj.reps=obj.seriesDetails.map(v=>v.reps).join(' / ');const fileInput=box.querySelector('.routine-video-file');obj.videoId=fileInput?.dataset.videoId||'';const file=fileInput?.files?.[0];if(file){if(!file.type.startsWith('video/')||file.size>25*1024*1024){alert('Video inválido o mayor de 25 MB.');return}obj.videoId='vid_'+Date.now()+'_'+Math.random().toString(36).slice(2);try{await storeVideo(obj.videoId,file)}catch(err){alert('Safari no pudo guardar el video. Verifica el espacio disponible.');return}}exercises.push(obj)}
  const data=read(),key=String(window.currentClientId),all=Array.isArray(data[key])?data[key]:[];
  const routine={id:editing||('r'+Date.now()),name:$('routineName').value.trim(),goal:$('routineGoal').value.trim(),level:$('routineLevel').value,weeks:Number($('routineWeeks').value),days:Number($('routineDays').value),exercises};if(!routine.name)return;
  const idx=all.findIndex(r=>r.id===editing);if(idx>=0)all[idx]=routine;else all.unshift(routine);data[key]=all;
