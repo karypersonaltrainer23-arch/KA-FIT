@@ -1473,7 +1473,7 @@ body{
     <p>Utiliza las dos fechas seleccionadas arriba. Añade tus observaciones y abre una versión lista para imprimir o guardar como PDF.</p>
     <label for="reportNotes" style="display:block;color:#ffd75a;margin:12px 0 8px">Observaciones y recomendaciones del entrenador</label>
     <textarea id="reportNotes" rows="4" placeholder="Ej. Evolución, técnica, próximos objetivos..." style="width:100%;padding:12px;border:1px solid #a78636;border-radius:12px;background:#151515;color:#fff;font:inherit;resize:vertical"></textarea>
-    <button type="button" id="createProgressReport" class="progress-expand" onclick="createProgressReport()">▤ Preparar reporte PDF</button>
+    <button type="button" id="createProgressReport" class="progress-expand">▤ Preparar reporte PDF</button>
     <p style="font-size:12px;color:#bbb;margin-top:10px">En iPhone: en la vista del reporte, pulsa Imprimir y utiliza Compartir para guardar el PDF en Archivos o enviarlo por WhatsApp. El reporte no se sube a un servidor.</p>
   </div>
   <a href="clientes.html?modo=progreso" id="closeProgress" class="edit-file-button" style="margin-top:20px;text-align:center;text-decoration:none">← Volver a Progreso</a>
@@ -2613,7 +2613,19 @@ function closeKafitReport(){
   const button=document.getElementById('createProgressReport');
   if(button)button.scrollIntoView({block:'center'});
 }
-// El botón de reporte utiliza su manejador onclick directo.
+// Conexión dentro del mismo ámbito que createProgressReport: Safari/iPhone.
+const reportButton = document.getElementById('createProgressReport');
+if (reportButton) {
+  reportButton.addEventListener('click', function(event) {
+    event.preventDefault();
+    try { createProgressReport(); }
+    catch (error) {
+      console.error('KA-FIT: error al preparar reporte', error);
+      alert('Error al preparar el reporte: ' + (error && error.message ? error.message : String(error)));
+    }
+  });
+}
+
 
 document.getElementById('compareStart').addEventListener('change',updateEvaluationCompare);
 document.getElementById('compareEnd').addEventListener('change',updateEvaluationCompare);
