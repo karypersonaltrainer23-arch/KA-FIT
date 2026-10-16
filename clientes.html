@@ -1045,6 +1045,11 @@ body{
 #routineEditor .routine-library button{padding:9px;border:1px solid #9b7418;border-radius:10px;background:#211b10;color:#ffd75a}
 #routineEditor .routine-editor-close{float:right;background:#242015;border:1px solid #d4af37;color:#ffd75a;border-radius:10px;padding:9px}
 </style>
+<style>
+/* Biblioteca KA-FIT */
+#kafitLibrary{position:fixed;inset:0;z-index:350;background:linear-gradient(145deg,#211806,#050505 65%);color:#fff;overflow:auto;padding:calc(18px + env(safe-area-inset-top)) 16px 90px}
+#kafitLibrary[hidden]{display:none!important}.kl-wrap{max-width:720px;margin:auto}.kl-header{display:flex;align-items:center;justify-content:space-between;gap:12px}.kl-header h2{color:#ffd75a;font-size:23px}.kl-filter{width:100%;padding:12px;margin:8px 0;background:#171717;color:white;border:1px solid #a78636;border-radius:12px;font-size:16px}.kl-card{border:1px solid #806627;border-radius:15px;background:#15120c;padding:14px;margin:12px 0}.kl-card h3{color:#ffd75a;margin:0 0 8px}.kl-card p{color:#ddd;margin:6px 0;font-size:13px}.kl-card video{width:100%;max-height:240px;border-radius:10px;background:#000;margin:9px 0}.kl-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.kl-actions button{flex:1;min-width:110px}.kl-hint{color:#c9b992;font-size:13px;line-height:1.5;margin:10px 0}.kl-form{padding:15px;border:1px solid #a78636;border-radius:14px;background:#17130c;margin:15px 0}.kl-form[hidden]{display:none!important}
+</style>
 </head>
 
 <body>
@@ -1510,7 +1515,7 @@ body{
 <section id="routinesPanel" style="display:none">
  <button type="button" class="routine-btn" onclick="closeRoutines()">← Volver a Rutinas</button>
  <h2>🏋️ Rutinas personalizadas</h2><p id="routineClientName" class="routine-muted"></p>
- <div class="file-card"><h3>Programas del cliente</h3><div id="routineList"></div><button type="button" class="routine-btn primary" id="routineNew">＋ Crear nueva rutina</button></div>
+ <button type="button" class="routine-btn" id="klOpen">📚 Abrir biblioteca de ejercicios</button><div class="file-card"><h3>Programas del cliente</h3><div id="routineList"></div><button type="button" class="routine-btn primary" id="routineNew">＋ Crear nueva rutina</button></div>
  <div class="file-card" id="routineEditor" hidden style="margin-top:16px">
  <button type="button" class="routine-editor-close" id="routineEditorClose">✕ Cerrar</button><h3 id="routineEditorTitle">Nueva rutina</h3>
  <form id="routineForm">
@@ -1522,6 +1527,23 @@ body{
   <div class="routine-actions"><button class="routine-btn primary" type="submit">Guardar rutina</button><button class="routine-btn" type="button" id="routineCancel">Cancelar</button></div>
  </form></div>
 </section>
+<section id="kafitLibrary" hidden aria-label="Biblioteca de ejercicios"><div class="kl-wrap">
+<div class="kl-header"><h2>📚 Biblioteca KA-FIT</h2><button type="button" class="routine-btn" id="klClose">✕ Cerrar</button></div>
+<p class="kl-hint">Busca por ejercicio o grupo muscular. Puedes añadir tus propios ejercicios con videos desde tu iPhone.</p>
+<button type="button" class="routine-btn primary" id="klNew">＋ Crear ejercicio</button>
+<form id="klForm" class="kl-form" hidden>
+<h3 id="klFormTitle" style="color:#ffd75a">Nuevo ejercicio</h3>
+<label class="routine-field">Nombre del ejercicio<input id="klName" required maxlength="100"></label>
+<label class="routine-field">Grupo muscular<select id="klGroup" required></select></label>
+<label class="routine-field">Instrucciones<textarea id="klNotes" rows="3" maxlength="1500" placeholder="Ejecución y recomendaciones"></textarea></label>
+<label class="routine-field">Video demostrativo (máximo 25 MB)<input id="klVideo" type="file" accept="video/*"></label>
+<p id="klVideoStatus" class="kl-hint"></p><div id="klVideoPreview"></div>
+<div class="kl-actions"><button type="submit" class="routine-btn primary">Guardar ejercicio</button><button type="button" id="klCancel" class="routine-btn">Cancelar</button></div>
+</form>
+<input id="klSearch" class="kl-filter" type="search" placeholder="Buscar ejercicio...">
+<select id="klCategory" class="kl-filter"></select>
+<p id="klCount" class="kl-hint"></p><div id="klResults"></div>
+</div></section>
 <script>
 
 /* =========================
@@ -2719,6 +2741,20 @@ const $=id=>document.getElementById(id);
 const INTENSITY_METHODS=['Tradicional','Drop-set','Súper serie','Bi-serie','Tri-serie','Rest-pause','Cluster-set','Fallo muscular','Repeticiones forzadas','Circuito','Myo-reps','Pirámide ascendente','Pirámide descendente','Tempo controlado','Isométricos','Otro / personalizado'];
 const GROUP_TYPES=['Individual','Súper serie','Bi-serie','Tri-serie','Circuito'];
 const EXERCISE_LIBRARY=[['Sentadilla con barra','Piernas'],['Prensa de piernas','Piernas'],['Extensión de cuádriceps','Piernas'],['Curl femoral','Piernas'],['Peso muerto rumano','Piernas'],['Hip thrust','Glúteos'],['Zancadas','Piernas'],['Elevación de talones','Pantorrillas'],['Press de banca','Pecho'],['Press inclinado con mancuernas','Pecho'],['Aperturas con mancuernas','Pecho'],['Flexiones','Pecho'],['Jalón al pecho','Espalda'],['Remo con barra','Espalda'],['Remo sentado','Espalda'],['Dominadas','Espalda'],['Press militar','Hombros'],['Elevaciones laterales','Hombros'],['Pájaros','Hombros'],['Curl de bíceps','Bíceps'],['Curl martillo','Bíceps'],['Extensión de tríceps en polea','Tríceps'],['Fondos','Tríceps'],['Plancha','Core'],['Crunch abdominal','Core']];
+const KL_KEY='kafit_custom_exercises_v1';
+const KL_GROUPS=['Todos','Piernas','Glúteos','Pantorrillas','Pecho','Espalda','Hombros','Bíceps','Tríceps','Core','Cardio','Movilidad','Otros'];
+let klEditing=null,klTarget=null;
+function klCustom(){try{const a=JSON.parse(localStorage.getItem(KL_KEY)||'[]');return Array.isArray(a)?a:[]}catch(e){return []}}
+function klEntries(){return [...EXERCISE_LIBRARY.map(([name,group])=>({id:'base:'+name,name,group,notes:'',videoId:'',base:true})),...klCustom()]}
+function klClose(){ $('kafitLibrary').hidden=true;document.body.style.overflow=$('routineEditor').hidden?'':'hidden';klTarget=null;klCancel() }
+function klCancel(){klEditing=null;$('klForm').hidden=true;$('klForm').reset();$('klVideoPreview').replaceChildren();$('klVideoStatus').textContent=''}
+function klOpen(target=null){klTarget=target;$('kafitLibrary').hidden=false;document.body.style.overflow='hidden';klRender()}
+function klRender(){const search=$('klSearch').value.trim().toLocaleLowerCase('es'),group=$('klCategory').value;const items=klEntries().filter(x=>(!group||group==='Todos'||x.group===group)&&(!search||(x.name+' '+x.group).toLocaleLowerCase('es').includes(search)));$('klCount').textContent=items.length+' ejercicios';const host=$('klResults');host.replaceChildren();items.forEach(x=>{const card=el('article',undefined,'kl-card');card.append(el('h3',x.name),el('p','Grupo muscular: '+x.group));if(x.notes)card.appendChild(el('p',x.notes));if(x.videoId){const holder=el('div');card.appendChild(holder);showStoredVideo(x.videoId,holder)}else card.appendChild(el('p','Sin video demostrativo','kl-hint'));const actions=el('div',undefined,'kl-actions');if(klTarget){const pick=el('button','＋ Usar en rutina','routine-btn primary');pick.type='button';pick.onclick=()=>{klTarget.querySelector('[data-key="name"]').value=x.name;const f=klTarget.querySelector('.routine-video-file');if(f){f.dataset.videoId=x.videoId||'';f.value='';const preview=klTarget.querySelector('.routine-video-preview');preview.replaceChildren();if(x.videoId)showStoredVideo(x.videoId,preview);const status=klTarget.querySelector('.routine-video-status');if(status)status.textContent=x.videoId?'Video vinculado desde la biblioteca.':'Ejercicio seleccionado sin video.'}klClose()};actions.appendChild(pick)}if(!x.base){const edit=el('button','Editar','routine-btn');edit.type='button';edit.onclick=()=>klEdit(x);const del=el('button','Eliminar','routine-btn');del.type='button';del.onclick=()=>{if(!confirm('¿Eliminar este ejercicio de la biblioteca? Las rutinas existentes se conservarán.'))return;localStorage.setItem(KL_KEY,JSON.stringify(klCustom().filter(y=>y.id!==x.id)));klRender()};actions.append(edit,del)}card.appendChild(actions);host.appendChild(card)})}
+function klEdit(x){klEditing=x?.id||null;$('klForm').hidden=false;$('klFormTitle').textContent=x?'Editar ejercicio':'Nuevo ejercicio';$('klName').value=x?.name||'';$('klGroup').value=x?.group||'Piernas';$('klNotes').value=x?.notes||'';$('klVideo').value='';$('klVideoPreview').replaceChildren();$('klVideoStatus').textContent=x?.videoId?'Video guardado; selecciona otro para reemplazarlo.':'';if(x?.videoId)showStoredVideo(x.videoId,$('klVideoPreview'));$('klForm').scrollIntoView({block:'start'})}
+KL_GROUPS.forEach(g=>{const a=el('option',g);a.value=g;$('klCategory').appendChild(a);if(g!=='Todos'){const b=el('option',g);b.value=g;$('klGroup').appendChild(b)}});
+$('klOpen').onclick=()=>klOpen();$('klClose').onclick=klClose;$('klNew').onclick=()=>klEdit(null);$('klCancel').onclick=klCancel;$('klSearch').oninput=klRender;$('klCategory').onchange=klRender;
+$('klVideo').onchange=()=>{const f=$('klVideo').files[0];if(!f)return;if(!f.type.startsWith('video/')||f.size>25*1024*1024){alert('Selecciona un video válido de hasta 25 MB.');$('klVideo').value='';return}$('klVideoStatus').textContent='Video seleccionado: '+f.name;showVideo(f,$('klVideoPreview'))};
+$('klForm').onsubmit=async e=>{e.preventDefault();const name=$('klName').value.trim(),group=$('klGroup').value,notes=$('klNotes').value.trim();if(!name)return;const all=klCustom(),old=all.find(x=>x.id===klEditing);let videoId=old?.videoId||'';const file=$('klVideo').files[0];if(file){videoId='libvid_'+Date.now()+'_'+Math.random().toString(36).slice(2);try{await storeVideo(videoId,file)}catch(err){alert('No se pudo guardar el video. Comprueba el espacio disponible.');return}}const item={id:klEditing||'lib_'+Date.now()+'_'+Math.random().toString(36).slice(2),name,group,notes,videoId};const idx=all.findIndex(x=>x.id===klEditing);if(idx>=0)all[idx]=item;else all.push(item);try{localStorage.setItem(KL_KEY,JSON.stringify(all))}catch(err){alert('No se pudo guardar el ejercicio.');return}klCancel();klRender()};
 function createSeriesRow(host, data={}){
  const card=el('div',undefined,'routine-series-card');
  const header=el('div','Serie '+(host.children.length+1),'routine-series-title');card.appendChild(header);
@@ -2737,7 +2773,7 @@ function field(label,type,value,opts={}){const wrap=el('label',label,'routine-fi
 function addExercise(data={}){
  const box=el('div',undefined,'routine-exercise');
  box.appendChild(field('Ejercicio','text',data.name,{key:'name',placeholder:'Ej. Sentadilla'}));
- const lib=el('div',undefined,'routine-library');const choose=document.createElement('select');choose.className='routine-btn';choose.style.maxWidth='100%';const first=document.createElement('option');first.value='';first.textContent='📚 Elegir de la biblioteca';choose.appendChild(first);EXERCISE_LIBRARY.forEach(([name,group])=>{const op=document.createElement('option');op.value=name;op.textContent=group+' · '+name;choose.appendChild(op)});choose.onchange=()=>{if(choose.value)box.querySelector('[data-key="name"]').value=choose.value};lib.appendChild(choose);box.appendChild(lib);
+ const lib=el('div',undefined,'routine-library');const choose=document.createElement('select');choose.className='routine-btn';choose.style.maxWidth='100%';const first=document.createElement('option');first.value='';first.textContent='📚 Elegir de la biblioteca';choose.appendChild(first);EXERCISE_LIBRARY.forEach(([name,group])=>{const op=document.createElement('option');op.value=name;op.textContent=group+' · '+name;choose.appendChild(op)});choose.onchange=()=>{if(choose.value)box.querySelector('[data-key="name"]').value=choose.value};lib.appendChild(choose);const browse=el('button','📚 Buscar por músculo y video','routine-btn');browse.type='button';browse.onclick=()=>klOpen(box);lib.appendChild(browse);box.appendChild(lib);
 
  box.appendChild(field('Día / sesión','text',data.day||'Día 1',{key:'day',placeholder:'Ej. Lunes o Día 1'}));
  const groupBox=el('div',undefined,'routine-group-settings');groupBox.appendChild(el('h4','🔗 Vincular con otros ejercicios'));
@@ -2757,7 +2793,7 @@ function addExercise(data={}){
  const videoLabel=el('label','Video corto del ejercicio (desde tu iPhone)','routine-field');
  const file=document.createElement('input');file.type='file';file.accept='video/*';file.className='routine-video-file';file.style.marginTop='8px';file.dataset.videoId=data.videoId||'';
  const preview=el('div',undefined,'routine-video-preview');
- const status=el('p',data.videoId?'Video guardado. Puedes reemplazarlo seleccionando otro.':'Selecciona un video corto (máximo 25 MB).','routine-muted');
+ const status=el('p',data.videoId?'Video guardado. Puedes reemplazarlo seleccionando otro.':'Selecciona un video corto (máximo 25 MB).','routine-muted');status.classList.add('routine-video-status');
  videoLabel.append(file,status,preview);box.appendChild(videoLabel);
  if(data.videoId)showStoredVideo(data.videoId,preview);
  file.addEventListener('change',()=>{preview.replaceChildren();const f=file.files?.[0];if(!f)return;
