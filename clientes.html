@@ -3181,11 +3181,17 @@ $('routineForm').addEventListener('submit',async e=>{e.preventDefault();const bo
   return html+'</svg>';
  }
  function update(){
-  const sel=$('kafitStrengthExercise'),old=sel.value,names=[...new Set(data().map(x=>x.exercise))].sort((a,b)=>a.localeCompare(b,'es'));
+  const sel=$('kafitStrengthExercise'),old=sel.value;
+  let stored={};try{stored=JSON.parse(localStorage.getItem('kafit_routines_v1')||'{}')}catch(e){}
+  const clientRoutines=Array.isArray(stored[String(window.currentClientId)])?stored[String(window.currentClientId)]:[];
+  const names=[...new Set([
+   ...clientRoutines.flatMap(r=>Array.isArray(r.exercises)?r.exercises.map(x=>String(x.name||'').trim()):[]),
+   ...data().map(x=>String(x.exercise||'').trim())
+  ].filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));
   sel.replaceChildren();names.forEach(n=>{const o=new Option(n,n);sel.add(o)});if(names.includes(old))sel.value=old;
   const rows=filtered(),dates=new Map();rows.forEach(x=>dates.set(x.date,Math.max(dates.get(x.date)??0,x.weight)));
   const pts=[...dates],initial=pts[0]?.[1],last=pts[pts.length-1]?.[1];
-  $('kafitStrengthSummary').textContent=pts.length?`${pts.length} fechas con cargas · Inicial: ${initial} kg · Última: ${last} kg · Cambio: ${Number((last-initial).toFixed(2))>0?'+':''}${Number((last-initial).toFixed(2))} kg`:'Sin entrenamientos válidos en el periodo seleccionado.';
+  $('kafitStrengthSummary').textContent=pts.length?`${pts.length} fechas con cargas · Inicial: ${initial} kg · Última: ${last} kg · Cambio: ${Number((last-initial).toFixed(2))>0?'+':''}${Number((last-initial).toFixed(2))} kg`:'Este ejercicio aún no tiene entrenamientos con cargas válidas en el periodo seleccionado.';
   $('kafitStrengthChart').innerHTML=chart(rows);$('kafitStrengthPdf').disabled=!rows.length;
  }
  window.kafitRenderStrengthDashboard=update;
