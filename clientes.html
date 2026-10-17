@@ -1468,6 +1468,7 @@ body{
     <h3>🏋️ Progreso de fuerza · Reporte independiente</h3>
     <p>Consulta cargas por ejercicio y genera un PDF semanal, mensual o histórico, sin incluir medidas corporales.</p>
     <label class="routine-field">Ejercicio<select id="kafitStrengthExercise" class="kl-filter"></select></label>
+    <p id="kafitStrengthRoutineInfo" style="color:#ffd75a;font-size:13px;margin:5px 0 12px" aria-live="polite"></p>
     <label class="routine-field">Periodo del reporte<select id="kafitStrengthPeriod" class="kl-filter"><option value="7">Últimos 7 días</option><option value="30">Últimos 30 días</option><option value="all">Todo el historial</option></select></label>
     <div id="kafitStrengthSummary" class="routine-muted" aria-live="polite"></div>
     <div id="kafitStrengthChart" style="margin:14px 0;overflow-x:auto;border:1px solid #725c20;border-radius:14px;background:#141414;padding:12px"></div>
@@ -3184,11 +3185,26 @@ $('routineForm').addEventListener('submit',async e=>{e.preventDefault();const bo
   const sel=$('kafitStrengthExercise'),old=sel.value;
   let stored={};try{stored=JSON.parse(localStorage.getItem('kafit_routines_v1')||'{}')}catch(e){}
   const clientRoutines=Array.isArray(stored[String(window.currentClientId)])?stored[String(window.currentClientId)]:[];
-  const names=[...new Set([
-   ...clientRoutines.flatMap(r=>Array.isArray(r.exercises)?r.exercises.map(x=>String(x.name||'').trim()):[]),
-   ...data().map(x=>String(x.exercise||'').trim())
-  ].filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));
-  sel.replaceChildren();names.forEach(n=>{const o=new Option(n,n);sel.add(o)});if(names.includes(old))sel.value=old;
+  const groups=new Map();
+  clientRoutines.forEach(r=>{
+   const title=String(r.name||'Rutina sin nombre').trim();
+   const exercises=[...new Set((Array.isArray(r.exercises)?r.exercises:[]).map(x=>String(x.name||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));
+   if(exercises.length)groups.set(String(r.id),{title,exercises});
+  });
+  const assigned=new Set([...groups.values()].flatMap(g=>g.exercises));
+  const historical=[...new Set(data().map(x=>String(x.exercise||'').trim()).filter(x=>x&&!assigned.has(x)))].sort((a,b)=>a.localeCompare(b,'es'));
+  sel.replaceChildren();
+  [...groups.values()].forEach(group=>{
+   const optgroup=document.createElement('optgroup');optgroup.label='Rutina: '+group.title;
+   group.exercises.forEach(n=>{const o=new Option(n,n);optgroup.appendChild(o)});
+   sel.appendChild(optgroup);
+  });
+  if(historical.length){const group=document.createElement('optgroup');group.label='Ejercicios de registros anteriores';historical.forEach(n=>group.appendChild(new Option(n,n)));sel.appendChild(group)}
+  const names=[...assigned,...historical];
+  if(names.includes(old))sel.value=old;
+  const matchingRoutines=[...groups.values()].filter(g=>g.exercises.includes(sel.value)).map(g=>g.title);
+  const routineInfo=$('kafitStrengthRoutineInfo');
+  if(routineInfo)routineInfo.textContent=matchingRoutines.length?'Rutina'+(matchingRoutines.length>1?'s':'')+': '+[...new Set(matchingRoutines)].join(' · '):'Ejercicio de un registro anterior';
   const rows=filtered(),dates=new Map();rows.forEach(x=>dates.set(x.date,Math.max(dates.get(x.date)??0,x.weight)));
   const pts=[...dates],initial=pts[0]?.[1],last=pts[pts.length-1]?.[1];
   $('kafitStrengthSummary').textContent=pts.length?`${pts.length} fechas con cargas · Inicial: ${initial} kg · Última: ${last} kg · Cambio: ${Number((last-initial).toFixed(2))>0?'+':''}${Number((last-initial).toFixed(2))} kg`:'Este ejercicio aún no tiene entrenamientos con cargas válidas en el periodo seleccionado.';
@@ -3201,14 +3217,14 @@ $('routineForm').addEventListener('submit',async e=>{e.preventDefault();const bo
   const client=(JSON.parse(localStorage.getItem('kafit_clients_v2')||'[]')||[]).find(c=>String(c.id)===String(window.currentClientId));
   const name=client?.name||$('progressClientLabel').textContent||'Cliente';
   const exercise=$('kafitStrengthExercise').value,period=$('kafitStrengthPeriod').selectedOptions[0].textContent;
-  const summary=$('kafitStrengthSummary').textContent,notes=$('kafitStrengthNotes').value.trim();
+  const routineNames=$('kafitStrengthRoutineInfo').textContent,summary=$('kafitStrengthSummary').textContent,notes=$('kafitStrengthNotes').value.trim();
   const section=document.createElement('section');section.id='kafitIndependentStrengthReport';
   section.style.cssText='position:fixed;inset:0;z-index:99999;overflow:auto;background:#ededed;color:#222;padding:15px;font:15px Arial,sans-serif';
   const toolbar=document.createElement('div');toolbar.style.cssText='position:sticky;top:0;display:flex;gap:10px;justify-content:center;background:#171717;padding:12px;z-index:2';
   const close=document.createElement('button');close.textContent='← Cerrar';close.className='routine-btn';close.onclick=()=>{section.remove();document.body.classList.remove('kafit-independent-strength-print')};
   const print=document.createElement('button');print.textContent='Imprimir / Guardar PDF';print.className='routine-btn primary';print.onclick=()=>window.print();toolbar.append(close,print);section.appendChild(toolbar);
   const paper=document.createElement('article');paper.style.cssText='max-width:780px;margin:14px auto;background:white;padding:26px;line-height:1.5';
-  paper.innerHTML=`<h1 style="color:#96701d;border-bottom:3px solid #d4af37;padding-bottom:12px">KA-FIT · REPORTE DE FUERZA</h1><p><b>Cliente:</b> ${esc(name)}</p><p><b>Ejercicio:</b> ${esc(exercise)}</p><p><b>Periodo:</b> ${esc(period)}</p><p><b>Fecha de emisión:</b> ${new Date().toLocaleDateString('es-MX')}</p><p style="color:#85600f;font-weight:bold;margin:18px 0">${esc(summary)}</p><h2 style="color:#96701d">Evolución de cargas</h2><div style="background:#141414;padding:12px;border-radius:10px;overflow:hidden">${chart(rows)}</div><h2 style="color:#96701d;margin-top:20px">Series registradas</h2><table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="background:#292217;color:white"><th>Fecha</th><th>Rutina</th><th>Peso (kg)</th><th>Repeticiones</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.date)}</td><td>${esc(r.routine)}</td><td>${r.weight}</td><td>${esc(r.reps)}</td></tr>`).join('')}</tbody></table>${notes?`<h2 style="color:#96701d;margin-top:20px">Observaciones</h2><p style="white-space:pre-wrap">${esc(notes)}</p>`:''}<p style="font-size:11px;color:#666;margin-top:24px">Reporte independiente de fuerza. Se consideran las series completadas con peso válido; no incluye evaluaciones de medidas corporales.</p>`;
+  paper.innerHTML=`<h1 style="color:#96701d;border-bottom:3px solid #d4af37;padding-bottom:12px">KA-FIT · REPORTE DE FUERZA</h1><p><b>Cliente:</b> ${esc(name)}</p><p><b>Ejercicio:</b> ${esc(exercise)}</p><p><b>${esc(routineNames)}</b></p><p><b>Periodo:</b> ${esc(period)}</p><p><b>Fecha de emisión:</b> ${new Date().toLocaleDateString('es-MX')}</p><p style="color:#85600f;font-weight:bold;margin:18px 0">${esc(summary)}</p><h2 style="color:#96701d">Evolución de cargas</h2><div style="background:#141414;padding:12px;border-radius:10px;overflow:hidden">${chart(rows)}</div><h2 style="color:#96701d;margin-top:20px">Series registradas</h2><table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="background:#292217;color:white"><th>Fecha</th><th>Rutina</th><th>Peso (kg)</th><th>Repeticiones</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.date)}</td><td>${esc(r.routine)}</td><td>${r.weight}</td><td>${esc(r.reps)}</td></tr>`).join('')}</tbody></table>${notes?`<h2 style="color:#96701d;margin-top:20px">Observaciones</h2><p style="white-space:pre-wrap">${esc(notes)}</p>`:''}<p style="font-size:11px;color:#666;margin-top:24px">Reporte independiente de fuerza. Se consideran las series completadas con peso válido; no incluye evaluaciones de medidas corporales.</p>`;
   section.appendChild(paper);document.body.appendChild(section);document.body.classList.add('kafit-independent-strength-print');section.scrollTop=0;
  });
 })();
