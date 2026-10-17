@@ -1057,7 +1057,7 @@ body{
 .routine-cover-preview img{width:100%;max-height:190px;object-fit:cover;border:1px solid #a78636;border-radius:12px;margin:8px 0}
 .kl-cover span{position:relative;z-index:1;display:grid;place-items:center;width:56px;height:56px;border-radius:50%;background:#000b;border:2px solid #ffda58;color:#ffda58;font-size:27px;box-shadow:0 0 15px #0008}
 </style>
-</head>
+<style>@media print{body.kafit-strength-print > :not(#kafitStrengthReport){display:none!important}body.kafit-strength-print #kafitStrengthReport{position:static!important;inset:auto!important;overflow:visible!important;background:white!important;padding:0!important}body.kafit-strength-print #kafitStrengthReport > div:first-child{display:none!important}body.kafit-strength-print #kafitStrengthReport article{margin:0!important;padding:0!important;max-width:none!important}body.kafit-strength-print #kafitStrengthReport table tr{break-inside:avoid}@page{size:A4;margin:13mm}}</style></head>
 
 <body>
 
@@ -2925,8 +2925,8 @@ function viewRoutine(r){
  const notesLabel=el('label','Observaciones de la sesión','routine-field');const notes=document.createElement('textarea');notes.rows=3;notes.style.cssText='display:block;width:100%;padding:12px;margin-top:8px;background:#171717;color:white;border:1px solid #a78636;border-radius:12px';notesLabel.appendChild(notes);panel.appendChild(notesLabel);
  const notice=el('p','','routine-muted');notice.setAttribute('aria-live','polite');panel.appendChild(notice);
  const history=el('div');
- function renderHistory(){history.replaceChildren();history.appendChild(el('h3','Historial de entrenamientos'));const saved=[...records()].sort((a,b)=>String(b.date).localeCompare(String(a.date))||String(b.savedAt).localeCompare(String(a.savedAt)));if(!saved.length)history.appendChild(el('p','Aún no hay entrenamientos registrados.','routine-muted'));saved.forEach(item=>{const row=el('div',undefined,'routine-exercise');row.appendChild(el('strong',item.date));row.appendChild(el('p',item.series.filter(x=>x.completed).length+' de '+item.series.length+' series completadas'));item.series.forEach(x=>{if(x.completed||x.reps!==''||x.weight!=='')row.appendChild(el('p',x.day+' · '+x.exercise+' · Serie '+(x.si+1)+': '+(x.reps||'—')+' reps · '+(x.weight||'—')+' kg'+(x.completed?' ✓':'')))});if(item.notes)row.appendChild(el('p','Notas: '+item.notes));history.appendChild(row)})}
- const save=el('button','💾 Guardar entrenamiento','routine-btn primary');save.type='button';save.style.width='100%';save.onclick=()=>{if(!dateInput.value){notice.textContent='Selecciona una fecha.';return}const series=entries.map(x=>({ei:x.ei,si:x.si,exercise:x.exercise,day:x.day,reps:x.reps.value,weight:x.weight.value,completed:x.completed.checked}));if(!series.some(x=>x.completed||x.reps!==''||x.weight!=='')){notice.textContent='Registra al menos una serie antes de guardar.';return}const all=getLogs();if(!all[clientKey])all[clientKey]={};if(!Array.isArray(all[clientKey][routineKey]))all[clientKey][routineKey]=[];all[clientKey][routineKey].push({date:dateInput.value,savedAt:new Date().toISOString(),series,notes:notes.value.trim()});try{localStorage.setItem(logKey,JSON.stringify(all));notice.textContent='Entrenamiento guardado en este navegador.';renderHistory()}catch(e){notice.textContent='No se pudo guardar. Revisa el almacenamiento disponible.'}};
+ function renderHistory(){history.replaceChildren();history.appendChild(el('h3','Historial de entrenamientos'));const saved=[...records()].sort((a,b)=>String(b.date).localeCompare(String(a.date))||String(b.savedAt).localeCompare(String(a.savedAt)));if(!saved.length)history.appendChild(el('p','Aún no hay entrenamientos registrados.','routine-muted'));saved.forEach(item=>{const row=el('div',undefined,'routine-exercise');row.appendChild(el('strong',item.date));row.appendChild(el('p',item.series.filter(x=>x.completed).length+' de '+item.series.length+' series completadas'));item.series.forEach(x=>{if(x.completed||x.reps!==''||x.weight!=='')row.appendChild(el('p',x.day+' · '+x.exercise+' · Serie '+(x.si+1)+': '+(x.reps||'—')+' reps · '+(x.weight||'—')+' kg'+(x.completed?' ✓':'')))});if(item.series.some(x=>x.completed&&(x.reps===''||x.weight==='')))row.appendChild(el('p','⚠️ Este registro anterior contiene series completadas sin repeticiones o peso. No se utilizan esas cargas en las gráficas.','routine-muted'));if(item.notes)row.appendChild(el('p','Notas: '+item.notes));history.appendChild(row)})}
+ const save=el('button','💾 Guardar entrenamiento','routine-btn primary');save.type='button';save.style.width='100%';save.onclick=()=>{if(!dateInput.value){notice.textContent='Selecciona una fecha.';return}const series=entries.map(x=>({ei:x.ei,si:x.si,exercise:x.exercise,day:x.day,reps:x.reps.value,weight:x.weight.value,completed:x.completed.checked}));if(!series.some(x=>x.completed||x.reps!==''||x.weight!=='')){notice.textContent='Registra al menos una serie antes de guardar.';return}if(series.some(x=>x.completed&&(x.reps===''||x.weight===''))){notice.textContent='Para marcar una serie como completada, registra las repeticiones y el peso real. No se guardó la sesión.';return}const all=getLogs();if(!all[clientKey])all[clientKey]={};if(!Array.isArray(all[clientKey][routineKey]))all[clientKey][routineKey]=[];all[clientKey][routineKey].push({date:dateInput.value,savedAt:new Date().toISOString(),series,notes:notes.value.trim()});try{localStorage.setItem(logKey,JSON.stringify(all));notice.textContent='Entrenamiento guardado en este navegador.';renderHistory()}catch(e){notice.textContent='No se pudo guardar. Revisa el almacenamiento disponible.'}};
  panel.appendChild(save);panel.appendChild(history);renderHistory();wrap.appendChild(panel);
  // KA-FIT: evolución de cargas basada únicamente en registros reales.
  const strength=el('section',undefined,'file-card');strength.style.marginTop='18px';
@@ -2952,17 +2952,46 @@ function viewRoutine(r){
   if(!points.length){strengthSummary.textContent='Todavía no hay series completadas con peso registrado para este ejercicio.';strengthChart.appendChild(el('p','Registra al menos una sesión para ver la gráfica.','routine-muted'));return}
   const first=points[0][1],last=points[points.length-1][1],max=Math.max(...points.map(x=>x[1])),delta=last-first;
   strengthSummary.textContent='Sesiones: '+points.length+' · Inicial: '+first+' kg · Última: '+last+' kg · Cambio: '+(delta>0?'+':'')+Number(delta.toFixed(2))+' kg · Máximo: '+max+' kg';
-  const ns='http://www.w3.org/2000/svg',width=Math.max(320,points.length*72+58),height=260,left=44,right=16,top=24,bottom=55,plotW=width-left-right,plotH=height-top-bottom;
+  const ns='http://www.w3.org/2000/svg',width=Math.max(320,points.length*72+58),height=280,left=66,right=42,top=38,bottom=62,plotW=width-left-right,plotH=height-top-bottom;
   const svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox','0 0 '+width+' '+height);svg.setAttribute('role','img');svg.setAttribute('aria-label','Progreso de fuerza de '+selected);svg.style.cssText='display:block;width:100%;min-width:'+Math.min(width,620)+'px;height:auto';
   const make=(tag,attrs,txt)=>{const node=document.createElementNS(ns,tag);Object.entries(attrs).forEach(([k,v])=>node.setAttribute(k,String(v)));if(txt!=null)node.textContent=txt;svg.appendChild(node);return node};
-  const ceiling=Math.max(5,Math.ceil(max*1.15/5)*5),x=i=>left+(points.length===1?plotW/2:i*plotW/(points.length-1)),y=v=>top+plotH-(v/ceiling)*plotH;
+  const ceiling=Math.max(5,Math.ceil(max*1.25/5)*5),x=i=>left+16+(points.length===1?(plotW-32)/2:i*(plotW-32)/(points.length-1)),y=v=>top+plotH-(v/ceiling)*plotH;
   for(let i=0;i<=4;i++){const val=ceiling*i/4,yy=y(val);make('line',{x1:left,y1:yy,x2:width-right,y2:yy,stroke:'#514324','stroke-width':1});make('text',{x:left-7,y:yy+4,fill:'#d6c8a3','font-size':11,'text-anchor':'end'},Number(val.toFixed(1)))}
   if(points.length>1)make('polyline',{points:points.map((p,i)=>x(i)+','+y(p[1])).join(' '),fill:'none',stroke:'#ffd75a','stroke-width':3,'stroke-linejoin':'round','stroke-linecap':'round'});
-  points.forEach((p,i)=>{make('circle',{cx:x(i),cy:y(p[1]),r:5,fill:'#ffd75a',stroke:'#050505','stroke-width':2});make('text',{x:x(i),y:Math.max(12,y(p[1])-11),fill:'#ffe278','font-size':12,'text-anchor':'middle'},p[1]+' kg');make('text',{x:x(i),y:height-26,fill:'#ddd','font-size':11,'text-anchor':'middle'},p[0].slice(5).replace('-','/'))});
+  points.forEach((p,i)=>{make('circle',{cx:x(i),cy:y(p[1]),r:5,fill:'#ffd75a',stroke:'#050505','stroke-width':2});make('text',{x:Math.max(left+20,Math.min(width-right-20,x(i))),y:Math.max(16,y(p[1])-15),fill:'#ffe278','font-size':12,'text-anchor':'middle'},p[1]+' kg');make('text',{x:x(i),y:height-26,fill:'#ddd','font-size':11,'text-anchor':'middle'},p[0].slice(5).replace('-','/'))});
   make('text',{x:width/2,y:height-5,fill:'#c9b992','font-size':11,'text-anchor':'middle'},'Fecha (mes/día)');strengthChart.appendChild(svg);
  }
  strengthSelect.addEventListener('change',strengthDraw);
  const originalSave=save.onclick;save.onclick=()=>{originalSave();strengthDraw()};
+
+ // Reporte imprimible, sin dependencias ni envío de datos a servidores.
+ const pdfButton=el('button','▤ Generar PDF de progreso de fuerza','routine-btn primary');
+ pdfButton.type='button';pdfButton.style.cssText='width:100%;margin-top:15px';
+ pdfButton.onclick=()=>{
+  const client=JSON.parse(localStorage.getItem('kafit_clients_v1')||'[]');
+  const selected=strengthSelect.value;
+  const rows=[...records()].filter(x=>Array.isArray(x.series)).flatMap(log=>log.series.filter(x=>x.completed&&x.exercise===selected&&x.weight!==''&&x.weight!=null&&Number.isFinite(Number(x.weight))&&Number(x.weight)>=0).map(x=>({date:log.date,weight:Number(x.weight),reps:x.reps})));
+  if(!rows.length){alert('No hay series completadas con peso válido para generar este reporte.');return}
+  const report=document.createElement('section');report.id='kafitStrengthReport';report.style.cssText='position:fixed;inset:0;z-index:99999;overflow:auto;background:#ededed;color:#222;padding:16px;font:15px Arial,sans-serif';
+  const bar=el('div');bar.style.cssText='position:sticky;top:0;background:#171717;padding:12px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap';
+  const back=el('button','← Cerrar','routine-btn');back.onclick=()=>{report.remove();document.body.classList.remove('kafit-strength-print')};
+  const print=el('button','Imprimir / Guardar PDF','routine-btn primary');print.onclick=()=>window.print();bar.append(back,print);report.appendChild(bar);
+  const paper=el('article');paper.style.cssText='max-width:780px;margin:14px auto;background:#fff;padding:28px;line-height:1.5';report.appendChild(paper);
+  const brand=el('h1','KA-FIT · REPORTE DE FUERZA');brand.style.cssText='color:#987017;border-bottom:3px solid #d4af37;padding-bottom:12px';paper.appendChild(brand);
+  const clientRow=Array.isArray(client)?client.find(c=>String(c.id)===clientKey):null;
+  paper.appendChild(el('p','Cliente: '+(clientRow?.name||document.getElementById('routineClientName')?.textContent||'Cliente seleccionado')));
+  paper.appendChild(el('p','Programa: '+r.name));paper.appendChild(el('p','Ejercicio: '+selected));paper.appendChild(el('p','Fecha de emisión: '+new Date().toLocaleDateString('es-MX')));
+  const sum=el('p',strengthSummary.textContent);sum.style.cssText='margin:20px 0;font-weight:bold;color:#85600f';paper.appendChild(sum);
+  const heading=el('h2','Evolución de carga máxima por fecha');heading.style.color='#987017';paper.appendChild(heading);
+  const svg=strengthChart.querySelector('svg');if(svg){const copy=svg.cloneNode(true);copy.style.cssText='width:100%;max-width:690px;height:auto;background:#141414;border-radius:10px;padding:12px';paper.appendChild(copy)}
+  paper.appendChild(el('h2','Series completadas con carga válida'));
+  const table=document.createElement('table');table.style.cssText='width:100%;border-collapse:collapse;margin-top:12px';
+  const tr=document.createElement('tr');['Fecha','Peso (kg)','Repeticiones'].forEach(v=>{const th=document.createElement('th');th.textContent=v;th.style.cssText='background:#252018;color:#fff;padding:8px;text-align:left';tr.appendChild(th)});table.appendChild(tr);
+  rows.sort((a,b)=>String(a.date).localeCompare(String(b.date))).forEach(x=>{const tr=document.createElement('tr');[x.date,String(x.weight),String(x.reps||'No registradas')].forEach(v=>{const td=document.createElement('td');td.textContent=v;td.style.cssText='padding:8px;border-bottom:1px solid #ddd';tr.appendChild(td)});table.appendChild(tr)});paper.appendChild(table);
+  const foot=el('p','Reporte elaborado con los registros locales de KA-FIT. La carga máxima corresponde al mayor peso registrado en una fecha; no es una estimación de 1RM.');foot.style.cssText='font-size:12px;color:#666;margin-top:25px';paper.appendChild(foot);
+  document.body.appendChild(report);document.body.classList.add('kafit-strength-print');report.scrollTop=0;
+ };
+ strength.appendChild(pdfButton);
  strengthDraw();wrap.appendChild(strength);
 
  const bottom=el('button','← Volver a mis rutinas','routine-btn');bottom.style.marginTop='18px';bottom.onclick=close.onclick;wrap.appendChild(bottom);document.body.style.overflow='hidden';overlay.scrollTop=0;
