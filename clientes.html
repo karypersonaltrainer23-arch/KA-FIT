@@ -2684,6 +2684,58 @@ function createProgressReport(){
   @page {size:A4;margin:10mm;}
 }
 </style>
+
+<style id="kafit-ios-pdf-onepage-v2">
+/* Ajuste de paginación para reportes de fuerza en Safari iPhone. */
+@media print {
+  @page { size: letter; margin: 9mm; }
+  html, body { height:auto!important; min-height:0!important; margin:0!important; padding:0!important; }
+  body.kafit-independent-strength-print,
+  body.kafit-strength-print { overflow:visible!important; }
+  body.kafit-independent-strength-print #kafitIndependentStrengthReport,
+  body.kafit-strength-print #kafitStrengthReport {
+    display:block!important; position:static!important; height:auto!important;
+    min-height:0!important; max-height:none!important; overflow:visible!important;
+    margin:0!important; padding:0!important; border:0!important;
+  }
+  #kafitIndependentStrengthReport article,
+  #kafitStrengthReport article {
+    width:100%!important; max-width:none!important; min-height:0!important;
+    margin:0!important; padding:0!important; font-size:11px!important;
+    line-height:1.22!important; box-shadow:none!important;
+  }
+  #kafitIndependentStrengthReport article > div:first-child,
+  #kafitStrengthReport article > div:first-child {
+    margin-bottom:5px!important; padding-bottom:5px!important;
+  }
+  #kafitIndependentStrengthReport article > div:first-child img,
+  #kafitStrengthReport article > div:first-child img {
+    width:43px!important; height:55px!important; object-fit:contain!important;
+  }
+  #kafitIndependentStrengthReport article h1,
+  #kafitStrengthReport article h1 { font-size:19px!important; margin:3px 0 6px!important; }
+  #kafitIndependentStrengthReport article h2,
+  #kafitStrengthReport article h2 { font-size:14px!important; margin:6px 0 4px!important; }
+  #kafitIndependentStrengthReport article p,
+  #kafitStrengthReport article p { margin:3px 0!important; }
+  #kafitIndependentStrengthReport article svg,
+  #kafitStrengthReport article svg {
+    display:block!important; width:100%!important; height:66mm!important;
+    max-height:66mm!important; margin:5px 0!important;
+    padding:3px!important; break-inside:avoid!important;
+  }
+  #kafitIndependentStrengthReport article table,
+  #kafitStrengthReport article table { margin:4px 0!important; font-size:9px!important; }
+  #kafitIndependentStrengthReport article th,
+  #kafitIndependentStrengthReport article td,
+  #kafitStrengthReport article th,
+  #kafitStrengthReport article td { padding:3px 4px!important; }
+  #kafitIndependentStrengthReport article > section {
+    margin:6px 0!important; padding:5px 0!important; break-inside:auto!important;
+  }
+  #kafitIndependentStrengthReport article > section > * { max-width:100%!important; }
+}
+</style>
 </body></html>`;
   // Vista integrada: evita navegación blob: y bloqueos de Safari en iPhone.
   try {
