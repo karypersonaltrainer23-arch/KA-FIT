@@ -1464,6 +1464,16 @@ body{
   <p>Consulta la evolución de las medidas corporales registradas.</p>
   <div id="progressClientLabel" style="color:#ffd75a;font-weight:700;margin-bottom:12px"></div>
   <div id="progressSummary" class="progress-summary"></div>
+  <div class="file-card" style="margin:16px 0" id="kafitStrengthDashboard">
+    <h3>🏋️ Progreso de fuerza · Reporte independiente</h3>
+    <p>Consulta cargas por ejercicio y genera un PDF semanal, mensual o histórico, sin incluir medidas corporales.</p>
+    <label class="routine-field">Ejercicio<select id="kafitStrengthExercise" class="kl-filter"></select></label>
+    <label class="routine-field">Periodo del reporte<select id="kafitStrengthPeriod" class="kl-filter"><option value="7">Últimos 7 días</option><option value="30">Últimos 30 días</option><option value="all">Todo el historial</option></select></label>
+    <div id="kafitStrengthSummary" class="routine-muted" aria-live="polite"></div>
+    <div id="kafitStrengthChart" style="margin:14px 0;overflow-x:auto;border:1px solid #725c20;border-radius:14px;background:#141414;padding:12px"></div>
+    <label class="routine-field">Observaciones del entrenador<textarea id="kafitStrengthNotes" rows="3" placeholder="Avances, técnica, objetivos para la siguiente semana..." style="display:block;width:100%;margin-top:7px;padding:12px;background:#171717;color:white;border:1px solid #a78636;border-radius:12px"></textarea></label>
+    <button type="button" class="routine-btn primary" id="kafitStrengthPdf" style="width:100%;margin-top:12px">▤ Generar PDF solo de fuerza</button>
+  </div>
   <h3 style="color:#ffd75a;margin:18px 0 8px">Medidas corporales</h3>
   <div id="progressMeasures" class="progress-measures"></div>
   <div class="file-card" style="margin-bottom:14px">
@@ -2264,6 +2274,7 @@ function openProgress() {
   document.querySelector(".bottom-nav").style.display = "none";
   renderProgressDashboard();
   renderProgressChart();
+  if(window.kafitRenderStrengthDashboard)window.kafitRenderStrengthDashboard();
   // Refrescar el comparador al abrir el progreso del cliente.
   refreshKafitCompare();
   window.scrollTo(0,0);
@@ -3125,4 +3136,85 @@ $('routineForm').addEventListener('submit',async e=>{e.preventDefault();const bo
   });
 })();
 </script>
-</body>
+<script>
+/* KA-FIT: panel de fuerza independiente, datos locales del cliente actual. */
+(function(){
+ const $=id=>document.getElementById(id);
+ const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ function data(){
+  const id=window.currentClientId;if(id==null)return [];
+  let routines={},logs={};try{routines=JSON.parse(localStorage.getItem('kafit_routines_v1')||'{}');logs=JSON.parse(localStorage.getItem('kafit_workout_logs_v1')||'{}')}catch(e){return []}
+  const result=[];
+  (routines[String(id)]||[]).forEach(r=>{
+   const rr=logs[String(id)]||{};
+   (rr[String(r.id)]||[]).forEach(log=>{
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(log.date)||!Array.isArray(log.series))return;
+    log.series.forEach(x=>{
+     if(!x.completed||!x.exercise||x.weight===''||x.weight==null)return;
+     const w=Number(x.weight);if(!Number.isFinite(w)||w<0)return;
+     result.push({date:log.date,exercise:x.exercise,weight:w,reps:x.reps||'—',routine:r.name||'Rutina'});
+    });
+   });
+  });
+  return result;
+ }
+ function filtered(){
+  const name=$('kafitStrengthExercise').value,days=$('kafitStrengthPeriod').value;
+  let list=data().filter(x=>x.exercise===name);
+  if(days!=='all'){
+   const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-(Number(days)-1));
+   const threshold=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+   list=list.filter(x=>x.date>=threshold);
+  }
+  return list.sort((a,b)=>a.date.localeCompare(b.date));
+ }
+ function chart(rows){
+  const dates=new Map();rows.forEach(x=>dates.set(x.date,Math.max(dates.get(x.date)??0,x.weight)));
+  const points=[...dates];if(!points.length)return '<p style="color:#bbb">No hay cargas válidas para este ejercicio y periodo.</p>';
+  const W=Math.max(340,points.length*85+100),H=260,L=60,R=40,T=36,B=56,maximum=Math.max(5,Math.ceil(Math.max(...points.map(x=>x[1]))*1.25/5)*5);
+  const x=i=>L+18+(points.length===1?(W-L-R-36)/2:i*(W-L-R-36)/(points.length-1));
+  const y=v=>T+(H-T-B)*(1-v/maximum);
+  let html=`<svg viewBox="0 0 ${W} ${H}" style="display:block;width:100%;min-width:${Math.min(W,620)}px;height:auto" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Evolución de fuerza">`;
+  for(let i=0;i<=4;i++){const v=maximum*i/4,yy=y(v);html+=`<line x1="${L}" y1="${yy}" x2="${W-R}" y2="${yy}" stroke="#554725"/><text x="${L-9}" y="${yy+4}" fill="#d8c9a4" font-size="11" text-anchor="end">${Number(v.toFixed(1))}</text>`}
+  if(points.length>1)html+=`<polyline fill="none" stroke="#ffd75a" stroke-width="3" points="${points.map((p,i)=>x(i)+','+y(p[1])).join(' ')}"/>`;
+  points.forEach((p,i)=>{html+=`<circle cx="${x(i)}" cy="${y(p[1])}" r="5" fill="#ffd75a"/><text x="${x(i)}" y="${Math.max(17,y(p[1])-16)}" text-anchor="middle" fill="#ffe278" font-size="12">${p[1]} kg</text><text x="${x(i)}" y="${H-23}" text-anchor="middle" fill="#ddd" font-size="11">${p[0].slice(5).replace('-','/')}</text>`});
+  return html+'</svg>';
+ }
+ function update(){
+  const sel=$('kafitStrengthExercise'),old=sel.value,names=[...new Set(data().map(x=>x.exercise))].sort((a,b)=>a.localeCompare(b,'es'));
+  sel.replaceChildren();names.forEach(n=>{const o=new Option(n,n);sel.add(o)});if(names.includes(old))sel.value=old;
+  const rows=filtered(),dates=new Map();rows.forEach(x=>dates.set(x.date,Math.max(dates.get(x.date)??0,x.weight)));
+  const pts=[...dates],initial=pts[0]?.[1],last=pts[pts.length-1]?.[1];
+  $('kafitStrengthSummary').textContent=pts.length?`${pts.length} fechas con cargas · Inicial: ${initial} kg · Última: ${last} kg · Cambio: ${Number((last-initial).toFixed(2))>0?'+':''}${Number((last-initial).toFixed(2))} kg`:'Sin entrenamientos válidos en el periodo seleccionado.';
+  $('kafitStrengthChart').innerHTML=chart(rows);$('kafitStrengthPdf').disabled=!rows.length;
+ }
+ window.kafitRenderStrengthDashboard=update;
+ $('kafitStrengthExercise').addEventListener('change',update);$('kafitStrengthPeriod').addEventListener('change',update);
+ $('kafitStrengthPdf').addEventListener('click',()=>{
+  const rows=filtered();if(!rows.length){alert('No hay entrenamientos en este periodo.');return}
+  const client=(JSON.parse(localStorage.getItem('kafit_clients_v2')||'[]')||[]).find(c=>String(c.id)===String(window.currentClientId));
+  const name=client?.name||$('progressClientLabel').textContent||'Cliente';
+  const exercise=$('kafitStrengthExercise').value,period=$('kafitStrengthPeriod').selectedOptions[0].textContent;
+  const summary=$('kafitStrengthSummary').textContent,notes=$('kafitStrengthNotes').value.trim();
+  const section=document.createElement('section');section.id='kafitIndependentStrengthReport';
+  section.style.cssText='position:fixed;inset:0;z-index:99999;overflow:auto;background:#ededed;color:#222;padding:15px;font:15px Arial,sans-serif';
+  const toolbar=document.createElement('div');toolbar.style.cssText='position:sticky;top:0;display:flex;gap:10px;justify-content:center;background:#171717;padding:12px;z-index:2';
+  const close=document.createElement('button');close.textContent='← Cerrar';close.className='routine-btn';close.onclick=()=>{section.remove();document.body.classList.remove('kafit-independent-strength-print')};
+  const print=document.createElement('button');print.textContent='Imprimir / Guardar PDF';print.className='routine-btn primary';print.onclick=()=>window.print();toolbar.append(close,print);section.appendChild(toolbar);
+  const paper=document.createElement('article');paper.style.cssText='max-width:780px;margin:14px auto;background:white;padding:26px;line-height:1.5';
+  paper.innerHTML=`<h1 style="color:#96701d;border-bottom:3px solid #d4af37;padding-bottom:12px">KA-FIT · REPORTE DE FUERZA</h1><p><b>Cliente:</b> ${esc(name)}</p><p><b>Ejercicio:</b> ${esc(exercise)}</p><p><b>Periodo:</b> ${esc(period)}</p><p><b>Fecha de emisión:</b> ${new Date().toLocaleDateString('es-MX')}</p><p style="color:#85600f;font-weight:bold;margin:18px 0">${esc(summary)}</p><h2 style="color:#96701d">Evolución de cargas</h2><div style="background:#141414;padding:12px;border-radius:10px;overflow:hidden">${chart(rows)}</div><h2 style="color:#96701d;margin-top:20px">Series registradas</h2><table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="background:#292217;color:white"><th>Fecha</th><th>Rutina</th><th>Peso (kg)</th><th>Repeticiones</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.date)}</td><td>${esc(r.routine)}</td><td>${r.weight}</td><td>${esc(r.reps)}</td></tr>`).join('')}</tbody></table>${notes?`<h2 style="color:#96701d;margin-top:20px">Observaciones</h2><p style="white-space:pre-wrap">${esc(notes)}</p>`:''}<p style="font-size:11px;color:#666;margin-top:24px">Reporte independiente de fuerza. Se consideran las series completadas con peso válido; no incluye evaluaciones de medidas corporales.</p>`;
+  section.appendChild(paper);document.body.appendChild(section);document.body.classList.add('kafit-independent-strength-print');section.scrollTop=0;
+ });
+})();
+</script>
+<style>
+#kafitIndependentStrengthReport td,#kafitIndependentStrengthReport th{padding:8px 5px;border-bottom:1px solid #ddd;text-align:left}
+@media print{
+body.kafit-independent-strength-print > :not(#kafitIndependentStrengthReport){display:none!important}
+body.kafit-independent-strength-print #kafitIndependentStrengthReport{position:static!important;overflow:visible!important;padding:0!important;background:white!important}
+body.kafit-independent-strength-print #kafitIndependentStrengthReport > div:first-child{display:none!important}
+body.kafit-independent-strength-print #kafitIndependentStrengthReport article{margin:0!important;padding:0!important;max-width:none!important}
+body.kafit-independent-strength-print #kafitIndependentStrengthReport tr{break-inside:avoid}
+@page{size:A4;margin:13mm}
+}
+</style>
