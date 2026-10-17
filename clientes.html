@@ -3353,7 +3353,7 @@ $('routineForm').addEventListener('submit',async e=>{e.preventDefault();const bo
   let body=`<h1 style="color:#96701d;border-bottom:3px solid #d4af37;padding-bottom:12px">KA-FIT · REPORTE DE FUERZA POR RUTINA</h1><p><b>Cliente:</b> ${esc(clientName)}</p><p><b>Rutina:</b> ${esc(routine.name||'Rutina')}</p><p><b>Periodo:</b> ${esc(period)}</p><p><b>Fecha de emisión:</b> ${new Date().toLocaleDateString('es-MX')}</p><p><b>Ejercicios:</b> ${names.length} · <b>Series con cargas válidas:</b> ${rows.length}</p>`;
   names.forEach(exercise=>{
    const series=rows.filter(x=>x.exercise===exercise).sort((a,b)=>a.date.localeCompare(b.date));
-   body+=`<section style="break-inside:avoid-page;margin-top:26px;border-top:2px solid #d4af37;padding-top:12px"><h2 style="color:#96701d">${esc(exercise)}</h2>`;
+   body+=`<section style="break-inside:auto;margin-top:12px;border-top:2px solid #d4af37;padding-top:12px"><h2 style="color:#96701d">${esc(exercise)}</h2>`;
    if(!series.length){body+='<p>Sin entrenamientos con cargas válidas en el periodo seleccionado.</p></section>';return}
    const dates=new Map();series.forEach(x=>dates.set(x.date,Math.max(dates.get(x.date)??0,x.weight)));
    const points=[...dates],initial=points[0][1],last=points[points.length-1][1];
@@ -3402,5 +3402,25 @@ body.kafit-independent-strength-print #kafitIndependentStrengthReport > div:firs
 body.kafit-independent-strength-print #kafitIndependentStrengthReport article{margin:0!important;padding:0!important;max-width:none!important}
 body.kafit-independent-strength-print #kafitIndependentStrengthReport tr{break-inside:avoid}
 @page{size:A4;margin:13mm}
+}
+</style>
+
+<style id="kafit-print-real-fix">
+@media print {
+ @page {size:letter;margin:8mm}
+ html,body{height:auto!important;min-height:0!important;margin:0!important;padding:0!important;overflow:visible!important}
+ body.kafit-independent-strength-print #kafitIndependentStrengthReport{position:static!important;display:block!important;height:auto!important;min-height:0!important;overflow:visible!important;margin:0!important;padding:0!important}
+ body.kafit-independent-strength-print #kafitIndependentStrengthReport article{box-sizing:border-box!important;display:block!important;max-width:none!important;min-height:0!important;height:auto!important;margin:0!important;padding:0!important;line-height:1.22!important;font-size:11px!important}
+ #kafitIndependentStrengthReport article > section{break-inside:auto!important;page-break-inside:auto!important;margin:8px 0!important;padding:5px 0!important}
+ #kafitIndependentStrengthReport article > div:first-child{margin:0 0 8px!important;padding:0 0 6px!important;gap:10px!important}
+ #kafitIndependentStrengthReport article > div:first-child img{width:44px!important;height:55px!important}
+ #kafitIndependentStrengthReport article > div:first-child h1{font-size:19px!important}
+ #kafitIndependentStrengthReport article > div:first-child p{font-size:12px!important}
+ #kafitIndependentStrengthReport article p{margin:3px 0!important}
+ #kafitIndependentStrengthReport article h2{font-size:14px!important;margin:6px 0 4px!important}
+ #kafitIndependentStrengthReport article div:has(> svg){margin:5px 0!important;padding:4px!important;break-inside:avoid!important}
+ #kafitIndependentStrengthReport article svg{display:block!important;width:100%!important;height:62mm!important;max-height:62mm!important;break-inside:avoid!important}
+ #kafitIndependentStrengthReport article table{margin:4px 0!important;font-size:9px!important}
+ #kafitIndependentStrengthReport article th,#kafitIndependentStrengthReport article td{padding:3px 4px!important}
 }
 </style>
