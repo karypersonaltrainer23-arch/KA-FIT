@@ -2643,6 +2643,47 @@ function createProgressReport(){
 .routine-muted{color:#bbb;font-size:13px;line-height:1.5}
 </style>
 </head><body><div class="actions"><button type="button" class="return" onclick="if(window.opener && !window.opener.closed){window.opener.focus();window.close()}else{history.back()}">← Volver a KA-FIT</button><button onclick="window.print()">Imprimir / Guardar PDF</button><p>En iPhone, abre la vista de impresión y comparte el documento como PDF.</p></div><article class="sheet"><div class="brand">${logoUrl?'<img src="'+esc(logoUrl)+'" alt="Logo KA-FIT">':''}<div><h1>KA-FIT</h1><p>Reporte de progreso corporal</p></div></div><div class="meta"><div><b>Cliente</b><br>${esc(client.name)}</div><div><b>Objetivo</b><br>${esc(client.goal||'No especificado')}</div><div><b>Evaluación inicial</b><br>${esc(a.date)}</div><div><b>Evaluación final</b><br>${esc(b.date)}</div></div><h2>Comparación de medidas</h2><table><thead><tr><th>Medida</th><th>Inicial</th><th>Final</th><th>Cambio</th></tr></thead><tbody>${lines}</tbody></table><h2>Comparación visual</h2>${bars}<h2>Observaciones y recomendaciones</h2><div class="notes">${esc(notes||'Sin observaciones registradas.')}</div><div class="foot">KA-FIT · El cambio positivo o negativo de una medida no implica por sí solo una mejora. Reporte generado el ${esc(new Date().toLocaleDateString('es-MX'))}.</div></article>
+
+<style id="kafit-print-pagination-fix">
+/* KA-FIT: paginación compacta para Safari iOS */
+@media print {
+  body.kafit-independent-strength-print,
+  body.kafit-strength-print,
+  body.kafit-report-open {height:auto!important;min-height:0!important;overflow:visible!important;}
+  body.kafit-independent-strength-print #kafitIndependentStrengthReport,
+  body.kafit-strength-print #kafitStrengthReport,
+  body.kafit-report-open #kafitReportViewer {height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;}
+  body.kafit-independent-strength-print #kafitIndependentStrengthReport article,
+  body.kafit-strength-print #kafitStrengthReport article {padding:0!important;margin:0!important;line-height:1.3!important;font-size:12px!important;}
+  #kafitIndependentStrengthReport article > section {break-inside:auto!important;page-break-inside:auto!important;margin-top:10px!important;padding-top:7px!important;}
+  #kafitIndependentStrengthReport article > section > h2 {margin:4px 0 5px!important;font-size:16px!important;break-after:avoid!important;}
+  #kafitIndependentStrengthReport article p,
+  #kafitStrengthReport article p {margin:5px 0!important;}
+  #kafitIndependentStrengthReport article h2,
+  #kafitIndependentStrengthReport article h3,
+  #kafitStrengthReport article h2 {margin:9px 0 5px!important;break-after:avoid!important;}
+  #kafitIndependentStrengthReport article svg,
+  #kafitStrengthReport article svg {display:block!important;width:100%!important;max-height:95mm!important;height:auto!important;break-inside:avoid!important;page-break-inside:avoid!important;}
+  #kafitIndependentStrengthReport article div:has(> svg) {break-inside:avoid!important;page-break-inside:avoid!important;padding:5px!important;margin:6px 0!important;}
+  #kafitIndependentStrengthReport article table,
+  #kafitStrengthReport article table {font-size:10px!important;margin:5px 0!important;}
+  #kafitIndependentStrengthReport article th,
+  #kafitIndependentStrengthReport article td,
+  #kafitStrengthReport article th,
+  #kafitStrengthReport article td {padding:4px 5px!important;}
+  #kafitIndependentStrengthReport article tr,
+  #kafitStrengthReport article tr {break-inside:avoid!important;}
+  #kafitIndependentStrengthReport article > div:first-child,
+  #kafitStrengthReport article > div:first-child {gap:12px!important;padding-bottom:8px!important;margin-bottom:9px!important;break-inside:avoid!important;}
+  #kafitIndependentStrengthReport article > div:first-child img,
+  #kafitStrengthReport article > div:first-child img {width:52px!important;height:68px!important;}
+  #kafitIndependentStrengthReport article > div:first-child h1,
+  #kafitStrengthReport article > div:first-child h1 {font-size:22px!important;}
+  #kafitIndependentStrengthReport article > div:first-child p,
+  #kafitStrengthReport article > div:first-child p {font-size:13px!important;}
+  @page {size:A4;margin:10mm;}
+}
+</style>
 </body></html>`;
   // Vista integrada: evita navegación blob: y bloqueos de Safari en iPhone.
   try {
